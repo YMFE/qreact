@@ -1,0 +1,6 @@
+/src/
+/test/
+/scripts/
+/examples/
+/coverage/
+.babelrc

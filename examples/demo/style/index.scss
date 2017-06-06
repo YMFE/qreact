@@ -1,0 +1,218 @@
+@import "./mixin";
+
+html{
+    width: 100%;
+    height: 100%;
+    font-size: 100px;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    font-family: Helvetica, "Microsoft YaHei", Tahoma, Arial;
+}
+
+body{
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+}
+
+div{
+  box-sizing: border-box;
+  font-size: 0.16rem;
+  padding: 4px 4px 0 4px;
+  border: 4px solid #ccc;
+  margin-bottom: 4px;
+}
+a,b,c,d{
+    border: 2px solid #ff0000;
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    padding: 2px;
+}
+
+.page{
+    position: absolute;
+    top:0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    @include flexbox();
+    @include flex-direction(column);
+}
+
+
+.page-header{
+    height: 0.40rem;
+    line-height: 0.40rem;
+    background-color: #1ba9ba;
+    text-align: center;
+    position: relative;
+    color: #fff;
+    font-size: 0.18rem;
+    .back{
+        display: block;
+        position: absolute;
+        left:10px;
+        line-height: 0.40rem;
+        height: 0.40rem;
+        font-size: 0.14rem;
+        text-decoration: none;
+        color: #fff;
+    }
+
+}
+
+.page-body{
+  background-color: #efefef;
+  position: absolute;
+  top:0.40rem;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  overflow: scroll;
+  .section-title{
+    width: 100%;
+    height: 0.40rem;
+    line-height: 0.40rem;
+    padding-left: 0.20rem;
+  }
+  .link{
+      display: block;
+      width: 100%;
+      height: 0.40rem;
+      line-height: 0.40rem;
+      background-color: #fff;
+      border-bottom: 1px solid #eee;
+      text-decoration: none;
+      color: #333;
+      padding-left: 0.15rem;
+  }
+  .section-body{
+      padding: 0.15rem;
+      background: #fff;
+  }
+  .log-block{
+      margin: 0.1rem 0;
+      padding: 0.1rem 0.15rem;
+      height: 0.8rem;
+      overflow: scroll;
+      border:1px solid #333;
+      border-radius: 0.05rem;
+  }
+  .log-inline{
+      margin: 0.1rem 0;
+      padding: 0.1rem 0.15rem;
+  }
+  .basic-input{
+      width:100%;
+      height: 0.35rem;
+      border: 1px solid #333;
+  }
+  .basic-textarea{
+    width:100%;
+    height: 0.6rem;
+    border: 1px solid #333;
+  }
+  .basic-button{
+      width: 1.2rem;
+      height: 0.35rem;
+      line-height: 0.35rem;
+      text-align: center;
+      color: #fff;
+      font-size: 0.14rem;
+      background: #1ba9ba;
+      border-radius: 0.05rem;
+
+  }
+}
+
+.page-event{
+    .box{
+      padding:0.1rem;
+      @include flexbox();
+      @include justify-content(space-around);
+      .outer{
+
+          width:1rem;
+          height: 1rem;
+          background: #d1d1d1;
+          color: #333;
+          font-size: 0.12rem;
+          text-align: center;
+          @include flexbox();
+          @include align-items(center);
+          @include justify-content(center);
+          @include flex-direction(column);
+          .inner{
+              width:0.5rem;
+              height: 0.5rem;
+              background: #a1a1a1;
+              font-size: 0.12rem;
+          }
+      }
+    }
+    .touch-box{
+        width:100%;
+        height: 1rem;
+        line-height: 1rem;
+        background-color: #d1d1d1;
+        text-align: center;
+        margin-bottom: 0.15rem;
+    }
+    .other-box{
+        width:100%;
+        height: 1rem;
+        line-height: 0.22rem;
+        background-color: #d1d1d1;
+        text-align: center;
+        margin-bottom: 0.15rem;
+        overflow: scroll;
+        .other-cell{
+            height: 3rem;
+        }
+    }
+    .animation-buttons{
+        @include flexbox();
+        @include justify-content(space-around);
+        margin-bottom: 0.2rem;
+    }
+
+    .animation-box{
+        width: 0.6rem;
+        height: 0.6rem;
+        margin-top: 0.2rem;
+        color:#fff;
+        background-color: #d1d1d1;
+        border-radius: 50%;
+        @include transition(width 1s ease-in-out);
+        &.animate{
+            @include animation(animationBox 1000ms ease-in-out);
+        }
+        &.transition{
+            width: 1.8rem;
+        }
+    }
+
+
+
+}
+@-webkit-keyframes animationBox {
+  from {
+      -webkit-transform: translateX(0);
+  }
+  to {
+      -webkit-transform: translateX(300%);
+  }
+}
+@keyframes animationBox {
+  from {
+      transform: translateX(0);
+  }
+  to {
+      transform: translateX(300%);
+  }
+}
