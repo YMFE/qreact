@@ -1,0 +1,15 @@
+{
+    "sourceMaps": true,
+    "presets": [
+        "es2015"
+    ],
+    "plugins": [
+        ["transform-react-jsx"],
+        ["module-resolver", {
+            "alias": {
+                "react": "./../../src/preact-compat",
+                "react-dom": "./../../src/preact-compat"
+            }
+        }]
+    ]
+}
