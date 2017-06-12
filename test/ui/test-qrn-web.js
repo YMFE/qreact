@@ -47,7 +47,7 @@ describe('QunarReactNativeWeb', function() {
             CurrentScene = document.querySelectorAll(sceneQuery)[presentedIndex];
             if (presentedIndex === 0 && CurrentScene && allButtonsInIndex.length === 0) {
                 let allButtons = CurrentScene.querySelectorAll([scrollerQuery, buttonQuery, textQuery].join(' '));
-                allButtons.forEach((ele, index) => {
+                [].forEach.call(allButtons, (ele, index) => {
                     let id = '#' + (ele.parentElement.id = ele.innerText);
                     allButtonsInIndex.push(id);
                     if (index === 0) buttonHeight = ele.parentElement.offsetHeight / 2;

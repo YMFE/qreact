@@ -5037,7 +5037,7 @@
                 img = img.onload = img.onerror = null;
             };
             img.onerror = function(err) {
-                failure(err);
+                failure && failure(err);
                 img = img.onload = img.onerror = null;
             };
         };
@@ -23901,7 +23901,7 @@
                 });
 
 
-                let func = function() {
+                var func = function() {
                     if (opts.title) {
                         nextView.routerOpts.title = opts.title;
                     }

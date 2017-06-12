@@ -1,5 +1,7 @@
 # Qreact
 
+[![Build Status](https://travis-ci.org/gogoyqj/qreact.svg?branch=master)](https://travis-ci.org/gogoyqj/qreact)
+
 ## Description
 
 Alternative to React, same api and behavior, eg: lifecycle, vnodes data structure, without modifying ur business code, but smaller size.

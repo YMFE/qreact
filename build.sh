@@ -1,6 +1,12 @@
 #!bin/bash
 
 echo 'start build'
+kernal=$(uname -s)
+alias ised="sed -i \"\""
+if [ $kernal = "Linux" ];
+then
+    alias ised="sed -i\"\""
+fi
 
 # build qreact-react-web.js
 echo 'build umd'
@@ -10,16 +16,17 @@ for config in $configs;do
     cp -f rollup.config.js $config;
 done
 
-sed -i "" "s/\/\/ comment-start/\/\* comment-start/g" src/preact-compat.js
-sed -i "" "s/\/\/ comment-end/comment-end *\//g" src/preact-compat.js
-sed -i "" "s/\/\/ comment-start/\/\* comment-start/g" src/preact-compat-react-web.js
-sed -i "" "s/\/\/ comment-end/comment-end *\//g" src/preact-compat-react-web.js
+cp -f src/preact-compat.js src/preact-compat-react-web.js
+
+ised "s/\/\/ comment-start/\/\* comment-start/g" src/preact-compat.js
+ised "s/\/\/ comment-end/comment-end *\//g" src/preact-compat.js
+ised "s/\/\/ comment-start/\/\* comment-start/g" src/preact-compat-react-web.js
+ised "s/\/\/ comment-end/comment-end *\//g" src/preact-compat-react-web.js
 
 # special replace for react native web
-cp -f src/preact-compat.js src/preact-compat-react-web.js
-sed -i "" "s/dist\/qreact\.js/dist\/qreact-react-web.js/g" _reactweb.config.js
-sed -i "" "s/src\/preact-compat\.js/src\/preact-compat-react-web.js/g" _reactweb.config.js
-sed -i "" "s/\/\/ import '.\/event\/injectResponderEventPlugin'/import '.\/event\/injectResponderEventPlugin'/" src/preact-compat-react-web.js
+ised "s/dist\/qreact\.js/dist\/qreact-react-web.js/g" _reactweb.config.js
+ised "s/src\/preact-compat\.js/src\/preact-compat-react-web.js/g" _reactweb.config.js
+ised "s/\/\/ import '.\/event\/injectResponderEventPlugin'/import '.\/event\/injectResponderEventPlugin'/" src/preact-compat-react-web.js
 rollup -c _reactweb.config.js
 uglifyjs dist/qreact-react-web.js -o dist/qreact-react-web.min.js -p relative -m --source-map dist/qreact-react-web.min.map
 
@@ -27,30 +34,30 @@ uglifyjs dist/qreact-react-web.js -o dist/qreact-react-web.min.js -p relative -m
 rollup -c rollup.config.js
 
 
-sed -i "" "s/\/\* comment-start/\/\/ comment-start/g" src/preact-compat.js
-sed -i "" "s/comment-end \*\//\/\/ comment-end/g" src/preact-compat.js
-sed -i "" "s/\/\* comment-start/\/\/ comment-start/g" src/preact-compat-react-web.js
-sed -i "" "s/comment-end \*\//\/\/ comment-end/g" src/preact-compat-react-web.js
+ised "s/\/\* comment-start/\/\/ comment-start/g" src/preact-compat.js
+ised "s/comment-end \*\//\/\/ comment-end/g" src/preact-compat.js
+ised "s/\/\* comment-start/\/\/ comment-start/g" src/preact-compat-react-web.js
+ised "s/comment-end \*\//\/\/ comment-end/g" src/preact-compat-react-web.js
 
 echo 'build es'
 for config in $configs;do
-    sed -i "" "s/dist\//es\//g" $config
-    sed -i "" "s/'default'/'named'/g" $config
-    sed -i "" "s/\'umd\'/\'es\'/g" $config
+    ised "s/dist\//es\//g" $config
+    ised "s/'default'/'named'/g" $config
+    ised "s/\'umd\'/\'es\'/g" $config
     rollup -c $config
 done
 
 
-sed -i "" "s/\/\/ comment-start/\/\* comment-start/g" src/preact-compat.js
-sed -i "" "s/\/\/ comment-end/comment-end *\//g" src/preact-compat.js
-sed -i "" "s/\/\/ comment-start/\/\* comment-start/g" src/preact-compat-react-web.js
-sed -i "" "s/\/\/ comment-end/comment-end *\//g" src/preact-compat-react-web.js
+ised "s/\/\/ comment-start/\/\* comment-start/g" src/preact-compat.js
+ised "s/\/\/ comment-end/comment-end *\//g" src/preact-compat.js
+ised "s/\/\/ comment-start/\/\* comment-start/g" src/preact-compat-react-web.js
+ised "s/\/\/ comment-end/comment-end *\//g" src/preact-compat-react-web.js
 
 echo 'build cjs'
 for config in $configs;do
-    sed -i "" "s/es\//cjs\//g" $config
-    sed -i "" "s/\'es\'/\'cjs\'/g" $config
-    sed -i "" "s/'named'/'default'/g" $config
+    ised "s/es\//cjs\//g" $config
+    ised "s/\'es\'/\'cjs\'/g" $config
+    ised "s/'named'/'default'/g" $config
     rollup -c $config
 done
 
@@ -58,11 +65,11 @@ for config in $configs;do
     rm -f $config
 done
 # rm -f src/preact-compat-react-web.js
-sed -i "" "s/\/\* comment-start/\/\/ comment-start/g" src/preact-compat.js
-sed -i "" "s/comment-end \*\//\/\/ comment-end/g" src/preact-compat.js
+ised "s/\/\* comment-start/\/\/ comment-start/g" src/preact-compat.js
+ised "s/comment-end \*\//\/\/ comment-end/g" src/preact-compat.js
 
 # since rollup didn't remove comments, remove "[//|/*|*] @provides" with sed
-sed -i "" "s/@provides//g" dist/qreact.js
+ised "s/@provides//g" dist/qreact.js
 
 # minify qreact.min.js
 # -m, --mangle names/pass mangler true
@@ -70,9 +77,9 @@ uglifyjs dist/qreact.js -o dist/qreact.min.js -p relative -m --source-map dist/q
 
 # try to get gzipped size
 checkgzip=$(which gzip)
-if [[ -x $checkgzip ]];then
+if [ -x $checkgzip ];then
     gzip -fk dist/qreact.min.js
-    if [[ $res -ne 0 ]];then
+    if [ $res -ne 0 ];then
         echo 'gzip faild'
         exit 250
     fi

@@ -1,5 +1,5 @@
 /*eslint no-var:0, object-shorthand:0 */
-var runUITests = require.main.filename.indexOf('run-test.js') !== -1 && process.env.seleniumEnable !== 'false';
+var runUITests = require.main.filename.indexOf('run-test.js') !== -1 && process.env.seleniumEnable !== 'false' || process.env.TRAVIS;
 var coverage = String(process.env.COVERAGE) !== 'false' && false,
     ci = String(process.env.CI).match(/^(1|true)$/gi),
     pullRequest = !String(process.env.TRAVIS_PULL_REQUEST).match(/^(0|false|undefined)$/gi),
@@ -17,16 +17,70 @@ module.exports = function(config) {
         },
         basePath: __dirname,
 
-        hostname: '127.0.0.1',
+        // hostname: '127.0.0.1',
+        // hostname: '100.80.21.128',
+        // hostname: '192.168.59.3',
         customLaunchers: runUITests ? {
             'Chrome': {
                 base: 'WebDriverio',
                 browserName: 'chrome',
                 name: 'Karma'
+            },
+            'android-default': { // webView
+                base: 'WebDriverio',
+                browserName: 'chrome',
+                name: 'Karma',
+                config: {
+                    desiredCapabilities: {
+                        chromeOptions: {
+                            androidPackage: 'com.android.browser',
+                            androidActivity: '.BrowserActivity',
+                            windowTypes: ['webview']
+                        },
+                        deviceName: '4_0',
+                        browserName: 'chrome',
+                        platformName: 'Android'
+                    },
+                    logLevel: 'none'//'verbose'
+                }
+            },
+            'Chrome-Android': {
+                base: 'WebDriverio',
+                browserName: 'chrome',
+                name: 'Karma',
+                config: {
+                    desiredCapabilities: {
+                        chromeOptions: {
+                            androidPackage: 'com.android.chrome'
+                        },
+                        deviceName: '4_0',
+                        browserName: 'chrome',
+                        platformName: 'Android'
+                    },
+                    logLevel: 'none'//'verbose'
+                }
+            },
+            'Chrome-SauceLabs': {
+                base: 'WebDriverio',
+                browserName: 'chrome',
+                version: '57.0',
+                mobileEmulationEnabled: true,
+                name: 'Karma',
+                config: {
+                    host: 'localhost',
+                    port: 4445,
+                    logLevel: 'verbose',
+                    name: 'integration',
+                    'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
+                    user: process.env.SAUCE_USERNAME,
+                    key: process.env.SAUCE_ACCESS_KEY
+                }
             }
         } : {},
         // customLaunchers: sauceLabs ? sauceLabsLaunchers : travisLaunchers,
-        browsers: ['Chrome'],
+        // browsers: ['android-default'],
+        // browsers: ['Chrome-Android'],
+        browsers: process.env.TRAVIS ? ['Chrome-SauceLabs'] : ['Chrome'],
         frameworks: ['source-map-support', 'mocha', 'chai-sinon'],
 
         reporters: ['mocha', 'coverage'],

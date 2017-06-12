@@ -7,8 +7,7 @@
   "scripts": {
     "test": "npm-run-all build _test",
     "_test": "node run-test.js singleRun",
-    "build": "sh build.sh",
-    "prepublish": "npm-run-all test"
+    "build": "sh build.sh"
   },
   "keywords": [
     "react",
@@ -42,7 +41,7 @@
     "karma-chai-sinon": "^0.1.5",
     "karma-chrome-launcher": "^2.0.0",
     "karma-coverage": "^1.1.1",
-    "karma-event-driver-ext": "0.0.10",
+    "karma-event-driver-ext": "0.0.13",
     "karma-mocha": "^1.3.0",
     "karma-mocha-reporter": "^2.2.2",
     "karma-sinon-chai": "^1.2.4",

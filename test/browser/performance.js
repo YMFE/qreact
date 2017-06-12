@@ -107,7 +107,7 @@ describe('performance', function() {
             root = render(jsx, scratch, root);
         }, ({ ticks, message }) => {
             console.log(`PERF: empty diff: ${message}`);
-            expect(ticks).to.be.below(150 * MULTIPLIER);
+            expect(ticks).to.be.below(250 * MULTIPLIER);
             done();
         });
     });
