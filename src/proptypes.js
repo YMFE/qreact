@@ -1,8 +1,22 @@
-export let PropTypes = {};
-function noop() {
-    return PropTypes;
-}
-'array bool func number object string any arrayOf element instanceOf node objectOf oneOf oneOfType shape'.split(' ').forEach(function(f) {
-    PropTypes[f] = noop;
-});
-
+//为了兼容yo
+var check = function() {
+  return check;
+};
+check.isRequired = check;
+export var PropTypes = {
+  array: check,
+  bool: check,
+  func: check,
+  number: check,
+  object: check,
+  string: check,
+  any: check,
+  arrayOf: check,
+  element: check,
+  instanceOf: check,
+  node: check,
+  objectOf: check,
+  oneOf: check,
+  oneOfType: check,
+  shape: check
+};
