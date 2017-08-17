@@ -22,6 +22,7 @@ import { instanceMap } from "./instanceMap";
 import { disposeVnode } from "./dispose";
 
 import { scheduler } from "./scheduler";
+import { typeNumber } from "./util";
 /**
  * ReactDOM.render 方法
  *
@@ -670,7 +671,7 @@ function applyUpdate(data) {
   // re-order
   let currentNode = dom.parentNode.childNodes[data.index];
   if (currentNode !== dom) {
-    dom.parentNode.insertBefore(dom, currentNode);
+    dom.parentNode.insertBefore(dom, typeNumber(currentNode) === 0 ? null : currentNode);
   }
   return dom;
 }
@@ -685,7 +686,7 @@ function applyDestroy(data) {
 
 function applyCreate(data) {
   let node = mountVnode(data.vnode, data.parentContext);
-  data.parentNode.insertBefore(node, data.parentNode.childNodes[data.index]);
+  data.parentNode.insertBefore(node, typeNumber(data.parentNode.childNodes[data.index]) === 0 ? null : data.parentNode.childNodes[data.index]);
 }
 
 

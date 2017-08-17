@@ -12,7 +12,7 @@ export var scheduler = {
     this.add(fn);
     setTimeout(function() {
       scheduler.run();
-    }, 0);
+    }, 16);
   },
   run: function() {
     if (this.count === 0) return;

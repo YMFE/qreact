@@ -1,3 +1,5 @@
+import "../lib/polyfill";
+
 import { createElement } from "./createElement";
 import { cloneElement } from "./cloneElement";
 
@@ -44,5 +46,6 @@ var React = {
 };
 
 window.ReactDOM = React;
+window.React = React;
 
 export default React;

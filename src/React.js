@@ -44,5 +44,6 @@ var React = {
 };
 
 window.ReactDOM = React;
+window.React = React;
 
 export default React;

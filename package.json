@@ -1,6 +1,6 @@
 {
   "name": "qreact",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "a mini React-like framework",
   "main": "dist/React.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "test": "node node_modules/karma-event-driver-ext",
     "devtools": "rollup -c build/rollup.tools.js",
     "webpack": "^1.14.0",
-    "precommit-msg": "echo '正在进行代码检查...' && exit 0",
+    "precommit-msg": "echo 'Linting code...' && exit 0",
     "lint": "eslint src/ build/ --fix"
   },
   "pre-commit": [
