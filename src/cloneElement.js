@@ -1,4 +1,4 @@
-import { createElement, __ref } from "./createElement";
+import { createElement } from "./createElement";
 
 export function cloneElement(vnode, props) {
   if (Array.isArray(vnode)) {
@@ -13,7 +13,7 @@ export function cloneElement(vnode, props) {
   }
   if (vnode.__refKey) {
     obj.ref = vnode.__refKey;
-  } else if (vnode.ref !== __ref) {
+  } else if (vnode.ref) {
     obj.ref = vnode.ref;
   }
 

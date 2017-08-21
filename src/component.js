@@ -1,5 +1,6 @@
-import { extend, isFn, options } from "./util";
-import { scheduler } from "./scheduler";
+import { extend, isFn, options, clearArray } from "./util";
+import { CurrentOwner } from "./createElement";
+import { win } from "./browser";
 
 /**
  *组件的基类
@@ -9,81 +10,98 @@ import { scheduler } from "./scheduler";
  */
 
 export function Component(props, context) {
+  CurrentOwner.cur = this; //防止用户在构造器生成JSX
   this.context = context;
   this.props = props;
   this.refs = {};
-  this._disableSetState = true;
-  /**
-   * this._disableSetState = true 用于阻止组件在componentWillMount/componentWillReceiveProps
-   * 被setState，从而提前发生render;
-   * this._updating = true 用于将componentDidMount发生setState/forceUpdate 延迟到整个render后再触发
-   * this._disposed = true 阻止组件在销毁后还进行diff
-   * this._forceUpdate = true 用于强制组件更新，忽略shouldComponentUpdate的结果
-   * this._hasDidMount = true 表示这个组件已经触发componentDidMount回调，
-   * 如果用户没有指定，那么它在插入DOM树时，自动标识为true
-   * 此flag是确保 component在update前就要执行componentDidMount
-   */
-  this._pendingCallbacks = [];
-  this._pendingStates = [];
-  this.state = {};
+  this.state = null;
+  this.__dirty = true;
+  this.__pendingCallbacks = [];
+  this.__pendingStates = [];
+  this.__pendingRefs = [];
+  /*
+  * this.__dirty = true 表示组件不能更新
+  * this.__hasRendred = true 表示组件已经渲染了一次
+  * this.__rerender = true 表示组件需要再渲染一次
+  * this.__hasDidMount = true 表示组件及子孙已经都插入DOM树
+  * this.__updating = true 表示组件处于componentWillUpdate与componentDidUpdate中
+  * this.__forceUpdate = true 用于强制组件更新，忽略shouldComponentUpdate的结果
+  */
 }
 
 Component.prototype = {
-  replaceState() {
-    console.warn("此方法末实现");  // eslint-disable-line
+  replaceState: function replaceState() {
+      console.warn("此方法末实现"); // eslint-disable-line
   },
-  setState(state, cb) {
-    this._pendingStates.push(state);
-    setStateProxy(this, cb);
+  setState: function setState(state, cb) {
+    setStateImpl.call(this, state, cb);
+  },
+  forceUpdate: function forceUpdate(cb) {
+    setStateImpl.call(this, true, cb);
   },
 
-  forceUpdate(cb) {
-    this._forceUpdate = true;
-    setStateProxy(this, cb);
+  __collectRefs: function __collectRefs(fn) {
+    this.__pendingRefs.push(fn);
   },
-  _processPendingState: function(props, context) {
-    var n = this._pendingStates.length;
+  __mergeStates: function __mergeStates(props, context) {
+    var n = this.__pendingStates.length;
     if (n === 0) {
       return this.state;
     }
-    var states = this._pendingStates.splice(0);
+    var states = clearArray(this.__pendingStates);
     var nextState = extend({}, this.state);
     for (var i = 0; i < n; i++) {
       var partial = states[i];
-      extend(
-        nextState,
-        isFn(partial) ? partial.call(this, nextState, props, context) : partial
-      );
+      extend(nextState, isFn(partial) ? partial.call(this, nextState, props, context) : partial);
     }
-
     return nextState;
   },
 
-  render() {}
+  render: function render() {}
 };
 
-/**
- * 让外面的setState与forceUpdate都共用同一通道
- *
- * @param {any} instance
- * @param {any} state
- * @param {any} cb fire by component did update
- * @param {any} force ignore shouldComponentUpdate
- */
+function setStateImpl(state, cb) {
+  var _this = this;
 
-function setStateProxy(instance, cb) {
   if (isFn(cb)) {
-    instance._pendingCallbacks.push(cb);
+    this.__pendingCallbacks.push(cb);
   }
-  if (instance._updating) {
-    //防止在父组件更新过程中，子组件执行父组件的setState
-    scheduler.add(function() {
-      options.refreshComponent(instance);
-    });
-  } else if (instance._disableSetState === true) {
-    //只存储回调，但不会触发组件的更新
-    this._forceUpdate = false;
+  // forceUpate是同步渲染
+  if (state === true) {
+    if (!this.__dirty && (this.__dirty = true)) {
+      this.__forceUpdate = true;
+      options.refreshComponent(this, []);
+    }
   } else {
-    options.refreshComponent(instance);
+    // setState是异步渲染
+    this.__pendingStates.push(state);
+    // 子组件在componentWillReiveProps调用父组件的setState方法
+    if (this.__updating) {
+      devolveCallbacks.call(this, "__tempUpdateCbs");
+      this.__rerender = true;
+    } else if (!this.__hasDidMount) {
+      //如果在componentDidMount中调用setState方法，那么setState的所有回调，都会延迟到componentDidUpdate中执行
+      if (this.__hasRendered) devolveCallbacks.call(this, "__tempMountCbs");
+      if (!this.__dirty && (this.__dirty = true)) {
+        defer(function () {
+          if (_this.__dirty) {
+            _this.__pendingCallbacks = _this.__tempMountCbs;
+            options.refreshComponent(_this, []);
+          }
+        });
+      }
+    } else if (!this.__dirty && (this.__dirty = true)) {
+      options.refreshComponent(this, []);
+    }
   }
 }
+
+function devolveCallbacks(name) {
+  var args = this.__pendingCallbacks;
+  var list = this[name] = this[name] || [];
+  list.push.apply(list, args);
+  this.__pendingCallbacks = [];
+}
+var defer = win.requestAnimationFrame || win.webkitRequestAnimationFrame || function (job) {
+  setTimeout(job, 16);
+};

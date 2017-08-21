@@ -73,6 +73,10 @@ export function toLowerCase(s) {
   return lowerCache[s] || (lowerCache[s] = s.toLowerCase());
 }
 
+export function clearArray(a) {
+  return a.splice(0, a.length);
+}
+
 /**
  *
  *
@@ -90,7 +94,6 @@ export function oneObject(array, val) {
     array = array.match(rword) || [];
   }
   var result = {},
-    //eslint-disable-next-line
     value = val !== void 666 ? val : 1;
   for (var i = 0, n = array.length; i < n; i++) {
     result[array[i]] = value;
@@ -128,7 +131,7 @@ export function checkNull(vnode, type) {
     vnode = vnode[0];
   }
   if (vnode === null || vnode === false) {
-    return { type: "#comment", text: "empty" };
+    return { type: "#comment", text: "empty", vtype: 0 };
   } else if (!vnode || !vnode.vtype) {
     throw new Error(
       `@${type.name}#render:You may have returned undefined, an array or some other invalid object`
@@ -136,8 +139,9 @@ export function checkNull(vnode, type) {
   }
   return vnode;
 }
+
 var numberMap = {
-  "[object Null]": 1,
+  //null undefined IE6-8这里会返回[object Object]
   "[object Boolean]": 2,
   "[object Number]": 3,
   "[object String]": 4,
@@ -145,7 +149,8 @@ var numberMap = {
   "[object Symbol]": 6,
   "[object Array]": 7
 };
-// undefined: 0, null: 1, boolean:2, number: 3, string: 4, function: 5, array: 6, object:7
+
+// undefined: 0, null: 1, boolean: 2, number: 3, string: 4, function: 5, array: 6, object:8
 export function typeNumber(data) {
   if (data === null) {
     return 1;
@@ -162,7 +167,6 @@ export function getComponentProps(vnode) {
   var props = vnode.props;
   if (defaultProps) {
     for (var i in defaultProps) {
-      //eslint-disable-next-line
       if (props[i] === void 666) {
         props[i] = defaultProps[i];
       }

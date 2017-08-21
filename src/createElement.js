@@ -30,7 +30,7 @@ export function createElement(type, configs) {
       var val = configs[i];
       switch (i) {
       case "key":
-        key = val;
+        key = val + "";
         break;
       case "ref":
         ref = val;
@@ -64,7 +64,7 @@ export function createElement(type, configs) {
     props.children = children;
   }
 
-  return new Vnode(type, props, key, ref, vtype, checkProps, CurrentOwner.cur);
+  return new Vnode(type, props, key, ref, vtype, checkProps);
 }
 
 function flattenChildren(stack) {
@@ -100,7 +100,8 @@ function flattenChildren(stack) {
         }
         child = {
           type: "#text",
-          text: child + ""
+          text: child + "",
+          vtype: 0
         };
         lastText = child;
       } else {
@@ -127,16 +128,14 @@ export function __ref(dom) {
     instance.refs[this.__refKey] = dom;
   }
 }
-function Vnode(type, props, key, ref, vtype, checkProps, owner) {
+function Vnode(type, props, key, ref, vtype, checkProps) {
   this.type = type;
   this.props = props;
   this.vtype = vtype;
+  this._owner = CurrentOwner.cur;
 
   if (key) {
     this.key = key;
-  }
-  if (owner) {
-    this._owner = owner;
   }
   if (vtype === 1) {
     this.checkProps = checkProps;

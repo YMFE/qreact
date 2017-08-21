@@ -1,12 +1,10 @@
-import "../lib/polyfill";
-
 import { createElement } from "./createElement";
 import { cloneElement } from "./cloneElement";
 
 import { PureComponent } from "./PureComponent";
 import { Component } from "./Component";
 import { Children } from "./Children";
-import { win as window } from "./browser";
+import { win } from "./browser";
 
 import { options } from "./util";
 import { createClass } from "./createClass";
@@ -45,7 +43,6 @@ var React = {
   }
 };
 
-window.ReactDOM = React;
-window.React = React;
+win.React = win.ReactDOM = React;
 
 export default React;

@@ -107,6 +107,9 @@
   };
   // undefined: 0, null: 1, boolean:2, number: 3, string: 4, function: 5, array: 6, object:7
   function typeNumber(data) {
+    if (data === null) {
+      return 1;
+    }
     if (data === void 666) {
       return 0;
     }

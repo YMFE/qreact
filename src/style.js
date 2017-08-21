@@ -1,13 +1,14 @@
 import { oneObject, camelize } from "./util";
+
 export var rnumber = /^-?\d+(\.\d+)?$/;
 /**
-     * 为元素样子设置样式
-     * 
-     * @export
-     * @param {any} dom 
-     * @param {any} oldStyle 
-     * @param {any} newStyle 
-     */
+ * 为元素样子设置样式
+ * 
+ * @export
+ * @param {any} dom 
+ * @param {any} oldStyle 
+ * @param {any} newStyle 
+ */
 export function patchStyle(dom, oldStyle, newStyle) {
   if (oldStyle === newStyle) {
     return;

@@ -1,4 +1,3 @@
-import { instanceMap } from "./instanceMap";
 import {
   options
 } from "./util";
@@ -16,16 +15,14 @@ export function disposeVnode(vnode) {
   case 4:
     disposeStateless(vnode);
     break;
-  default:
-    vnode._hostNode = vnode._hostParent = null;
-    break;
   }
   vnode._disposed = true;
 }
 
 function disposeStateless(vnode) {
-  if (vnode._instance) {
-    disposeVnode(vnode._instance._rendered);
+  var instance = vnode._instance;
+  if (instance) {
+    disposeVnode(instance._renderedVnode);
     vnode._instance = null;
   }
 }
@@ -38,24 +35,22 @@ function disposeElement(vnode) {
   }
   //eslint-disable-next-line
   vnode.ref && vnode.ref(null);
-  vnode._hostNode = vnode._hostParent = null;
 }
 
 function disposeComponent(vnode) {
   var instance = vnode._instance;
   if (instance) {
-    instance._disableSetState = true;
     options.beforeUnmount(instance);
     if (instance.componentWillUnmount) {
       instance.componentWillUnmount();
     }
     //在执行componentWillUnmount后才将关联的元素节点解绑，防止用户在钩子里调用 findDOMNode方法
-    var node = instanceMap.get(instance);
-    if (node) {
-      node._component = null;
-      instanceMap["delete"](instance);
+    var dom = instance._currentElement._hostNode;
+    if (dom) {
+      dom._component = null;
     }
+    vnode.ref && vnode.ref(null);
     vnode._instance = instance._currentElement = null;
-    disposeVnode(instance._rendered);
+    disposeVnode(vnode._renderedVnode);
   }
 }

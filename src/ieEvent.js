@@ -3,21 +3,15 @@ import {
   eventHooks,
   addEvent,
   eventPropHooks,
-  dispatchEvent,
-  SyntheticEvent
+  dispatchEvent
 } from "./event";
-import { oneObject } from "./util";
-
-function fireEvent(e, type) {
-  e = new SyntheticEvent(e);
-  e.type = type;
-  dispatchEvent(e);
-}
+import { oneObject, HTML_KEY, toLowerCase } from "./util";
+import { propHooks } from "./diffProps";
 
 //Ie6-8 oninput使用propertychange进行冒充，触发一个ondatasetchanged事件
 function fixIEInputHandle(e) {
   if (e.propertyName === "value") {
-    fireEvent(e, "input");
+    dispatchEvent(e, "input");
   }
 }
 function fixIEInput(dom) {
@@ -38,13 +32,12 @@ function fixIEChangeHandle(e) {
     }
   }
 
-  fireEvent(e, "change");
+  dispatchEvent(e, "change");
 }
 function fixIEChange(dom) {
   //IE6-8, radio, checkbox的点击事件必须在失去焦点时才触发
-  var eventType =
-    dom.type === "radio" || dom.type === "checkbox" ? "click" : "change";
-  addEvent(dom, eventType, fixIEChangeHandle);
+  var mask = dom.type === "radio" || dom.type === "checkbox" ? "click" : "change";
+  addEvent(dom, mask, fixIEChangeHandle);
 }
 
 function fixIESubmit(dom) {
@@ -54,64 +47,70 @@ function fixIESubmit(dom) {
 }
 
 if (msie < 9) {
-  String("focus,blur").replace(/\w+/g, function(type) {
-    eventHooks[type] = function(dom) {
-      var eventType = type === "focus" ? "focusin" : "focusout";
-      addEvent(dom, eventType, function(e) {
-        fireEvent(e, type);
-      });
-    };
-  });
-
-  String("mouseenter,mouseleave").replace(/\w+/g, function(type) {
-    eventHooks[type] = function(dom) {
-      var eventType = type === "mouseenter" ? "mouseover" : "mouseout";
-      addEvent(dom, eventType, function(e) {
-        var t = e.relatedTarget;
-        if (!t || (t !== dom && dom.contains(t))) {
-          fireEvent(e, type);
-        }
-      });
-    };
-  });
-
-  Object.assign(
-    eventPropHooks,
-    oneObject(
-      "mousemove, mouseout,mouseenter, mouseleave, mouseout,mousewheel, mousewheel, whe" +
-        "el, click",
-      function(event) {
-        if (!("pageX" in event)) {
-          var doc = event.target.ownerDocument || document;
-          var box =
-            doc.compatMode === "BackCompat" ? doc.body : doc.documentElement;
-          event.pageX =
-            event.clientX + (box.scrollLeft >> 0) - (box.clientLeft >> 0);
-          event.pageY =
-            event.clientY + (box.scrollTop >> 0) - (box.clientTop >> 0);
-        }
+  propHooks[HTML_KEY] = function (dom, name, val, lastProps) {
+    var oldhtml = lastProps[name] && lastProps[name].__html;
+    var html = val && val.__html;
+    if (html !== oldhtml) {
+      //IE8-会吃掉最前面的空白
+      dom.innerHTML = String.fromCharCode(0xFEFF) + html;
+      var textNode = dom.firstChild;
+      if (textNode.data.length === 1) {
+        dom.removeChild(textNode);
+      } else {
+        textNode.deleteData(0, 1);
       }
-    )
-  );
+    }
+  };
 
-  Object.assign(
-    eventPropHooks,
-    oneObject("keyup, keydown, keypress", function(event) {
+  String("focus,blur").replace(/\w+/g, function (type) {
+    eventHooks[type] = function (dom, name) {
+      var mark = "__" + name;
+      if (!dom[mark]) {
+        dom[mark] = true;
+        var mask = name === "focus" ? "focusin" : "focusout";
+        addEvent(dom, mask, function (e) {
+          //https://www.ibm.com/developerworks/cn/web/1407_zhangyao_IE11Dojo/
+          //window
+          var tagName = e.srcElement.tagName;
+          if (!tagName) {
+            return;
+          }
+          // <body> #document
+          var tag = toLowerCase(tagName);
+          if (tag == "#document" || tag == "body") {
+            return;
+          }
+          e.target = dom; //因此focusin事件的srcElement有问题，强行修正
+          dispatchEvent(e, name, true);
+        });
+      }
+    };
+  });
+
+  Object.assign(eventPropHooks, oneObject("mousemove, mouseout,mouseenter, mouseleave, mouseout,mousewheel, mousewheel, whe" + "el, click", function (event) {
+    if (!("pageX" in event)) {
+      var doc = event.target.ownerDocument || document;
+      var box = doc.compatMode === "BackCompat" ? doc.body : doc.documentElement;
+      event.pageX = event.clientX + (box.scrollLeft >> 0) - (box.clientLeft >> 0);
+      event.pageY = event.clientY + (box.scrollTop >> 0) - (box.clientTop >> 0);
+    }
+  }));
+
+  Object.assign(eventPropHooks, oneObject("keyup, keydown, keypress", function (event) {
+    /* istanbul ignore next  */
+    if (event.which == null && event.type.indexOf("key") === 0) {
       /* istanbul ignore next  */
-      if (event.which == null && event.type.indexOf("key") === 0) {
-        /* istanbul ignore next  */
-        event.which = event.charCode != null ? event.charCode : event.keyCode;
-      }
-    })
-  );
+      event.which = event.charCode != null ? event.charCode : event.keyCode;
+    }
+  }));
 
   //IE8中select.value不会在onchange事件中随用户的选中而改变其value值，也不让用户直接修改value 只能通过这个hack改变
   try {
     Object.defineProperty(HTMLSelectElement.prototype, "value", {
-      set: function(v) {
+      set: function set(v) {
         this._fixIEValue = v;
       },
-      get: function() {
+      get: function get() {
         return this._fixIEValue;
       }
     });

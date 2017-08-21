@@ -1,7 +1,7 @@
 import { patchStyle } from "./style";
 
 import {
-  addGlobalEventListener,
+  addGlobalEvent,
   getBrowserName,
   isEventName,
   eventHooks
@@ -109,9 +109,7 @@ function getHookType(name, val, type, dom) {
   if (typeNumber(val) < 3 && !val) {
     return "removeAttribute";
   }
-  return name.indexOf("data-") === 0 || dom[name] === void 666
-    ? "setAttribute"
-    : "property";
+  return name.indexOf("data-") === 0 || dom[name] === void 666 ? "setAttribute" : "property";
 }
 
 function getHookTypeSVG(name) {
@@ -135,8 +133,8 @@ var svgprops = {
   xlinkShow: "xlink:show"
 };
 var emptyStyle = {};
-var propHooks = {
-  boolean: function(dom, name, val) {
+export var propHooks = {
+  boolean: function boolean(dom, name, val) {
     // 布尔属性必须使用el.xxx = true|false方式设值 如果为false, IE全系列下相当于setAttribute(xxx,''),
     // 会影响到样式,需要进一步处理 eslint-disable-next-line
     dom[name] = !!val;
@@ -144,33 +142,33 @@ var propHooks = {
       dom.removeAttribute(name);
     }
   },
-  removeAttribute: function(dom, name) {
+  removeAttribute: function removeAttribute(dom, name) {
     dom.removeAttribute(name);
   },
-  setAttribute: function(dom, name, val) {
+  setAttribute: function setAttribute(dom, name, val) {
     try {
       dom.setAttribute(name, val);
     } catch (e) {
-      console.log("setAttribute error", name, val); // eslint-disable-line
+      // eslint-disable-next-line
+      console.log("setAttribute error", name, val);
     }
   },
-  svgClass: function(dom, name, val) {
+  svgClass: function svgClass(dom, name, val) {
     if (!val) {
       dom.removeAttribute("class");
     } else {
       dom.setAttribute("class", val);
     }
   },
-  svgAttr: function(dom, name, val) {
-    var method =
-      typeNumber(val) < 3 && !val ? "removeAttribute" : "setAttribute";
+  svgAttr: function svgAttr(dom, name, val) {
+    var method = typeNumber(val) < 3 && !val ? "removeAttribute" : "setAttribute";
     if (svgprops[name]) {
       dom[method + "NS"](xlink, svgprops[name], val || "");
     } else {
       dom[method](toLowerCase(name), val || "");
     }
   },
-  property: function(dom, name, val) {
+  property: function property(dom, name, val) {
     if (name !== "value" || dom[name] !== val) {
       dom[name] = val;
       if (controlled[name]) {
@@ -179,14 +177,14 @@ var propHooks = {
     }
   },
   children: noop,
-  className: function(dom, _, val) {
+  className: function className(dom, _, val) {
     dom.className = val;
   },
-  style: function(dom, _, val, lastProps) {
+  style: function style(dom, _, val, lastProps) {
     patchStyle(dom, lastProps.style || emptyStyle, val || emptyStyle);
   },
-  __event__: function(dom, name, val, lastProps) {
-    let events = dom.__events || (dom.__events = {});
+  __event__: function __event__(dom, name, val, lastProps) {
+    var events = dom.__events || (dom.__events = {});
 
     if (val === false) {
       delete events[toLowerCase(name.slice(2))];
@@ -194,10 +192,10 @@ var propHooks = {
       if (!lastProps[name]) {
         //添加全局监听事件
         var _name = getBrowserName(name);
-        addGlobalEventListener(_name);
+        addGlobalEvent(_name);
         var hook = eventHooks[_name];
         if (hook) {
-          hook(dom, name);
+          hook(dom, _name);
         }
       }
       //onClick --> click, onClickCapture --> clickcapture
@@ -205,10 +203,11 @@ var propHooks = {
     }
   },
 
-  dangerouslySetInnerHTML: function(dom, name, val, lastProps) {
+  dangerouslySetInnerHTML: function dangerouslySetInnerHTML(dom, name, val, lastProps) {
     var oldhtml = lastProps[name] && lastProps[name].__html;
-    if (val && val.__html !== oldhtml) {
-      dom.innerHTML = val.__html;
+    var html = val && val.__html;
+    if (html !== oldhtml) {
+      dom.innerHTML = html;
     }
   }
 };

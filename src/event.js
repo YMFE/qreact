@@ -1,4 +1,3 @@
-import { scheduler } from "./scheduler";
 import { document } from "./browser";
 import { isFn, noop } from "./util";
 
@@ -24,22 +23,24 @@ export function isEventName(name) {
 }
 export var isTouch = "ontouchstart" in document;
 
-export function dispatchEvent(e) {
+export function dispatchEvent(e, type, one) {
   //__type__ 在injectTapEventPlugin里用到
-  var bubble = e.__type__ || e.type;
-
+  // var bubble = e.__type__ || e.type;
   e = new SyntheticEvent(e);
-
+  if (type) {
+    e.type = type;
+  }
+  var bubble = e.type;
   var hook = eventPropHooks[bubble];
   if (hook && false === hook(e)) {
     return;
   }
 
   var paths = collectPaths(e);
-
+  if (one) {
+    paths = paths.slice(0, 1);
+  }
   var captured = bubble + "capture";
-
-  scheduler.run();
   triggerEventFlow(paths, captured, e);
 
   if (!e._stopPropagation) {
@@ -61,7 +62,7 @@ function collectPaths(e) {
 }
 
 function triggerEventFlow(paths, prop, e) {
-  for (var i = paths.length; i--; ) {
+  for (var i = paths.length; i--;) {
     var path = paths[i];
     var fn = path.events[prop];
     if (isFn(fn)) {
@@ -74,7 +75,7 @@ function triggerEventFlow(paths, prop, e) {
   }
 }
 
-export function addGlobalEventListener(name) {
+export function addGlobalEvent(name) {
   if (!globalEvents[name]) {
     globalEvents[name] = true;
     addEvent(document, name, dispatchEvent);
@@ -116,7 +117,7 @@ export function getBrowserName(onStr) {
 var supportsPassive = false;
 try {
   var opts = Object.defineProperty({}, "passive", {
-    get: function() {
+    get: function () {
       supportsPassive = true;
     }
   });
@@ -124,6 +125,10 @@ try {
 } catch (e) {
   // no catch
 }
+
+eventPropHooks.click = function (e) {
+  return !e.target.disabled;
+};
 
 /* IE6-11 chrome mousewheel wheelDetla 下 -120 上 120
             firefox DOMMouseScroll detail 下3 上-3
@@ -139,8 +144,8 @@ const fixWheelDelta =
   fixWheelType === "mousewheel"
     ? "wheelDetla"
     : fixWheelType === "wheel" ? "deltaY" : "detail";
-eventHooks.wheel = function(dom) {
-  addEvent(dom, fixWheelType, function(e) {
+eventHooks.wheel = function (dom) {
+  addEvent(dom, fixWheelType, function (e) {
     var delta = e[fixWheelDelta] > 0 ? -120 : 120;
     var deltaY = ~~dom._ms_wheel_ + delta;
     dom._ms_wheel_ = deltaY;
@@ -151,16 +156,54 @@ eventHooks.wheel = function(dom) {
   });
 };
 
-"blur,focus,mouseenter,mouseleave".replace(/\w+/g, function(type) {
-  eventHooks[type] = function(dom) {
-    addEvent(
-      dom,
-      type,
-      function(e) {
-        dispatchEvent(e);
-      },
-      true
-    );
+var fixFocus = {};
+"blur,focus".replace(/\w+/g, function (type) {
+  eventHooks[type] = function () {
+    if (!fixFocus[type]) {
+      fixFocus[type] = true;
+      addEvent(document, type, dispatchEvent, true);
+    }
+  };
+});
+
+/**
+ * 
+DOM通过event对象的relatedTarget属性提供了相关元素的信息。这个属性只对于mouseover和mouseout事件才包含值；
+对于其他事件，这个属性的值是null。IE不支持realtedTarget属性，但提供了保存着同样信息的不同属性。
+在mouseover事件触发时，IE的fromElement属性中保存了相关元素；
+在mouseout事件触发时，IE的toElement属性中保存着相关元素。
+可以把下面这个跨浏览器取得相关元素的方法添加到EventUtil对象中：
+ */
+function getRelatedTarget(e) {
+  return e.relatedTarget || e.toElement || e.fromElement || null;
+}
+
+function contains(a, b) {
+  if (b) {
+    // eslint-disable-next-line
+    while (b = b.parentNode) {
+      if (b === a) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+String("mouseenter,mouseleave").replace(/\w+/g, function (type) {
+  eventHooks[type] = function (dom, name) {
+    var mark = "__" + name;
+    if (!dom[mark]) {
+      dom[mark] = true;
+      var mask = name === "mouseenter" ? "mouseover" : "mouseout";
+      addEvent(dom, mask, function (e) {
+        var t = getRelatedTarget(e);
+        if (!t || t !== dom && !contains(dom, t)) {
+          //由于不冒泡，因此paths长度为1 
+          dispatchEvent(e, name, true);
+        }
+      });
+    }
   };
 });
 
@@ -187,34 +230,34 @@ export function SyntheticEvent(event) {
 }
 
 var eventProto = (SyntheticEvent.prototype = {
-  fixEvent: function() {}, //留给以后扩展用
-  preventDefault: function() {
+  fixEvent: function () { }, //留给以后扩展用
+  preventDefault: function () {
     var e = this.nativeEvent || {};
     e.returnValue = this.returnValue = false;
     if (e.preventDefault) {
       e.preventDefault();
     }
   },
-  fixHooks: function() {},
-  stopPropagation: function() {
+  fixHooks: function () { },
+  stopPropagation: function () {
     var e = this.nativeEvent || {};
     e.cancelBubble = this._stopPropagation = true;
     if (e.stopPropagation) {
       e.stopPropagation();
     }
   },
-  stopImmediatePropagation: function() {
+  stopImmediatePropagation: function () {
     this.stopPropagation();
     this.stopImmediate = true;
   },
-  toString: function() {
+  toString: function () {
     return "[object Event]";
   }
 });
 /* istanbul ignore next  */
 //freeze_start
 Object.freeze ||
-  (Object.freeze = function(a) {
+  (Object.freeze = function (a) {
     return a;
   });
 //freeze_end
