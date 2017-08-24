@@ -81,7 +81,7 @@ if (msie < 9) {
             return;
           }
           e.target = dom; //因此focusin事件的srcElement有问题，强行修正
-          dispatchEvent(e, name, true);
+          dispatchEvent(e, name, dom.parentNode);
         });
       }
     };

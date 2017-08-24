@@ -23,7 +23,7 @@ export function isEventName(name) {
 }
 export var isTouch = "ontouchstart" in document;
 
-export function dispatchEvent(e, type, one) {
+export function dispatchEvent(e, type, end) {
   //__type__ 在injectTapEventPlugin里用到
   // var bubble = e.__type__ || e.type;
   e = new SyntheticEvent(e);
@@ -36,10 +36,7 @@ export function dispatchEvent(e, type, one) {
     return;
   }
 
-  var paths = collectPaths(e);
-  if (one) {
-    paths = paths.slice(0, 1);
-  }
+  var paths = collectPaths(e.target, end || document);
   var captured = bubble + "capture";
   triggerEventFlow(paths, captured, e);
 
@@ -48,15 +45,17 @@ export function dispatchEvent(e, type, one) {
   }
 }
 
-function collectPaths(e) {
-  var target = e.target;
+function collectPaths(from, end) {
   var paths = [];
   do {
-    var events = target.__events;
-    if (events) {
-      paths.push({ dom: target, events: events });
+    if (from === end) {
+      break;
     }
-  } while ((target = target.parentNode) && target.nodeType === 1);
+    var events = from.__events;
+    if (events) {
+      paths.push({ dom: from, events: events });
+    }
+  } while ((from = from.parentNode) && from.nodeType === 1);
   // target --> parentNode --> body --> html
   return paths;
 }
@@ -175,7 +174,15 @@ DOM通过event对象的relatedTarget属性提供了相关元素的信息。这�
 可以把下面这个跨浏览器取得相关元素的方法添加到EventUtil对象中：
  */
 function getRelatedTarget(e) {
-  return e.relatedTarget || e.toElement || e.fromElement || null;
+  if (e.relatedTarget) {
+    return e.relatedTarget;
+  }
+
+  e.relatedTarget = e.fromElement === e.srcElement ?
+    e.toElement :
+    e.fromElement;
+
+  return e.relatedTarget;
 }
 
 function contains(a, b) {
@@ -199,13 +206,48 @@ String("mouseenter,mouseleave").replace(/\w+/g, function (type) {
       addEvent(dom, mask, function (e) {
         var t = getRelatedTarget(e);
         if (!t || t !== dom && !contains(dom, t)) {
-          //由于不冒泡，因此paths长度为1 
-          dispatchEvent(e, name, true);
+          var common = getLowestCommonAncestor(dom, t);
+          //由于不冒泡，因此paths长度为1
+          dispatchEvent(e, name, common);
         }
       });
     }
   };
 });
+
+function getLowestCommonAncestor(instA, instB) {
+  var depthA = 0;
+  for (var tempA = instA; tempA; tempA = tempA.parentNode) {
+    depthA++;
+  }
+  var depthB = 0;
+  for (var tempB = instB; tempB; tempB = tempB.parentNode) {
+    depthB++;
+  }
+
+  // If A is deeper, crawl up.
+  while (depthA - depthB > 0) {
+    instA = instA.parentNode;
+    depthA--;
+  }
+
+  // If B is deeper, crawl up.
+  while (depthB - depthA > 0) {
+    instB = instB.parentNode;
+    depthB--;
+  }
+
+  // Walk in lockstep until we find a match.
+  var depth = depthA;
+  while (depth--) {
+    if (instA === instB) {
+      return instA;
+    }
+    instA = instA.parentNode;
+    instB = instB.parentNode;
+  }
+  return null;
+}
 
 if (isTouch) {
   eventHooks.click = noop;

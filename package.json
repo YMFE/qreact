@@ -1,6 +1,6 @@
 {
   "name": "qreact",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "a mini React-like framework",
   "main": "dist/React.js",
   "scripts": {
@@ -98,6 +98,7 @@
   },
   "dependencies": {
     "babel-eslint": "6",
-    "pre-commit": "^1.2.2"
+    "pre-commit": "^1.2.2",
+    "user": "0.0.0"
   }
 }

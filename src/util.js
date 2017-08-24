@@ -23,7 +23,7 @@ export function extend(obj, props) {
  *
  * @export
  */
-export function noop() {}
+export function noop() { }
 
 /**
  * 类继承
@@ -33,7 +33,7 @@ export function noop() {}
  * @param {any} SupClass
  */
 export function inherit(SubClass, SupClass) {
-  function Bridge() {}
+  function Bridge() { }
   Bridge.prototype = SupClass.prototype;
 
   var fn = (SubClass.prototype = new Bridge());
@@ -55,7 +55,7 @@ export function getNodes(dom) {
   var ret = [],
     c = dom.childNodes || [];
   // eslint-disable-next-line
-  for (var i = 0, el; (el = c[i++]); ) {
+  for (var i = 0, el; (el = c[i++]);) {
     ret.push(el);
   }
   return ret;
@@ -115,7 +115,7 @@ export function camelize(target) {
     return target;
   }
   //转换为驼峰风格
-  return target.replace(rcamelize, function(match) {
+  return target.replace(rcamelize, function (match) {
     return match.charAt(1).toUpperCase();
   });
 }
@@ -160,6 +160,15 @@ export function typeNumber(data) {
   }
   var a = numberMap[__type.call(data)];
   return a || 8;
+}
+
+export var cbs = "__pendingCallbacks";
+export function devolveCallbacks(el, name, name2) {
+  //把两个数组挪来挪去
+  var args = el[name];
+  var list = el[name2] = el[name2] || [];
+  list.push.apply(list, args);
+  args.length = 0;
 }
 
 export function getComponentProps(vnode) {

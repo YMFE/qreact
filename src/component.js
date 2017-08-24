@@ -1,4 +1,4 @@
-import { extend, isFn, options, clearArray } from "./util";
+import { extend, isFn, options, clearArray, devolveCallbacks, cbs } from "./util";
 import { CurrentOwner } from "./createElement";
 import { win } from "./browser";
 
@@ -16,9 +16,10 @@ export function Component(props, context) {
   this.refs = {};
   this.state = null;
   this.__dirty = true;
-  this.__pendingCallbacks = [];
+  this[cbs] = [];
   this.__pendingStates = [];
   this.__pendingRefs = [];
+  this._currentElement = {};
   /*
   * this.__dirty = true 表示组件不能更新
   * this.__hasRendred = true 表示组件已经渲染了一次
@@ -31,7 +32,7 @@ export function Component(props, context) {
 
 Component.prototype = {
   replaceState: function replaceState() {
-      console.warn("此方法末实现"); // eslint-disable-line
+    console.warn("此方法末实现"); // eslint-disable-line
   },
   setState: function setState(state, cb) {
     setStateImpl.call(this, state, cb);
@@ -57,7 +58,7 @@ Component.prototype = {
     return nextState;
   },
 
-  render: function render() {}
+  render: function render() { }
 };
 
 function setStateImpl(state, cb) {
@@ -68,7 +69,7 @@ function setStateImpl(state, cb) {
   }
   // forceUpate是同步渲染
   if (state === true) {
-    if (!this.__dirty && (this.__dirty = true)) {
+    if (this._currentElement._hostNode && !this.__dirty && (this.__dirty = true)) {
       this.__forceUpdate = true;
       options.refreshComponent(this, []);
     }
@@ -77,15 +78,22 @@ function setStateImpl(state, cb) {
     this.__pendingStates.push(state);
     // 子组件在componentWillReiveProps调用父组件的setState方法
     if (this.__updating) {
-      devolveCallbacks.call(this, "__tempUpdateCbs");
+      devolveCallbacks(this, cbs, "__tempUpdateCbs");
       this.__rerender = true;
     } else if (!this.__hasDidMount) {
       //如果在componentDidMount中调用setState方法，那么setState的所有回调，都会延迟到componentDidUpdate中执行
-      if (this.__hasRendered) devolveCallbacks.call(this, "__tempMountCbs");
+      //componentWillMount时__dirty为true
+      if (this.__hasRendered) {
+        devolveCallbacks(this, cbs, "__tempMountCbs");
+      }
       if (!this.__dirty && (this.__dirty = true)) {
         defer(function () {
+          if (!_this._currentElement._hostNode) {
+            setStateImpl(_this, {});
+            return;
+          }
           if (_this.__dirty) {
-            _this.__pendingCallbacks = _this.__tempMountCbs;
+            devolveCallbacks(_this, "__tempMountCbs", cbs);
             options.refreshComponent(_this, []);
           }
         });
@@ -96,12 +104,6 @@ function setStateImpl(state, cb) {
   }
 }
 
-function devolveCallbacks(name) {
-  var args = this.__pendingCallbacks;
-  var list = this[name] = this[name] || [];
-  list.push.apply(list, args);
-  this.__pendingCallbacks = [];
-}
 var defer = win.requestAnimationFrame || win.webkitRequestAnimationFrame || function (job) {
   setTimeout(job, 16);
 };
