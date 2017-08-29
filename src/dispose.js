@@ -1,6 +1,5 @@
-import {
-  options
-} from "./util";
+import { options, noop } from "./util";
+
 export function disposeVnode(vnode) {
   if (!vnode || vnode._disposed) {
     return;
@@ -34,23 +33,24 @@ function disposeElement(vnode) {
     disposeVnode(children[i]);
   }
   //eslint-disable-next-line
-  vnode.ref && vnode.ref(null);
+    vnode.ref && vnode.ref(null);
 }
 
 function disposeComponent(vnode) {
-  var instance = vnode._instance;
+  let instance = vnode._instance;
   if (instance) {
     options.beforeUnmount(instance);
     if (instance.componentWillUnmount) {
       instance.componentWillUnmount();
     }
     //在执行componentWillUnmount后才将关联的元素节点解绑，防止用户在钩子里调用 findDOMNode方法
-    var dom = instance._currentElement._hostNode;
+    let dom = instance.__current._hostNode;
     if (dom) {
-      dom._component = null;
+      dom.__component = null;
     }
     vnode.ref && vnode.ref(null);
-    vnode._instance = instance._currentElement = null;
+    instance.setState = instance.forceUpdate = noop;
+    vnode._instance = instance.__current = instance.__renderInNextCycle = null;
     disposeVnode(vnode._renderedVnode);
   }
 }

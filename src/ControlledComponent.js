@@ -16,8 +16,9 @@ export function processFormElement(vnode, dom, props) {
     var eventName = data[2];
     if (duplexProp in props && !hasOtherControllProperty(props, keys)) {
       // eslint-disable-next-line
-      console.warn(`你为${vnode.type}[type=${domType}]元素指定了${duplexProp}属性，但是没有提供另外的${Object.keys(keys)}等用于控制${duplexProp}\n
-      变化的属性，那么它是一个非受控组件，用户无法通过输入改变元素的${duplexProp}值`);
+      console.warn(`你为${vnode.type}[type=${domType}]元素指定了${duplexProp}属性，
+      但是没有提供另外的${ Object.keys(keys) }来控制${duplexProp}属性的变化
+      那么它即为一个非受控组件，用户无法通过输入改变元素的${duplexProp}值`);
       dom[eventName] = data[3];
     }
     if (duplexType === 3) {
@@ -58,9 +59,7 @@ var duplexMap = {
 
 function preventUserInput(e) {
   var target = e.target;
-  var name = e.type === "textarea"
-    ? "innerHTML"
-    : "value";
+  var name = e.type === "textarea" ? "innerHTML" : "value";
   target[name] = target._lastValue;
 }
 
@@ -81,7 +80,8 @@ function preventUserChange(e) {
 
 var duplexData = {
   1: [
-    "value", {
+    "value",
+    {
       onChange: 1,
       onInput: 1,
       readOnly: 1,
@@ -91,7 +91,8 @@ var duplexData = {
     preventUserInput
   ],
   2: [
-    "checked", {
+    "checked",
+    {
       onChange: 1,
       onClick: 1,
       readOnly: 1,
@@ -101,7 +102,8 @@ var duplexData = {
     preventUserClick
   ],
   3: [
-    "value", {
+    "value",
+    {
       onChange: 1,
       disabled: 1
     },
@@ -113,13 +115,12 @@ var duplexData = {
 export function postUpdateSelectedOptions(vnode) {
   var props = vnode.props,
     multiple = !!props.multiple,
-    value = typeNumber(props.value) > 1
-      ? props.value
-      : typeNumber(props.defaultValue) > 1
-        ? props.defaultValue
-        : multiple
-          ? []
-          : "",
+    value =
+      typeNumber(props.value) > 1
+        ? props.value
+        : typeNumber(props.defaultValue) > 1
+          ? props.defaultValue
+          : multiple ? [] : "",
     options = [];
   collectOptions(vnode, props, options);
   if (multiple) {
@@ -171,7 +172,7 @@ function updateOptionsMore(options, n, propValue) {
     }
   } catch (e) {
     /* istanbul ignore next */
-    console.warn("<select multiple=\"true\"> 的value应该对应一个字符串数组"); // eslint-disable-line
+    console.warn('<select multiple="true"> 的value应该对应一个字符串数组'); // eslint-disable-line
   }
   for (let i = 0; i < n; i++) {
     let option = options[i];
@@ -185,9 +186,7 @@ function getOptionValue(option, props) {
   if (!props) {
     return getDOMOptionValue(option);
   }
-  return props.value === undefined
-    ? props.children[0].text
-    : props.value;
+  return props.value === undefined ? props.children[0].text : props.value;
 }
 
 function getDOMOptionValue(node) {
@@ -198,9 +197,7 @@ function getDOMOptionValue(node) {
   if (attr && attr.specified) {
     return attr.value;
   }
-  return node
-    .innerHTML
-    .trim();
+  return node.innerHTML.trim();
 }
 
 function getOptionSelected(option, selected) {

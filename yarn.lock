@@ -4957,6 +4957,10 @@ user-home@^1.0.0:
   version "1.1.1"
   resolved "http://registry.npm.corp.qunar.com/user-home/download/user-home-1.1.1.tgz#2b5be23a32b63a7c9deb8d0f28d485724a3df190"
 
+user@0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/user/-/user-0.0.0.tgz#f27f1b23fc511f2a8efa40db55cfba123824e02a"
+
 useragent@^2.1.12:
   version "2.2.1"
   resolved "http://registry.npm.corp.qunar.com/useragent/download/useragent-2.2.1.tgz#cf593ef4f2d175875e8bb658ea92e18a4fd06d8e"

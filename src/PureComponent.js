@@ -1,5 +1,5 @@
-import { Component } from "./Component";
 import { inherit } from "./util";
+import { Component } from "./Component";
 import { shallowEqual } from "./shallowEqual";
 
 export function PureComponent(props, context) {

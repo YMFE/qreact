@@ -12,6 +12,6 @@ export const Children = {
     return children.map(callback, context);
   },
   toArray(children) {
-    return children == null ? [] : Array.isArray(children) ? children.slice(0) : [children];
+    return children == null ? []: Array.isArray(children) ? children.slice(0) : [children];
   }
 };

@@ -1,7 +1,7 @@
-var __type = Object.prototype.toString;
+let __type = Object.prototype.toString;
 export var __push = Array.prototype.push;
 
-export var HTML_KEY = "dangerouslySetInnerHTML";
+export var innerHTML = "dangerouslySetInnerHTML";
 
 /**
  * 复制一个对象的属性到另一个对象
@@ -73,8 +73,9 @@ export function toLowerCase(s) {
   return lowerCache[s] || (lowerCache[s] = s.toLowerCase());
 }
 
-export function clearArray(a) {
+export function clearArray(a){
   return a.splice(0, a.length);
+  
 }
 
 /**
@@ -94,6 +95,7 @@ export function oneObject(array, val) {
     array = array.match(rword) || [];
   }
   var result = {},
+    //eslint-disable-next-line
     value = val !== void 666 ? val : 1;
   for (var i = 0, n = array.length; i < n; i++) {
     result[array[i]] = value;
@@ -131,7 +133,7 @@ export function checkNull(vnode, type) {
     vnode = vnode[0];
   }
   if (vnode === null || vnode === false) {
-    return { type: "#comment", text: "empty", vtype: 0 };
+    return { type: "#comment", text: "empty",vtype: 0 };
   } else if (!vnode || !vnode.vtype) {
     throw new Error(
       `@${type.name}#render:You may have returned undefined, an array or some other invalid object`
@@ -139,7 +141,6 @@ export function checkNull(vnode, type) {
   }
   return vnode;
 }
-
 var numberMap = {
   //null undefined IE6-8这里会返回[object Object]
   "[object Boolean]": 2,
@@ -149,8 +150,7 @@ var numberMap = {
   "[object Symbol]": 6,
   "[object Array]": 7
 };
-
-// undefined: 0, null: 1, boolean: 2, number: 3, string: 4, function: 5, array: 6, object:8
+// undefined: 0, null: 1, boolean:2, number: 3, string: 4, function: 5, array: 6, object:8
 export function typeNumber(data) {
   if (data === null) {
     return 1;
@@ -160,28 +160,6 @@ export function typeNumber(data) {
   }
   var a = numberMap[__type.call(data)];
   return a || 8;
-}
-
-export var cbs = "__pendingCallbacks";
-export function devolveCallbacks(el, name, name2) {
-  //把两个数组挪来挪去
-  var args = el[name];
-  var list = el[name2] = el[name2] || [];
-  list.push.apply(list, args);
-  args.length = 0;
-}
-
-export function getComponentProps(vnode) {
-  var defaultProps = vnode.type.defaultProps;
-  var props = vnode.props;
-  if (defaultProps) {
-    for (var i in defaultProps) {
-      if (props[i] === void 666) {
-        props[i] = defaultProps[i];
-      }
-    }
-  }
-  return props;
 }
 
 export var recyclables = {

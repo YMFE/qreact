@@ -1,19 +1,17 @@
+import { Component } from "./Component";
+import { options } from "./util";
+import { Children } from "./Children";
+import { win as window } from "./browser";
 import { createElement } from "./createElement";
 import { cloneElement } from "./cloneElement";
-
 import { PureComponent } from "./PureComponent";
-import { Component } from "./Component";
-import { win as window } from "./browser";
-import { Children } from "./Children";
-
-import { options } from "./util";
 
 import { render, findDOMNode } from "./diff";
 import "./ieEvent";
 
 var React = {
   version: "VERSION",
-  Children, //为了react-redux
+  Children, //支持react-redux
   render,
   findDOMNode,
   options,
@@ -23,7 +21,6 @@ var React = {
   Component
 };
 
-window.ReactDOM = React;
-window.React = React;
+window.React = window.ReactDOM = React;
 
 export default React;

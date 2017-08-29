@@ -1,14 +1,13 @@
 import { oneObject, camelize } from "./util";
-
 export var rnumber = /^-?\d+(\.\d+)?$/;
 /**
- * 为元素样子设置样式
- * 
- * @export
- * @param {any} dom 
- * @param {any} oldStyle 
- * @param {any} newStyle 
- */
+     * 为元素样子设置样式
+     * 
+     * @export
+     * @param {any} dom 
+     * @param {any} oldStyle 
+     * @param {any} newStyle 
+     */
 export function patchStyle(dom, oldStyle, newStyle) {
   if (oldStyle === newStyle) {
     return;
@@ -28,7 +27,7 @@ export function patchStyle(dom, oldStyle, newStyle) {
         //node.style.width = undefine 在旧式IE下会抛异常
         dom.style[name] = val; //应用样式
       } catch (e) {
-        console.log("dom.style[" + name + "] = " + val + "throw error");  // eslint-disable-line
+        console.log("dom.style[" + name + "] = " + val + "throw error"); // eslint-disable-line
       }
     }
   }

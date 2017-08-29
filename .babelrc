@@ -1,10 +1,13 @@
-{
-
-    "presets": ["es2015", "stage-0", "react"],
-    "plugins": ["syntax-async-generators", ["transform-runtime", {
-        "helpers": false,
-        "polyfill": false,
-        "regenerator": true,
-        "moduleName": "babel-runtime"
-    }]]
-}
+ {
+     "presets": [
+         ["es2015",{ "modules": false }], "react"
+     ],
+    
+     "plugins": [
+         [
+             "transform-es2015-classes", {
+                 "loose": true
+             }
+         ]
+     ]
+ }

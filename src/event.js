@@ -1,5 +1,5 @@
 import { document } from "./browser";
-import { isFn, noop } from "./util";
+import { isFn, noop,  options } from "./util";
 
 var globalEvents = {};
 export var eventPropHooks = {}; //用于在事件回调里对事件对象进行
@@ -25,12 +25,12 @@ export var isTouch = "ontouchstart" in document;
 
 export function dispatchEvent(e, type, end) {
   //__type__ 在injectTapEventPlugin里用到
-  // var bubble = e.__type__ || e.type;
   e = new SyntheticEvent(e);
   if (type) {
     e.type = type;
   }
   var bubble = e.type;
+
   var hook = eventPropHooks[bubble];
   if (hook && false === hook(e)) {
     return;
@@ -38,11 +38,14 @@ export function dispatchEvent(e, type, end) {
 
   var paths = collectPaths(e.target, end || document);
   var captured = bubble + "capture";
+  options.async = true;
   triggerEventFlow(paths, captured, e);
 
   if (!e._stopPropagation) {
     triggerEventFlow(paths.reverse(), bubble, e);
   }
+  options.async = false;
+  options.flushBatchedUpdates();
 }
 
 function collectPaths(from, end) {
@@ -55,6 +58,7 @@ function collectPaths(from, end) {
     if (events) {
       paths.push({ dom: from, events: events });
     }
+
   } while ((from = from.parentNode) && from.nodeType === 1);
   // target --> parentNode --> body --> html
   return paths;
@@ -124,7 +128,6 @@ try {
 } catch (e) {
   // no catch
 }
-
 eventPropHooks.click = function (e) {
   return !e.target.disabled;
 };
@@ -136,13 +139,13 @@ eventPropHooks.click = function (e) {
             chrome wheel deltaY 下100 上-100 */
 /* istanbul ignore next  */
 const fixWheelType =
-  "onmousewheel" in document
-    ? "mousewheel"
-    : document.onwheel !== void 666 ? "wheel" : "DOMMouseScroll";
+    "onmousewheel" in document
+      ? "mousewheel"
+      : document.onwheel !== void 666 ? "wheel" : "DOMMouseScroll";
 const fixWheelDelta =
-  fixWheelType === "mousewheel"
-    ? "wheelDetla"
-    : fixWheelType === "wheel" ? "deltaY" : "detail";
+    fixWheelType === "mousewheel"
+      ? "wheelDetla"
+      : fixWheelType === "wheel" ? "deltaY" : "detail";
 eventHooks.wheel = function (dom) {
   addEvent(dom, fixWheelType, function (e) {
     var delta = e[fixWheelDelta] > 0 ? -120 : 120;
@@ -160,35 +163,32 @@ var fixFocus = {};
   eventHooks[type] = function () {
     if (!fixFocus[type]) {
       fixFocus[type] = true;
-      addEvent(document, type, dispatchEvent, true);
+      addEvent(
+        document,
+        type,
+        dispatchEvent,
+        true
+      );
     }
   };
 });
-
 /**
  * 
 DOM通过event对象的relatedTarget属性提供了相关元素的信息。这个属性只对于mouseover和mouseout事件才包含值；
 对于其他事件，这个属性的值是null。IE不支持realtedTarget属性，但提供了保存着同样信息的不同属性。
 在mouseover事件触发时，IE的fromElement属性中保存了相关元素；
-在mouseout事件触发时，IE的toElement属性中保存着相关元素。
-可以把下面这个跨浏览器取得相关元素的方法添加到EventUtil对象中：
+在mouseout事件出发时，IE的toElement属性中保存着相关元素。
+但fromElement与toElement可能同时都有值
  */
 function getRelatedTarget(e) {
-  if (e.relatedTarget) {
-    return e.relatedTarget;
+  if (!e.timeStamp) {
+    e.relatedTarget = e.type === "mouseover"?  e.fromElement: e.toElement; 
   }
-
-  e.relatedTarget = e.fromElement === e.srcElement ?
-    e.toElement :
-    e.fromElement;
-
   return e.relatedTarget;
 }
-
 function contains(a, b) {
   if (b) {
-    // eslint-disable-next-line
-    while (b = b.parentNode) {
+    while ((b = b.parentNode)) {
       if (b === a) {
         return true;
       }
@@ -204,10 +204,10 @@ String("mouseenter,mouseleave").replace(/\w+/g, function (type) {
       dom[mark] = true;
       var mask = name === "mouseenter" ? "mouseover" : "mouseout";
       addEvent(dom, mask, function (e) {
-        var t = getRelatedTarget(e);
-        if (!t || t !== dom && !contains(dom, t)) {
+        let t = getRelatedTarget(e);
+        if (!t || (t !== dom && !contains(dom, t))) {
           var common = getLowestCommonAncestor(dom, t);
-          //由于不冒泡，因此paths长度为1
+          //由于不冒泡，因此paths长度为1 
           dispatchEvent(e, name, common);
         }
       });
@@ -248,6 +248,7 @@ function getLowestCommonAncestor(instA, instB) {
   }
   return null;
 }
+
 
 if (isTouch) {
   eventHooks.click = noop;
@@ -299,7 +300,7 @@ var eventProto = (SyntheticEvent.prototype = {
 /* istanbul ignore next  */
 //freeze_start
 Object.freeze ||
-  (Object.freeze = function (a) {
-    return a;
-  });
+    (Object.freeze = function (a) {
+      return a;
+    });
 //freeze_end

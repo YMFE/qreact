@@ -1,32 +1,19 @@
 import { patchStyle } from "./style";
-
-import {
-  addGlobalEvent,
-  getBrowserName,
-  isEventName,
-  eventHooks
-} from "./event";
+import { addGlobalEvent, getBrowserName, isEventName, eventHooks } from "./event";
 import { oneObject, toLowerCase, noop, typeNumber } from "./util";
 
-var boolAttributes = oneObject(
-  "autofocus,autoplay,async,allowTransparency,checked,controls,declare,disabled,def" +
+var boolAttributes = oneObject("autofocus,autoplay,async,allowTransparency,checked,controls,declare,disabled,def" +
     "er,defaultChecked,defaultSelected,isMap,loop,multiple,noHref,noResize,noShade,op" +
     "en,readOnly,selected",
-  true
-);
+true);
 
-var builtIdProperties = oneObject(
-  "accessKey,bgColor,cellPadding,cellSpacing,codeBase,codeType,colSpan,dateTime,def" +
-  "aultValue,contentEditable,frameBorder,maxLength,marginWidth,marginHeight,rowSpan" +
-  ",tabIndex,useMap,vSpace,valueType,vAlign," + //驼蜂风格
-    "value,id,title,alt,htmlFor,name,type,longDesc,className",
-  1
-);
+var builtIdProperties = oneObject("accessKey,bgColor,cellPadding,cellSpacing,codeBase,codeType,colSpan,dateTime,def" +
+    "aultValue,contentEditable,frameBorder,maxLength,marginWidth,marginHeight,rowSpan" +
+    ",tabIndex,useMap,vSpace,valueType,vAlign," + //驼蜂风格
+    "value,id,title,alt,htmlFor,name,type,longDesc,className", 1);
 
-var booleanTag = oneObject(
-  "script,iframe,a,map,video,bgsound,form,select,input,textarea,option,keygen,optgr" +
-    "oup,label"
-);
+var booleanTag = oneObject("script,iframe,a,map,video,bgsound,form,select,input,textarea,option,keygen,optgr" +
+    "oup,label");
 var xlink = "http://www.w3.org/1999/xlink";
 
 /**
@@ -44,7 +31,7 @@ export function diffProps(nextProps, lastProps, vnode, lastVnode, dom) {
     return diffSVGProps(nextProps, lastProps, vnode, lastVnode, dom);
   }
   //eslint-disable-next-line
-  for (let name in nextProps) {
+    for (let name in nextProps) {
     let val = nextProps[name];
     if (val !== lastProps[name]) {
       var hookName = getHookType(name, val, vnode.type, dom);
@@ -55,12 +42,9 @@ export function diffProps(nextProps, lastProps, vnode, lastVnode, dom) {
   for (let name in lastProps) {
     if (!nextProps.hasOwnProperty(name)) {
       var hookName2 = getHookType(name, false, vnode.type, dom);
-      propHooks[hookName2](
-        dom,
-        name,
-        builtIdProperties[name] ? "" : false,
-        lastProps
-      );
+      propHooks[hookName2](dom, name, builtIdProperties[name]
+        ? ""
+        : false, lastProps);
     }
   }
 }
@@ -78,7 +62,7 @@ function diffSVGProps(nextProps, lastProps, vnode, lastVnode, dom) {
     }
   }
   //eslint-disable-next-line
-  for (let name in lastProps) {
+    for (let name in lastProps) {
     if (!nextProps.hasOwnProperty(name)) {
       let val = nextProps[name];
       var hookName2 = getHookTypeSVG(name, val, vnode.type, dom);
@@ -99,7 +83,8 @@ var specialProps = {
 };
 
 function getHookType(name, val, type, dom) {
-  if (specialProps[name]) return name;
+  if (specialProps[name])
+    return name;
   if (boolAttributes[name] && booleanTag[type]) {
     return "boolean";
   }
@@ -109,7 +94,9 @@ function getHookType(name, val, type, dom) {
   if (typeNumber(val) < 3 && !val) {
     return "removeAttribute";
   }
-  return name.indexOf("data-") === 0 || dom[name] === void 666 ? "setAttribute" : "property";
+  return name.indexOf("data-") === 0 || dom[name] === void 666
+    ? "setAttribute"
+    : "property";
 }
 
 function getHookTypeSVG(name) {
@@ -117,7 +104,8 @@ function getHookTypeSVG(name) {
     return "svgClass";
   }
 
-  if (specialProps[name]) return name;
+  if (specialProps[name])
+    return name;
 
   if (isEventName(name)) {
     return "__event__";
@@ -134,7 +122,7 @@ var svgprops = {
 };
 var emptyStyle = {};
 export var propHooks = {
-  boolean: function boolean(dom, name, val) {
+  boolean: function (dom, name, val) {
     // 布尔属性必须使用el.xxx = true|false方式设值 如果为false, IE全系列下相当于setAttribute(xxx,''),
     // 会影响到样式,需要进一步处理 eslint-disable-next-line
     dom[name] = !!val;
@@ -142,33 +130,34 @@ export var propHooks = {
       dom.removeAttribute(name);
     }
   },
-  removeAttribute: function removeAttribute(dom, name) {
+  removeAttribute: function (dom, name) {
     dom.removeAttribute(name);
   },
-  setAttribute: function setAttribute(dom, name, val) {
+  setAttribute: function (dom, name, val) {
     try {
       dom.setAttribute(name, val);
     } catch (e) {
-      // eslint-disable-next-line
-      console.log("setAttribute error", name, val);
+      console.log("setAttribute error", name, val); // eslint-disable-line
     }
   },
-  svgClass: function svgClass(dom, name, val) {
+  svgClass: function (dom, name, val) {
     if (!val) {
       dom.removeAttribute("class");
     } else {
       dom.setAttribute("class", val);
     }
   },
-  svgAttr: function svgAttr(dom, name, val) {
-    var method = typeNumber(val) < 3 && !val ? "removeAttribute" : "setAttribute";
+  svgAttr: function (dom, name, val) {
+    var method = typeNumber(val) < 3 && !val
+      ? "removeAttribute"
+      : "setAttribute";
     if (svgprops[name]) {
       dom[method + "NS"](xlink, svgprops[name], val || "");
     } else {
       dom[method](toLowerCase(name), val || "");
     }
   },
-  property: function property(dom, name, val) {
+  property: function (dom, name, val) {
     if (name !== "value" || dom[name] !== val) {
       dom[name] = val;
       if (controlled[name]) {
@@ -177,14 +166,14 @@ export var propHooks = {
     }
   },
   children: noop,
-  className: function className(dom, _, val) {
+  className: function (dom, _, val) {
     dom.className = val;
   },
-  style: function style(dom, _, val, lastProps) {
+  style: function (dom, _, val, lastProps) {
     patchStyle(dom, lastProps.style || emptyStyle, val || emptyStyle);
   },
-  __event__: function __event__(dom, name, val, lastProps) {
-    var events = dom.__events || (dom.__events = {});
+  __event__: function (dom, name, val, lastProps) {
+    let events = dom.__events || (dom.__events = {});
 
     if (val === false) {
       delete events[toLowerCase(name.slice(2))];
@@ -203,7 +192,7 @@ export var propHooks = {
     }
   },
 
-  dangerouslySetInnerHTML: function dangerouslySetInnerHTML(dom, name, val, lastProps) {
+  dangerouslySetInnerHTML: function (dom, name, val, lastProps) {
     var oldhtml = lastProps[name] && lastProps[name].__html;
     var html = val && val.__html;
     if (html !== oldhtml) {
