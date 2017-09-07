@@ -35,6 +35,5 @@ Thumbs.db
 
 *node_modules*
 __tmp__*
-/lib/*
 
 /coverage
