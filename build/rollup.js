@@ -27,8 +27,8 @@ export default {
     }),
 
     license({
-      banner: `Qreact by 司徒正美 Copyright ${JSON.stringify(new Date()).replace(/T.*|"/g,"")}
-      兼容yo-router
+      banner: `by 司徒正美 Copyright ${JSON.stringify(new Date()).replace(/T.*|"/g,"")}
+      IE9+
       `
     }),
 

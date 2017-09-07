@@ -1,5 +1,5 @@
-import {extend, isFn, inherit} from "./util";
-import {Component} from "./Component";
+import { extend, isFn, inherit,limitWarn } from "./util";
+import { Component } from "./Component";
 /**
  * 为了兼容0.13之前的版本
  */
@@ -46,19 +46,18 @@ function flattenHooks(key, hooks) {
     return Object
       .assign
       .apply(null, hooks);
-  } else if (hookType === "function") {
+  } else if (hookType === "function" && hooks.length > 1) {
     return function () {
-      let ret;
+      let ret = {}, r, hasReturn = MANY_MERGED[key];
       for (let i = 0; i < hooks.length; i++) {
-        let r = hooks[i].apply(this, arguments);
-        if (r && MANY_MERGED[key]) {
-          if (!ret) {
-            ret = {};
-          }
+        r = hooks[i].apply(this, arguments);
+        if (hasReturn && r ) {
           Object.assign(ret, r);
         }
       }
-      return ret;
+      if (hasReturn)
+        return ret;
+      return r;
     };
   } else {
     return hooks[0];
@@ -75,7 +74,7 @@ function applyMixins(proto, mixins) {
 
 //创建一个构造器
 function newCtor(className, spec) {
-  let curry = Function("ReactComponent", "blacklist","spec", 
+  let curry = Function("ReactComponent", "blacklist", "spec",
     `return function ${className}(props, context) {
       ReactComponent.call(this, props, context);
 
@@ -94,11 +93,9 @@ function newCtor(className, spec) {
   return curry(Component, NOBIND, spec);
 }
 
-var warnOnce = 1;
 export function createClass(spec) {
-  if (warnOnce) {
-    warnOnce = 0;
-        console.warn("createClass已经过时，强烈建议使用es6方式定义类"); // eslint-disable-line
+  if (limitWarn.createClass-- > 0) {
+        console.warn("createClass已经废弃,请改用es6方式定义类"); // eslint-disable-line
   }
   var Constructor = newCtor(spec.displayName || "Component", spec);
   var proto = inherit(Constructor, Component);

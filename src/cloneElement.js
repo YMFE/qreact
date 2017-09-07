@@ -1,4 +1,4 @@
-import { createElement } from "./createElement";
+import { createElement, CurrentOwner } from "./createElement";
 
 export function cloneElement(vnode, props) {
   if (Array.isArray(vnode)) {
@@ -7,19 +7,18 @@ export function cloneElement(vnode, props) {
   if (!vnode.vtype) {
     return Object.assign({}, vnode);
   }
-  var obj = {};
-  if (vnode.key) {
-    obj.key = vnode.key;
-  }
+  var configs = {
+    key: vnode.key,
+    ref: vnode.__refKey || vnode.ref
+  };
 
-  if (vnode.__refKey) {
-    obj.ref = vnode.__refKey;
-  } else if (vnode.ref) {
-    obj.ref = vnode.ref;
-  }
-  return createElement(
+  Object.assign(configs, vnode.props, props);
+  CurrentOwner.cur = vnode._owner;
+  var ret = createElement(
     vnode.type,
-    Object.assign(obj, vnode.props, props),
-    arguments.length > 2 ? [].slice.call(arguments, 2) : vnode.props.children
+    configs,
+    arguments.length > 2 ? [].slice.call(arguments, 2) : configs.children
   );
+  CurrentOwner.cur = null;
+  return ret;
 }

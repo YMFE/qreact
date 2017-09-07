@@ -27,7 +27,7 @@ export default {
     }),
 
     license({
-      banner: `Qreact 兼容IE6-8的版本，有问题请加QQ 370262116 by 司徒正美 Copyright ${JSON.stringify(
+      banner: `IE6+，有问题请加QQ 370262116 by 司徒正美 Copyright ${JSON.stringify(
         new Date()
       ).replace(/T.*|"/g,"")}`
     }),

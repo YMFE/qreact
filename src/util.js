@@ -2,7 +2,12 @@ let __type = Object.prototype.toString;
 export var __push = Array.prototype.push;
 
 export var innerHTML = "dangerouslySetInnerHTML";
+export var EMPTY_CHILDREN = [];
 
+export var limitWarn = {
+  createClass: 1,
+  renderSubtree: 1
+};
 /**
  * 复制一个对象的属性到另一个对象
  *
@@ -75,7 +80,6 @@ export function toLowerCase(s) {
 
 export function clearArray(a){
   return a.splice(0, a.length);
-  
 }
 
 /**
@@ -129,9 +133,9 @@ export var options = {
 };
 
 export function checkNull(vnode, type) {
-  if (Array.isArray(vnode) && vnode.length === 1) {
-    vnode = vnode[0];
-  }
+  // if (Array.isArray(vnode) && vnode.length === 1) {
+  //  vnode = vnode[0];
+  // }
   if (vnode === null || vnode === false) {
     return { type: "#comment", text: "empty",vtype: 0 };
   } else if (!vnode || !vnode.vtype) {
