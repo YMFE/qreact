@@ -8,7 +8,7 @@ QReact 也实现了官方 `react/lib` 下的许多模块，这些模块可能被
 
 - QReact 与 React 完全兼容，具有高度一致的 API 和行为。
 
-- QReact 包含了 `react` 及 `react-dom` 的全部功能，同时有着更小的体积（`minified: 60KB gzipped : 18KB`），作为对比， `react@15.6.1` + `react-dom@15.6.1` 的体积则大了很多（`minified: 42.5KB + 182KB = 224.5KB gzipped: 9.1KB + 46.1KB = 55.2KB`）。
+- QReact 包含了 `react` 及 `react-dom` 的全部功能，同时有着更小的体积（`minified: 24KB gzipped : 10KB`），作为对比， `react@15.6.1` + `react-dom@15.6.1` 的体积则大了很多（`minified: 42.5KB + 182KB = 224.5KB gzipped: 9.1KB + 46.1KB = 55.2KB`）。
 
 - QReact 支持 IE 6 - IE 8，详细信息请[参见使用](https://qreact.ymfe.org/usage.html)中的“在 IE 6 - IE 8 及以下使用”。
 
