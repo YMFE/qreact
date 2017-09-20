@@ -34,7 +34,7 @@ describe("组件相关", function() {
     var s = React.render(<HelloComponent name="Sebastian" />, div);
 
     await browser.pause(200).$apply();
-    expect(s._currentElement._hostNode.innerHTML).toBe("Hello Sebastian");
+    expect(s.__current._hostNode.innerHTML).toBe("Hello Sebastian");
   });
 
   it("setState", async () => {
@@ -75,9 +75,9 @@ describe("组件相关", function() {
 
     var s = React.render(<A />, div);
     await browser.pause(200).$apply();
-    expect(s._currentElement._hostNode.innerHTML).toBe("1");
-    await browser.click(s._currentElement._hostNode).pause(200).$apply();
-    expect(s._currentElement._hostNode.innerHTML).toBe("3");
+    expect(s.__current._hostNode.innerHTML).toBe("1");
+    await browser.click(s.__current._hostNode).pause(200).$apply();
+    expect(s.__current._hostNode.innerHTML).toBe("3");
 
     expect(a).toBe(3);
   });
@@ -120,9 +120,9 @@ describe("组件相关", function() {
     var s = React.render(<A />, div);
     await browser.pause(200).$apply();
 
-    expect(s._currentElement._hostNode.innerHTML).toBe("1");
-    await browser.click(s._currentElement._hostNode).pause(200).$apply();
-    expect(s._currentElement._hostNode.innerHTML).toBe("1");
+    expect(s.__current._hostNode.innerHTML).toBe("1");
+    await browser.click(s.__current._hostNode).pause(200).$apply();
+    expect(s.__current._hostNode.innerHTML).toBe("1");
     expect(a).toBe(3);
   });
   it("PureComponent", async () => {
@@ -150,9 +150,9 @@ describe("组件相关", function() {
     var s = React.render(<App />, div);
     await browser.pause(200).$apply();
 
-    expect(s._currentElement._hostNode.innerHTML).toBe("7");
-    await browser.click(s._currentElement._hostNode).pause(200).$apply();
-    expect(s._currentElement._hostNode.innerHTML).toBe("7");
+    expect(s.__current._hostNode.innerHTML).toBe("7");
+    await browser.click(s.__current._hostNode).pause(200).$apply();
+    expect(s.__current._hostNode.innerHTML).toBe("7");
   });
   it("PureComponent2", async () => {
     class A extends React.PureComponent {
@@ -180,10 +180,10 @@ describe("组件相关", function() {
 
     var s = React.render(<A />, div);
     await browser.pause(100).$apply();
-    expect(s._currentElement._hostNode.innerHTML).toBe("7");
+    expect(s.__current._hostNode.innerHTML).toBe("7");
 
-    await browser.click(s._currentElement._hostNode).pause(200).$apply();
-    expect(s._currentElement._hostNode.innerHTML).toBe("9");
+    await browser.click(s.__current._hostNode).pause(200).$apply();
+    expect(s.__current._hostNode.innerHTML).toBe("9");
   });
   it("子组件是无状态组件", async () => {
     function Select(props) {
@@ -310,7 +310,7 @@ describe("组件相关", function() {
     expect(s.refs.c.selected).toBe(true);
   });
 
-  it("多选下拉框没有defaultValue", async () => {
+  it("多选下拉框没有defaultValue与ReactDOM.render的回调this指向问题", async () => {
     class App extends React.Component {
       constructor(props) {
         super(props);
@@ -329,7 +329,9 @@ describe("组件相关", function() {
       }
     }
 
-    var s = React.render(<App />, div);
+    var s = React.render(<App />, div, function(){
+      expect(this.constructor.name).toBe('App')
+    });
     await browser.pause(100).$apply();
     expect(s.refs.a.selected).toBe(true);
   });
@@ -464,14 +466,6 @@ describe("组件相关", function() {
       title: "默认值"
     };
 
-    window.onload = function() {
-      window.s = ReactDOM.render(
-        <div>
-          <HasChild />
-        </div>,
-        document.getElementById("example")
-      );
-    };
 
     var s = React.render(<HasChild />, div);
     await browser.pause(100).$apply();
@@ -529,30 +523,7 @@ describe("组件相关", function() {
 
   it("checkNull 中如果组件返回字符串应该报错", () => {});
 
-  it("在componentWillMount中使用setState", async () => {
-    class App extends React.Component {
-      constructor(props) {
-        super(props);
-        this.state = {
-          aaa: 1111
-        };
-      }
-      componentWillMount() {
-        this.setState({
-          aaa: 333
-        });
-      }
-      render() {
-        return <p>{this.state.aaa}</p>;
-      }
-    }
-
-    var s = React.render(<App />, div);
-    await browser.pause(200).$apply();
-    expect(s.state.aaa).toBe(333);
-    expect(div.textContent || div.innerText).toBe("333");
-  });
-
+  
    it('componentWillUnmount钩子中调用ReactDOM.findDOMNode 应该还能找到元素', () => {
     var assertions = 0;
 
@@ -562,13 +533,11 @@ describe("组件相关", function() {
       }
 
       componentDidMount() {
-        console.log(ReactDOM.findDOMNode(this),'111')
         expect(ReactDOM.findDOMNode(this)).not.toBe(null);
         assertions++;
       }
 
       componentWillUnmount() {
-        console.log(ReactDOM.findDOMNode(this),'222')
         expect(ReactDOM.findDOMNode(this)).not.toBe(null);
         assertions++;
       }
@@ -587,7 +556,6 @@ describe("组件相关", function() {
     expect(ReactDOM.findDOMNode(component)).not.toBe(null);
 
     component = React.render(<Wrapper showInner={false} />, el);
-    console.log(ReactDOM.findDOMNode(component))
     expect(ReactDOM.findDOMNode(component).tagName).toBe(undefined);
 
     component = React.render(<Wrapper showInner={true} />, el);
@@ -595,4 +563,44 @@ describe("组件相关", function() {
 
     expect(assertions).toBe(3);
   });
+
+  it('虚拟DOM的_owner必须在render中加上',async ()=>{
+
+ 
+    class B extends React.Component{
+      render(){
+        return <div className="xxx">{this.props.children}</div>
+      }
+    }
+    var b , c
+    class App extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = {
+          value: "南京"
+        };
+      }
+      _renderPopup(a){
+        return <B><p {...a}></p></B>
+      }
+      onChange(e) {
+        this.setState({
+          value: e.target.value
+        });
+      }
+      render() {
+        return (
+          <div>
+            {this._renderPopup({ref: "xxxx",children: [b = <span>333</span>]})}
+            {this._renderPopup({ref: "yyyy",children: [c = <strong>444</strong>]})}
+          </div>
+        );
+      }
+    }
+     var s = React.render(<App/>, div);
+      await browser.pause(100).$apply();
+     // console.log( s._rendered.props.children[0]._instance._rendered.props.children[0].props.children[0] )
+     expect(b._owner.constructor).toBe(App)
+     expect(c._owner.constructor).toBe(App)
+  })
 });

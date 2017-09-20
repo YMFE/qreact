@@ -5,31 +5,25 @@ export function disposeVnode(vnode) {
   if (!vnode || vnode._disposed) {
     return;
   }
-  switch (vnode.vtype) {
-  case 1:
-    disposeElement(vnode);
-    break;
-  case 2:
-    disposeComponent(vnode);
-    break;
-  case 4:
-    disposeStateless(vnode);
-    break;
-  }
+  disposeStrategy[vnode.vtype](vnode);
   vnode._disposed = true;
 }
-
+var disposeStrategy = {
+  0: noop,
+  1: disposeElement,
+  2: disposeComponent,
+  4: disposeStateless
+};
 function disposeStateless(vnode) {
   var instance = vnode._instance;
   if (instance) {
-    disposeVnode(instance._renderedVnode);
+    disposeVnode(instance.__rendered);
     vnode._instance = null;
   }
 }
 
 function disposeElement(vnode) {
   var { props, vchildren } = vnode;
-  //var children = props.children;
   if (props[innerHTML]) {
     removeDOMElement(vnode._hostNode);
   } else {
@@ -54,8 +48,8 @@ function disposeComponent(vnode) {
       dom.__component = null;
     }
     vnode.ref && vnode.ref(null);
-    instance.setState = instance.forceUpdate = noop;
-    vnode._instance = instance.__current = instance.__renderInNextCycle = null;
-    disposeVnode(vnode._renderedVnode);
+    instance.__current = instance.setState = instance.forceUpdate = noop;
+    vnode._instance = instance.__renderInNextCycle = null;
+    disposeVnode(instance.__rendered);
   }
 }

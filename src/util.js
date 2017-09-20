@@ -1,4 +1,3 @@
-let __type = Object.prototype.toString;
 export var __push = Array.prototype.push;
 
 export var innerHTML = "dangerouslySetInnerHTML";
@@ -18,11 +17,16 @@ export var limitWarn = {
 export function extend(obj, props) {
   if (props) {
     for (let i in props) {
-      if (props.hasOwnProperty(i)) obj[i] = props[i];
+      if (props.hasOwnProperty(i)) {
+        obj[i] = props[i];
+      }
     }
   }
   return obj;
 }
+
+let __type = Object.prototype.toString;
+
 /**
  * 一个空函数
  *
@@ -41,7 +45,7 @@ export function inherit(SubClass, SupClass) {
   function Bridge() { }
   Bridge.prototype = SupClass.prototype;
 
-  var fn = (SubClass.prototype = new Bridge());
+  let fn = (SubClass.prototype = new Bridge());
 
   // 避免原型链拉长导致方法查找的性能开销
   extend(fn, SupClass.prototype);
@@ -57,10 +61,10 @@ export function inherit(SubClass, SupClass) {
  * @returns
  */
 export function getNodes(dom) {
-  var ret = [],
+  let ret = [],
     c = dom.childNodes || [];
-  // eslint-disable-next-line
-  for (var i = 0, el; (el = c[i++]);) {
+    // eslint-disable-next-line
+    for (let i = 0, el; (el = c[i++]);) {
     ret.push(el);
   }
   return ret;
@@ -69,16 +73,16 @@ export function getNodes(dom) {
 var lowerCache = {};
 /**
  * 小写化的优化
- * 
+ *
  * @export
- * @param {any} s 
- * @returns 
+ * @param {any} s
+ * @returns
  */
 export function toLowerCase(s) {
   return lowerCache[s] || (lowerCache[s] = s.toLowerCase());
 }
 
-export function clearArray(a){
+export function clearArray(a) {
   return a.splice(0, a.length);
 }
 
@@ -98,10 +102,10 @@ export function oneObject(array, val) {
   if (typeNumber(array) === 4) {
     array = array.match(rword) || [];
   }
-  var result = {},
+  let result = {},
     //eslint-disable-next-line
-    value = val !== void 666 ? val : 1;
-  for (var i = 0, n = array.length; i < n; i++) {
+        value = val !== void 666 ? val : 1;
+  for (let i = 0, n = array.length; i < n; i++) {
     result[array[i]] = value;
   }
   return result;
@@ -113,8 +117,8 @@ export function getChildContext(instance, context) {
   }
   return context;
 }
-var rcamelize = /[-_][^-_]/g;
 
+var rcamelize = /[-_][^-_]/g;
 export function camelize(target) {
   //提前判断，提高getStyle等的效率
   if (!target || (target.indexOf("-") < 0 && target.indexOf("_") < 0)) {
@@ -128,6 +132,9 @@ export function camelize(target) {
 
 export var options = {
   beforeUnmount: noop,
+  beforeRender: noop,
+  beforePatch:noop,
+  afterPatch: noop,
   afterMount: noop,
   afterUpdate: noop
 };
@@ -137,7 +144,7 @@ export function checkNull(vnode, type) {
   //  vnode = vnode[0];
   // }
   if (vnode === null || vnode === false) {
-    return { type: "#comment", text: "empty",vtype: 0 };
+    return { type: "#comment", text: "empty", vtype: 0 };
   } else if (!vnode || !vnode.vtype) {
     throw new Error(
       `@${type.name}#render:You may have returned undefined, an array or some other invalid object`
@@ -145,6 +152,7 @@ export function checkNull(vnode, type) {
   }
   return vnode;
 }
+
 var numberMap = {
   //null undefined IE6-8这里会返回[object Object]
   "[object Boolean]": 2,
@@ -154,7 +162,7 @@ var numberMap = {
   "[object Symbol]": 6,
   "[object Array]": 7
 };
-// undefined: 0, null: 1, boolean:2, number: 3, string: 4, function: 5, array: 6, object:8
+// undefined: 0, null: 1, boolean:2, number: 3, string: 4, function: 5, symbol:6, array: 7, object:8
 export function typeNumber(data) {
   if (data === null) {
     return 1;

@@ -1,5 +1,5 @@
 import { document } from "./browser";
-import { isFn, noop,  options } from "./util";
+import { isFn, noop, options } from "./util";
 
 var globalEvents = {};
 export var eventPropHooks = {}; //用于在事件回调里对事件对象进行
@@ -21,6 +21,7 @@ export var eventLowerCache = {
 export function isEventName(name) {
   return /^on[A-Z]/.test(name);
 }
+
 export var isTouch = "ontouchstart" in document;
 
 export function dispatchEvent(e, type, end) {
@@ -92,42 +93,27 @@ export function addEvent(el, type, fn, bool) {
     el.addEventListener(
       type,
       fn,
-      /true|false/.test(bool)
-        ? bool
-        : supportsPassive
-          ? {
-            passive: false
-          }
-          : false
+      bool || false
     );
   } else if (el.attachEvent) {
     el.attachEvent("on" + type, fn);
   }
 }
 
-var ron = /^on/;
+
 var rcapture = /Capture$/;
 export function getBrowserName(onStr) {
   var lower = eventLowerCache[onStr];
   if (lower) {
     return lower;
   }
-  var camel = onStr.replace(ron, "").replace(rcapture, "");
+  var camel = onStr.slice(2).replace(rcapture, "");
   lower = camel.toLowerCase();
   eventLowerCache[onStr] = lower;
   return lower;
 }
-var supportsPassive = false;
-try {
-  var opts = Object.defineProperty({}, "passive", {
-    get: function () {
-      supportsPassive = true;
-    }
-  });
-  document.addEventListener("test", null, opts);
-} catch (e) {
-  // no catch
-}
+
+
 eventPropHooks.click = function (e) {
   return !e.target.disabled;
 };
@@ -149,8 +135,8 @@ const fixWheelDelta =
 eventHooks.wheel = function (dom) {
   addEvent(dom, fixWheelType, function (e) {
     var delta = e[fixWheelDelta] > 0 ? -120 : 120;
-    var deltaY = ~~dom._ms_wheel_ + delta;
-    dom._ms_wheel_ = deltaY;
+    var deltaY = ~~dom.__wheel + delta;
+    dom.__wheel = deltaY;
     e = new SyntheticEvent(e);
     e.type = "wheel";
     e.deltaY = deltaY;
@@ -182,10 +168,11 @@ DOM通过event对象的relatedTarget属性提供了相关元素的信息。这�
  */
 function getRelatedTarget(e) {
   if (!e.timeStamp) {
-    e.relatedTarget = e.type === "mouseover"?  e.fromElement: e.toElement; 
+    e.relatedTarget = e.type === "mouseover" ? e.fromElement : e.toElement;
   }
   return e.relatedTarget;
 }
+
 function contains(a, b) {
   if (b) {
     while ((b = b.parentNode)) {
@@ -254,6 +241,28 @@ if (isTouch) {
   eventHooks.click = noop;
   eventHooks.clickcapture = noop;
 }
+
+export function createHandle(name, fn) {
+  return function (e) {
+    if (fn && fn(e) === false) {
+      return;
+    }
+    dispatchEvent(e, name);
+  };
+}
+
+var changeHandle = createHandle("change");
+var doubleClickHandle = createHandle("doubleclick");
+
+//react将text,textarea,password元素中的onChange事件当成onInput事件
+eventHooks.changecapture = eventHooks.change = function (dom) {
+  var mask = /text|password/.test(dom.type) ? "input" : "change";
+  addEvent(document, mask, changeHandle);
+};
+
+eventHooks.doubleclick = eventHooks.doubleclickcapture = function () {
+  addEvent(document, "dblclick", doubleClickHandle);
+};
 
 export function SyntheticEvent(event) {
   if (event.nativeEvent) {

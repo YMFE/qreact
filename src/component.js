@@ -1,4 +1,4 @@
-import { extend, isFn, options, clearArray } from "./util";
+import { extend, isFn, options, clearArray, noop } from "./util";
 import { CurrentOwner } from "./createElement";
 
 /**
@@ -7,17 +7,18 @@ import { CurrentOwner } from "./createElement";
  * @param {any} props
  * @param {any} context
  */
-
+var mountOrder = 1;
 export function Component(props, context) {
-  CurrentOwner.cur = this; //防止用户在构造器生成JSX
+  //防止用户在构造器生成JSX
+  CurrentOwner.cur = this;
+  this.__mountOrder = mountOrder++;
   this.context = context;
   this.props = props;
   this.refs = {};
   this.state = null;
   this.__pendingCallbacks = [];
   this.__pendingStates = [];
-  this.__pendingRefs = [];
-  this.__current = {};
+  this.__current = noop;
   /*
     * this.__hydrating = true 表示组件正在根据虚拟DOM合成真实DOM
     * this.__renderInNextCycle = true 表示组件需要在下一周期重新渲染
@@ -26,21 +27,19 @@ export function Component(props, context) {
 }
 
 Component.prototype = {
+  constructor: Component,//必须重写constructor,防止别人在子类中使用Object.getPrototypeOf时找不到正确的基类
   replaceState() {
         console.warn("此方法末实现"); // eslint-disable-line
   },
 
   setState(state, cb) {
-    setStateImpl.call(this, state, cb);
+    debounceSetState(this, state, cb);
   },
-
+  isMounted() {
+    return !!this.__dom;
+  },
   forceUpdate(cb) {
-    setStateImpl.call(this, true, cb);
-  },
-  __collectRefs: function (fn) {
-    this
-      .__pendingRefs
-      .push(fn);
+    debounceSetState(this, true, cb);
   },
   __mergeStates: function (props, context) {
     var n = this.__pendingStates.length;
@@ -61,14 +60,23 @@ Component.prototype = {
   render() { }
 };
 
+function debounceSetState(a, b, c) {
+  if (a.__didUpdate) {//如果用户在componentDidUpdate中使用setState，要防止其卡死
+    setTimeout(function () {
+      a.__didUpdate = false;
+      setStateImpl.call(a, b, c);
+    }, 300);
+    return;
+  }
+  setStateImpl.call(a, b, c);
+}
 function setStateImpl(state, cb) {
-
   if (isFn(cb)) {
     this
       .__pendingCallbacks
       .push(cb);
   }
-  let hasDOM = this.__current._hostNode;
+  let hasDOM = this.__dom;
   if (state === true) {//forceUpdate
     this.__forceUpdate = true;
   } else {//setState

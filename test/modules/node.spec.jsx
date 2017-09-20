@@ -131,7 +131,7 @@ describe('node模块', function () {
             .pause(100)
             .$apply()
         var index = 0
-        expect(s._currentElement.getDOMNode().nodeName).toBe('DIV')
+        expect(s.__current.getDOMNode().nodeName).toBe('DIV')
         s.forceUpdate(function () {
             index++
         })
@@ -177,14 +177,14 @@ describe('node模块', function () {
         var s = React.render(<Select />, div)
         await browser.pause(100).$apply()
 
-
-        expect(s._currentElement._hostNode.children[1].selected).toBe(true)
+        //s.__current._hostNode
+        expect(div.firstChild.children[1].selected).toBe(true)
         await browser.selectByVisibleText('#node2', '上海').pause(100).$apply()
 
-        expect(s._currentElement._hostNode.children[2].selected).toBe(true)
+        expect(div.firstChild.children[2].selected).toBe(true)
         await browser.selectByVisibleText('#node2', '杭州').pause(100).$apply()
 
-        expect(s._currentElement._hostNode.children[0].selected).toBe(true)
+        expect(div.firstChild.children[0].selected).toBe(true)
 
 
     })
@@ -252,15 +252,15 @@ describe('node模块', function () {
         var s = React.render(<Select />, div)
         await browser.pause(100).$apply()
 
-        expect(s._currentElement._hostNode.children[0].text).toBe('北京')
-        expect(s._currentElement._hostNode.children[1].text).toBe('杭州')
-        expect(s._currentElement._hostNode.children[2].text).toBe('南京')
+        expect(s.__current._hostNode.children[0].text).toBe('北京')
+        expect(s.__current._hostNode.children[1].text).toBe('杭州')
+        expect(s.__current._hostNode.children[2].text).toBe('南京')
         s.change()
         await browser.pause(100).$apply()
 
-        expect(s._currentElement._hostNode.children[0].text).toBe('杭州')
-        expect(s._currentElement._hostNode.children[1].text).toBe('南京')
-        expect(s._currentElement._hostNode.children[2].text).toBe('北京')
+        expect(s.__current._hostNode.children[0].text).toBe('杭州')
+        expect(s.__current._hostNode.children[1].text).toBe('南京')
+        expect(s.__current._hostNode.children[2].text).toBe('北京')
 
 
     })
@@ -315,14 +315,14 @@ describe('node模块', function () {
         var s = React.render(<Radio />, div)
         await browser.pause(100).$apply()
 
-        expect(s._currentElement._hostNode.children[0].checked).toBe(false)
-        expect(s._currentElement._hostNode.children[1].checked).toBe(true)
-        expect(s._currentElement._hostNode.children[2].checked).toBe(false)
+        expect(s.__current._hostNode.children[0].checked).toBe(false)
+        expect(s.__current._hostNode.children[1].checked).toBe(true)
+        expect(s.__current._hostNode.children[2].checked).toBe(false)
         await browser.click('#radio3').pause(100).$apply()
 
-        expect(s._currentElement._hostNode.children[0].checked).toBe(false)
-        expect(s._currentElement._hostNode.children[1].checked).toBe(false)
-        expect(s._currentElement._hostNode.children[2].checked).toBe(true)
+        expect(s.__current._hostNode.children[0].checked).toBe(false)
+        expect(s.__current._hostNode.children[1].checked).toBe(false)
+        expect(s.__current._hostNode.children[2].checked).toBe(true)
 
 
     })
@@ -330,6 +330,7 @@ describe('node模块', function () {
     it('测试input元素的oninput事件', async () => {
 
         var values = ['x', 'xx', 'xxx', 'xxxx']
+        var el = ''
         class Input extends React.Component {
             constructor() {
                 super()
@@ -338,12 +339,15 @@ describe('node模块', function () {
                 }
             }
             onInput(e) {
+                console.log('oninput', e.type, e.target.value)
+                el = values.shift()
                 this.setState({ value: e.target.value })
             }
 
 
             componentDidUpdate() {
-                expect(s._currentElement._hostNode.children[0].value).toBe(values.shift())
+
+                expect(s.__current._hostNode.children[0].value).toBe(el)
 
             }
             render() {
@@ -365,17 +369,18 @@ describe('node模块', function () {
 
         await browser.pause(100).$apply()
 
-        expect(s._currentElement._hostNode.children[0].value).toBe('2')
+        expect(s.__current._hostNode.children[0].value).toBe('2')
 
         await browser
-            .setValue('#node4', 'xxxx').pause(100).$apply()
+            .setValue('#node4', 'xxxx').pause(300).$apply()
 
 
 
     })
     it('测试textarea元素的oninput事件', async () => {
 
-        var values = ['x', 'xx', 'xxx', 'xxxx']
+        var values = ['y', 'yy', 'yyy', 'yyyy']
+        var el = ''
         class TextArea extends React.Component {
             constructor() {
                 super()
@@ -384,12 +389,12 @@ describe('node模块', function () {
                 }
             }
             onInput(e) {
-                // console.log('oninput', e.type, e.target.value)
+                el = values.shift()
                 this.setState({ value: e.target.value })
             }
 
             componentDidUpdate() {
-                expect(s._currentElement._hostNode.children[0].value).toBe(values.shift())
+                expect(s.__current._hostNode.children[0].value).toBe(el)
             }
             render() {
                 return <div>
@@ -409,10 +414,10 @@ describe('node模块', function () {
             .pause(100)
             .$apply()
 
-        expect(s._currentElement._hostNode.children[0].value).toBe('4')
+        expect(s.__current._hostNode.children[0].value).toBe('4')
 
         await browser
-            .setValue('#node5', 'xxxx').pause(100).$apply()
+            .setValue('#node5', 'yyyy').pause(300).$apply()
 
 
     })
@@ -439,14 +444,14 @@ describe('node模块', function () {
             .pause(100)
             .$apply()
 
-        expect(s._currentElement._hostNode.children[0].value).toBe('5')
+        expect(s.__current._hostNode.children[0].value).toBe('5')
 
         await browser
             .setValue('#node6', 'xxxx')
             .pause(100)
             .$apply()
 
-        expect(s._currentElement._hostNode.children[0].value).toBe('5')
+        expect(s.__current._hostNode.children[0].value).toBe('5')
 
 
     })
@@ -473,14 +478,14 @@ describe('node模块', function () {
             .pause(100)
             .$apply()
 
-        expect(s._currentElement._hostNode.children[0].checked).toBe(true)
+        expect(s.__current._hostNode.children[0].checked).toBe(true)
 
         await browser
             .click('#node7')
             .pause(300)
             .$apply()
 
-        expect(s._currentElement._hostNode.children[0].checked).toBe(true)
+        expect(s.__current._hostNode.children[0].checked).toBe(true)
 
 
     })
@@ -507,14 +512,43 @@ describe('node模块', function () {
             .pause(100)
             .$apply()
 
-        expect(s._currentElement._hostNode.children[0].checked).toBe(false)
+        expect(s.__current._hostNode.children[0].checked).toBe(false)
 
         await browser
             .click('#radio7')
             .pause(300)
             .$apply()
 
-        expect(s._currentElement._hostNode.children[0].checked).toBe(false)
+        expect(s.__current._hostNode.children[0].checked).toBe(false)
+
+
+    })
+    it('元素节点存在dangerouslySetInnerHTML', async () => {
+        class App extends React.Component {
+            constructor() {
+                super()
+                this.state = {
+                    aaa: 0
+                }
+            }
+            change(s) {
+                this.setState({
+                    aaa: 1
+                })
+            }
+            render() {
+                return <div>{this.state.aaa === 1 ? <p dangerouslySetInnerHTML={{ __html: "<span>111</span" }}  >222</p> :
+                    <p><strong>222</strong></p>
+                }</div>
+            }
+        }
+        var s = React.render(<App />, div)
+        await browser
+            .pause(100)
+            .$apply()
+        expect(div.getElementsByTagName('strong').length).toBe(1)
+        s.change(1)
+        expect(div.getElementsByTagName('span').length).toBe(1)
 
 
     })
@@ -540,14 +574,14 @@ describe('node模块', function () {
             .pause(100)
             .$apply()
 
-        expect(s._currentElement._hostNode.children[1].selected).toBe(true)
+        expect(s.__current._hostNode.children[1].selected).toBe(true)
         await browser
             .selectByVisibleText('#node8', 'ccc')
             .pause(200)
             .$apply()
 
-        expect(s._currentElement._hostNode.children[2].selected).toBe(false)
-        expect(s._currentElement._hostNode.children[1].selected).toBe(true)
+        expect(s.__current._hostNode.children[2].selected).toBe(false)
+        expect(s.__current._hostNode.children[1].selected).toBe(true)
 
 
     })
@@ -670,7 +704,7 @@ describe('node模块', function () {
         }
         var index = 1
         function detect(a) {
-            console.log('detect 方法', index , a)
+            console.log('detect 方法', index, a)
             if (index === 1) {
                 expect(typeof a).toBe('object')
             } else {
@@ -685,7 +719,7 @@ describe('node模块', function () {
             handleClick() {
                 index = 0
                 this.forceUpdate()
-                setTimeout(function(){
+                setTimeout(function () {
                     console.log('应该输出', str)
                 })
             }
@@ -944,46 +978,46 @@ describe('node模块', function () {
     })
 
     it('对一个容器节点反复渲染组件或元素 ', async () => {
-		class Comp extends React.Component {
-			render() {
-				return <span>span in a component</span>;
-			}
-		}
-		let root;
-		function test(content) {
-			root = React.render(content, div);
-		}
+        class Comp extends React.Component {
+            render() {
+                return <span>span in a component</span>;
+            }
+        }
+        let root;
+        function test(content) {
+            root = React.render(content, div);
+        }
 
-		test(<Comp />);
-	    await browser.pause(50).$apply()
-		test(<div>just a div</div>);
-		await browser.pause(50).$apply()
-		test(<Comp />);
-		await browser.pause(50).$apply()
+        test(<Comp />);
+        await browser.pause(50).$apply()
+        test(<div>just a div</div>);
+        await browser.pause(50).$apply()
+        test(<Comp />);
+        await browser.pause(50).$apply()
 
-		expect(div.firstChild.innerHTML).to.equal('span in a component');
-	});
-    
-      it('切换style对象', async () => {
-          var index =1
-		class Comp extends React.Component {
-			render() {
-				return <span style={ index ? {color: 'red'}: null}>span in a component</span>;
-			}
-		}
-		let root;
-		function test(content) {
-			root = React.render(content, div);
-		}
+        expect(div.firstChild.innerHTML).to.equal('span in a component');
+    });
 
-		test(<Comp />);
-	    await browser.pause(50).$apply()
+    it('切换style对象', async () => {
+        var index = 1
+        class Comp extends React.Component {
+            render() {
+                return <span style={index ? { color: 'red' } : null}>span in a component</span>;
+            }
+        }
+        let root;
+        function test(content) {
+            root = React.render(content, div);
+        }
+
+        test(<Comp />);
+        await browser.pause(50).$apply()
         expect(div.firstChild.style.color).to.equal('red');
         index = 0
-		
-		test(<Comp />);
-		await browser.pause(50).$apply()
+
+        test(<Comp />);
+        await browser.pause(50).$apply()
         expect(div.firstChild.style.color).to.equal('');
-	});
+    });
 
 })

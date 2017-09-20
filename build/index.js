@@ -63,7 +63,6 @@ function getInstanceFromVNode(vnode) {
  * for how the devtools consumes the resulting objects.
  */
 function createDevToolsBridge() {
-  console.log("createDevToolsBridge....."); // eslint-disable-line
   const ComponentTree = {
     getNodeFromInstance(instance) {
       //createReactDOMComponent生成的实例有vnode对象
@@ -88,18 +87,18 @@ function createDevToolsBridge() {
   const Mount = {
     _instancesByReactRootID: roots,
     // tslint:disable-next-line:no-empty
-    _renderNewRootComponent(instance) {} // eslint-disable-line
+    _renderNewRootComponent() {}
   };
 
   const Reconciler = {
     // tslint:disable-next-line:no-empty
-    mountComponent(instance) {}, // eslint-disable-line
+    mountComponent() {},
     // tslint:disable-next-line:no-empty
-    performUpdateIfNecessary(instance) {}, // eslint-disable-line
+    performUpdateIfNecessary() {},
     // tslint:disable-next-line:no-empty
-    receiveComponent(instance) {}, // eslint-disable-line
+    receiveComponent() {},
     // tslint:disable-next-line:no-empty
-    unmountComponent(instance) {} // eslint-disable-line
+    unmountComponent() {}
   };
 
   //============
@@ -325,22 +324,12 @@ function createReactCompositeComponent(vnode) {
   };
 }
 
-function nextRootKey(roots) { // eslint-disable-line
-  return "." + Object.keys(roots).length;
-}
-
 function normalizeKey(key) {
   if (key && key[0] === ".") {
     return null;
   }
 }
 
-function typeName(type) { // eslint-disable-line
-  if (typeof type === "function") {
-    return type.displayName || type.name;
-  }
-  return type;
-}
 /**
  * Visit all child instances of a ReactCompositeComponent-like object that are
  * not composite components (ie. they represent DOM elements or text)
@@ -361,7 +350,6 @@ function visitNonCompositeChildren(instance, callback) {
 
 function initDevTools() {
   /* tslint:disable */
-  console.log("初始chrome react 调试工具"); // eslint-disable-line
   const bridge = createDevToolsBridge();
   var Methods = {
     afterMount: "componentAdded",

@@ -1,5 +1,5 @@
 //为了兼容yo
-var check = function() {
+var check = function () {
   return check;
 };
 check.isRequired = check;

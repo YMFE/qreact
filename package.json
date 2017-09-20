@@ -1,13 +1,12 @@
 {
   "name": "qreact",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "a mini React-like framework",
   "main": "dist/React.js",
   "scripts": {
     "build": "rollup -c build/rollup.js && rollup -c build/rollup.ie.js && rollup -c build/rollup.shim.js  && node build/shim.script.js ",
     "test": "node node_modules/karma-event-driver-ext",
     "devtools": "rollup -c build/rollup.tools.js",
-    "webpack": "^1.14.0",
     "precommit-msg": "echo 'Linting code...' && exit 0",
     "lint": "eslint src/ build/ --fix"
   },

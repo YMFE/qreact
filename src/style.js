@@ -27,7 +27,7 @@ export function patchStyle(dom, oldStyle, newStyle) {
         //node.style.width = undefine 在旧式IE下会抛异常
         dom.style[name] = val; //应用样式
       } catch (e) {
-        console.log("dom.style[" + name + "] = " + val + "throw error"); // eslint-disable-line
+                console.log("dom.style[" + name + "] = " + val + "throw error"); // eslint-disable-line
       }
     }
   }
@@ -57,9 +57,9 @@ export function cssName(name, dom) {
   if (cssMap[name]) {
     return cssMap[name];
   }
-  var host = (dom && dom.style) || {};
-  for (var i = 0, n = prefixes.length; i < n; i++) {
-    var camelCase = camelize(prefixes[i] + name);
+  let host = (dom && dom.style) || {};
+  for (let i = 0, n = prefixes.length; i < n; i++) {
+    let camelCase = camelize(prefixes[i] + name);
     if (camelCase in host) {
       return (cssMap[name] = camelCase);
     }

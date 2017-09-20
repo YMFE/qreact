@@ -1,19 +1,9 @@
-import {document, msie} from "./browser";
-import {propHooks} from "./diffProps";
+import { document, msie } from "./browser";
+import { actionStrategy } from "./diffProps";
+import { oneObject, toLowerCase, innerHTML } from "./util";
+import { eventHooks, addEvent, eventPropHooks, createHandle, dispatchEvent } from "./event";
 
-import {eventHooks, addEvent, eventPropHooks, dispatchEvent} from "./event";
-import {oneObject, toLowerCase, innerHTML} from "./util";
 
-//Ie6-8 oninput使用propertychange进行冒充，触发一个ondatasetchanged事件
-function fixIEInputHandle(e) {
-  if (e.propertyName === "value") {
-    dispatchEvent(e, "input");
-  }
-}
-
-function fixIEInput(dom) {
-  addEvent(dom, "propertychange", fixIEInputHandle);
-}
 //IE8中select.value不会在onchange事件中随用户的选中而改变其value值，也不让用户直接修改value 只能通过这个hack改变
 var noCheck = false;
 function setSelectValue(e) {
@@ -22,9 +12,8 @@ function setSelectValue(e) {
   }
 }
 
-function syncValueByOptionValue(e) {
-  var dom = e.srcElement,
-    idx = dom.selectedIndex,
+function syncValueByOptionValue(dom) {
+  let idx = dom.selectedIndex,
     option,
     attr;
   if (idx > -1) {
@@ -35,9 +24,10 @@ function syncValueByOptionValue(e) {
       ? option.value
       : option.text;
   }
+
 }
 
-function fixIEChangeHandle(e) {
+var fixIEChangeHandle = createHandle("change", function (e) {
   var dom = e.srcElement;
   if (dom.type === "select-one") {
     if (!dom.__bindFixValueFn) {
@@ -45,28 +35,39 @@ function fixIEChangeHandle(e) {
       dom.__bindFixValueFn = true;
     }
     noCheck = true;
-    syncValueByOptionValue(e);
+    syncValueByOptionValue(dom);
     noCheck = false;
   }
-  dispatchEvent(e, "change");
-}
-
-function fixIEChange(dom) {
-  //IE6-8, radio, checkbox的点击事件必须在失去焦点时才触发 select则需要做更多补丁工件
-  var mask = dom.type === "radio" || dom.type === "checkbox"
-    ? "click"
-    : "change";
-  addEvent(dom, mask, fixIEChangeHandle);
-}
-
-function fixIESubmit(dom) {
-  if (dom.nodeName === "FORM") {
-    addEvent(dom, "submit", dispatchEvent);
+  if (e.type === "propertychange") {
+    return e.propertyName === "value";
   }
-}
+});
+
+
+var fixIEInputHandle = createHandle("input", function (e) {
+  return e.propertyName === "value";
+});
+
+var IEHandleFix = {
+  input: function (dom) {
+    addEvent(dom, "propertychange", fixIEInputHandle);
+  },
+  change: function (dom) {
+    //IE6-8, radio, checkbox的点击事件必须在失去焦点时才触发 select则需要做更多补丁工件
+    var mask = /radio|check/.test(dom.type) ?
+      "click" : /text|password/.test(dom.type) ? "propertychange" :
+        "change";
+    addEvent(dom, mask, fixIEChangeHandle);
+  },
+  submit: function (dom) {
+    if (dom.nodeName === "FORM") {
+      addEvent(dom, "submit", dispatchEvent);
+    }
+  }
+};
 
 if (msie < 9) {
-  propHooks[innerHTML] = function (dom, name, val, lastProps) {
+  actionStrategy[innerHTML] = function (dom, name, val, lastProps) {
     var oldhtml = lastProps[name] && lastProps[name].__html;
     var html = val && val.__html;
     if (html !== oldhtml) {
@@ -108,7 +109,7 @@ if (msie < 9) {
   });
 
   Object.assign(eventPropHooks, oneObject("mousemove, mouseout,mouseenter, mouseleave, mouseout,mousewheel, mousewheel, whe" +
-      "el, click",
+        "el, click",
   function (event) {
     if (!("pageX" in event)) {
       var doc = event.target.ownerDocument || document;
@@ -130,9 +131,7 @@ if (msie < 9) {
     }
   }));
 
-  eventHooks.input = fixIEInput;
-  eventHooks.inputcapture = fixIEInput;
-  eventHooks.change = fixIEChange;
-  eventHooks.changecapture = fixIEChange;
-  eventHooks.submit = fixIESubmit;
+  for (let i in IEHandleFix) {
+    eventHooks[i] = eventHooks[i + "capture"] = IEHandleFix[i];
+  }
 }

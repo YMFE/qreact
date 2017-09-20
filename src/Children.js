@@ -1,13 +1,14 @@
 import { _flattenChildren } from "./createElement";
-import { limitWarn } from "./util";
+
 export const Children = {
   only(children) {
     //only方法接受的参数只能是一个对象，不能是多个对象（数组）。
     if (Array.isArray(children)) {
       children = children[0];
     }
-    if (children && children.vtype)
+    if (children && children.vtype) {
       return children;
+    }
     throw new Error("expect only one child");
   },
   count(children) {
@@ -23,14 +24,4 @@ export const Children = {
     return _flattenChildren(children, false);
   }
 };
-for (let key in Children) {
-  let fn = Children[key];
-  limitWarn[key] = 1;
-  Children[key] = function () {
-    if (limitWarn[key]-- > 0) {
-      // eslint-disable-next-line
-      console.warn("请限制使用Children." + key + ",不要窥探虚拟DOM的内部实现,会导致升级问题");
-    }
-    return fn.apply(null, arguments);
-  };
-}
+

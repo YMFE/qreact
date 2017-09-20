@@ -12,46 +12,45 @@ export var CurrentOwner = {
  * @returns
  */
 
-export function createElement(type, config, children) {
-  // Reserved names are extracted
-  var props = {};
-  var checkProps = 0;
-  var vtype = 1;
-  var key = null;
-  var ref = null;
+export function createElement(type, config, ...children) {
+  let props = {},
+    checkProps = 0,
+    vtype = 1,
+    key = null,
+    ref = null,
+    argsLen = children.length;
   if (config != null) {
-    for (var i in config) {
-      var val = config[i];
+    for (let i in config) {
+      let val = config[i];
       if (i === "key") {
-        if (val !== void 0) key = val + "";
+        if (val !== void 0) {
+          key = val + "";
+        }
       } else if (i === "ref") {
-        if (val !== void 0) ref = val;
+        if (val !== void 0) {
+          ref = val;
+        }
+      } else if (i === "children") {
+        props[i] = val;
       } else {
         checkProps = 1;
         props[i] = val;
       }
     }
   }
-  var childrenLength = arguments.length - 2;
-  if (childrenLength === 1) {
-    if (children !== void 0)
-      props.children = children;
-  } else if (childrenLength > 1) {
-    var childArray = Array(childrenLength);
-    // eslint-disable-next-line
-    for (var i = 0; i < childrenLength; i++) {
-      childArray[i] = arguments[i + 2];
-    }
-    props.children = childArray;
+
+  if (argsLen === 1) {
+    props.children = typeNumber(children[0]) > 2 ? children[0] : EMPTY_CHILDREN;
+  } else if (argsLen > 1) {
+    props.children = children;
   }
 
-  // Resolve default props
-  var defaultProps = type.defaultProps;
+  let defaultProps = type.defaultProps;
   if (defaultProps) {
-    for (propName in defaultProps) { // eslint-disable-line
-      if (props[propName] === void 666) { // eslint-disable-line
+    for (let propName in defaultProps) {
+      if (props[propName] === void 666) {
         checkProps = 1;
-        props[propName] = defaultProps[propName]; // eslint-disable-line
+        props[propName] = defaultProps[propName];
       }
     }
   }
@@ -68,36 +67,26 @@ export function createElement(type, config, children) {
 function getDOMNode() {
   return this;
 }
-export function __ref(dom) {
-  var instance = this._owner;
-  if (dom && instance) {
-    instance.refs[this.__refKey] = dom;
+
+function createStringRef(owner, ref) {
+  function stringRef(dom) {
+    if (dom) {
+      if (dom.nodeType) {
+        dom.getDOMNode = getDOMNode;
+      }
+      owner.refs[ref] = dom;
+    }
   }
-}
-var fakeOwn = {
-  __collectRefs: function () { }
-};
-function getRefValue(vnode) {
-  if (vnode._instance)
-    return vnode._instance;
-  var dom = vnode._hostNode;
-  if (!dom) {
-    dom = vnode._hostNode = vnode._owner.__current._hostNode;
-  }
-  dom.getDOMNode = getDOMNode;
-  return dom;
+  stringRef.string = ref;
+  return stringRef;
 }
 function Vnode(type, key, ref, props, vtype, checkProps) {
   this.type = type;
   this.props = props;
   this.vtype = vtype;
   var owner = CurrentOwner.cur;
-  if (owner) {
-    this._owner = owner;
-  } else {
-    owner = fakeOwn;
-  }
-  // this._owner.__pe  console.log(type, this._owner)
+  this._owner = owner;
+
   if (key) {
     this.key = key;
   }
@@ -105,21 +94,21 @@ function Vnode(type, key, ref, props, vtype, checkProps) {
   if (vtype === 1) {
     this.checkProps = checkProps;
   }
-  var refType = typeNumber(ref);
-  var self = this;
+  let refType = typeNumber(ref);
   if (refType === 4) {
     //string
-    this.__refKey = ref;
-    this.ref = __ref;
-    owner.__collectRefs(function () {
-      owner.refs[ref] = getRefValue(self, ref);
-    });
+    this.ref = createStringRef(owner, ref);
   } else if (refType === 5) {
-    //function
-    this.ref = ref;
-    owner.__collectRefs(function () {
-      ref(getRefValue(self, ref));
-    });
+    if (ref.string) {
+      var ref2 = createStringRef(owner, ref.string);
+      this.ref = function (dom) {
+        ref(dom);
+        ref2(dom);
+      };
+    } else {
+      //function
+      this.ref = ref;
+    }
   }
   /*
       this._hostNode = null
@@ -136,15 +125,12 @@ Vnode.prototype = {
 };
 
 export function _flattenChildren(original, convert) {
-  var children = [],
-    temp,
+  let children = [],
     lastText,
-    child;
-  if (Array.isArray(original)) {
-    temp = original.slice(0);
-  } else {
-    temp = [original];
-  }
+    child,
+    temp = Array.isArray(original)
+      ? original.slice(0)
+      : [original];
 
   while (temp.length) {
     //比较巧妙地判定是否为子数组
@@ -158,20 +144,17 @@ export function _flattenChildren(original, convert) {
       }
     } else {
       // eslint-disable-next-line
-            var childType = typeNumber(child);
+            let childType = typeNumber(child);
 
-      if (childType < 3 // 0, 1, 2
-      ) {
-        continue;
-      }
-
-      if (childType < 6) {
-        if (lastText) {
-          if (convert) {
-            children[0].text = child + children[0].text;
-          } else {
-            children[0] = child + children[0];
-          }
+      if (childType < 3) { // 0, 1, 2
+        if (convert) {
+          continue;
+        } else {
+          child = null;
+        }
+      } else if (childType < 6) {
+        if (lastText && convert) { //false模式下不进行合并与转换
+          children[0].text = child + children[0].text;
           continue;
         }
         child = child + "";
@@ -191,12 +174,16 @@ export function _flattenChildren(original, convert) {
     }
   }
   return children;
-
 }
+
 export function flattenChildren(vnode) {
-  var arr = _flattenChildren(vnode.props.children, true);
-  if (arr.length == 0) {
-    arr = EMPTY_CHILDREN;
+  let arr = EMPTY_CHILDREN,
+    c = vnode.props.children;
+  if (c !== null) {
+    arr = _flattenChildren(c, true);
+    if (arr.length === 0) {
+      arr = EMPTY_CHILDREN;
+    }
   }
   return vnode.vchildren = arr;
 }

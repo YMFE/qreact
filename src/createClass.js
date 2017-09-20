@@ -1,5 +1,6 @@
-import { extend, isFn, inherit,limitWarn } from "./util";
+import { extend, isFn, inherit, limitWarn } from "./util";
 import { Component } from "./Component";
+
 /**
  * 为了兼容0.13之前的版本
  */
@@ -38,6 +39,7 @@ var MANY_MERGED = {
   getDefaultProps: 1,
   getChildContext: 1
 };
+
 function flattenHooks(key, hooks) {
   let hookType = typeof hooks[0];
   if (hookType === "object") {
@@ -51,12 +53,13 @@ function flattenHooks(key, hooks) {
       let ret = {}, r, hasReturn = MANY_MERGED[key];
       for (let i = 0; i < hooks.length; i++) {
         r = hooks[i].apply(this, arguments);
-        if (hasReturn && r ) {
+        if (hasReturn && r) {
           Object.assign(ret, r);
         }
       }
-      if (hasReturn)
+      if (hasReturn) {
         return ret;
+      }
       return r;
     };
   } else {
@@ -80,7 +83,7 @@ function newCtor(className, spec) {
 
      for (var methodName in this) {
         var method = this[methodName];
-        if (typeof method  === 'function'&& !blacklist[methodName]) {
+        if (typeof method  === "function"&& !blacklist[methodName]) {
           this[methodName] = method.bind(this);
         }
       }
@@ -95,7 +98,7 @@ function newCtor(className, spec) {
 
 export function createClass(spec) {
   if (limitWarn.createClass-- > 0) {
-        console.warn("createClass已经废弃,请改用es6方式定义类"); // eslint-disable-line
+        console.log("createClass已经废弃,请改用es6方式定义类"); // eslint-disable-line
   }
   var Constructor = newCtor(spec.displayName || "Component", spec);
   var proto = inherit(Constructor, Component);
