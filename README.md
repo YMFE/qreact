@@ -28,4 +28,4 @@ QReact 基于开源项目 [developit preact@7.1.0](https://github.com/developit/
 
 QReact 中包括 Virtual DOM 以及 diff 机制等核心部分基于 Preact，通过修改数据结构及 diff 逻辑进一步减小与原生 React 的差异。
 
-此外，QReact 使用 React 的原生事件系统替换了 Preact 的事件绑定，并提供包含了 PanResponder 的 React Native Web 版本。
+此外，QReact 使用 React 的原生事件系统替换了 Preact 的事件绑定。
