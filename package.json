@@ -23,12 +23,12 @@
   "keywords": [
     "react-like"
   ],
-  "author": "RubyLouvre",
-  "license": "MIT",
+  "author": "YMFE",
+  "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/RubyLouvre/anu/issues"
+    "url": "https://github.com/YMFE/qreact/issues"
   },
-  "homepage": "https://github.com/RubyLouvre/anu#readme",
+  "homepage": "https://github.com/YMFE/qreact#readme",
   "devDependencies": {
     "babel-core": "^6.22.1",
     "babel-loader": "^6.2.10",
