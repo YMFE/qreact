@@ -16,7 +16,150 @@ QReact 也实现了官方 `react/lib` 下的许多模块，这些模块可能被
 
 ## 如何使用
 
-详细使用方式请[参见使用](https://qreact.ymfe.org/usage.html)。
+**完整文档请前往[官网](https://qreact.ymfe.org)查看。**
+
+### 注意
+
+如果引用了 `create-react-class` 或者 `prop-types` 库，则需要配置别名让其指向 QReact 的 `createClass` 和 `PropTypes`。具体参见下面的配置中的 `alias` 部分。
+
+### 在 ykit 中使用
+
+如果使用 ykit 构建项目，可以在 `modifyWebpackConfig` 中配置 `alias` 来使用 `qreact` 替换 `react` 和 `react-dom`:
+
+```javascript
+module.exports = {
+    /*
+    ...
+    */
+    config: {
+        modifyWebpackConfig: function(baseConfig) {
+            // 其他 webpack 配置
+            baseConfig.resolve = {
+                alias: {
+                    'react': 'qreact',
+                    'react-dom': 'qreact',
+
+                    // 若要兼容 IE 请使用以下配置
+                    // 'react': 'qreact/dist/ReactIE',
+                    // 'react-dom': 'qreact/dist/ReactIE',
+
+                    // 如果引用了 prop-types 或 create-react-class
+                    // 需要添加如下别名
+                    'prop-types': 'qreact/lib/ReactPropTypes',
+                    'create-react-class': 'qreact/lib/createClass'
+                }
+            }
+
+            return baseConfig;
+        }
+    },
+    /*
+    ...
+    */
+};
+```
+
+### 在 webpack 中使用
+
+如果使用 webpack 构建项目，可以通过配置 `webpack` 的 `alias` 来使用 `qreact` 替换 `react` 和 `react-dom`:
+
+```javascript
+module.exports = {
+    /*
+    ...
+    */
+    resolve: {
+        alias: {
+            'react': 'qreact',
+            'react-dom': 'qreact',
+
+            // 若要兼容 IE 请使用以下配置
+            // 'react: 'qreact/dist/ReactIE',
+            // 'react-dom': 'qreact/dist/ReactIE'
+
+            // 如果引用了 prop-types 或 create-react-class
+            // 需要添加如下别名
+            'prop-types': 'qreact/lib/ReactPropTypes',
+            'create-react-class': 'qreact/lib/createClass'
+        }
+    }
+    /*
+    ...
+    */
+};
+```
+
+### 在 script 标签中使用
+
+如果是直接使用 `script` 标签引入，那么可以去掉 `react` 和 `react-dom` 使用 `qreact` 取代之：
+
+```diff
+- <script src="react.js"></script>
+- <script src="react-dom.js"></script>
++ <script src="qreact.js"></script>
+```
+
+```javascript
+module.exports = {
+    /*
+    ...
+    */
+    // 将 qreact 从打包的 js 文件中抽出
+    externals: {
+        'react': 'React',
+        'react-dom': 'ReactDOM'
+    }
+    /*
+    ...
+    */
+};
+```
+
+### 在 IE 6 - IE 8 中使用
+
+在 IE 6 - IE 8 中使用需要注意以下几个问题：
+
+- `ykit.js` 中的 `alias` 字段配置需要指向 `qreact/dist/ReactIE` 而不是 `qreact`。
+
+- 如果项目直接或间接（比如 `CSSTransitionGroup`）中用到了 `requestAnimatioin` 的话，需要单独引入 `requestAnimatioin` 的 polyfill。
+
+- `.babelrc` 中需要在 `plugins` 中添加 `add-module-exports`。
+
+```javascript
+{
+    "plugins": [
+        "transform-export-extensions",
+        // babel@6 不再以 commonJS 方式输出模块
+        // 而在入口文件中中必须以 require 方式引入模块
+        // 否则无法正常渲染
+        // 详细信息请查看 https://github.com/59naga/babel-plugin-add-module-exports
+        "add-module-exports"
+    ],
+    "presets": [
+        "es2015",
+        "react"
+    ]
+}
+```
+- 入口文件不能使用 `import` 方式引入包或者组件，且需要引入 `es5-shim` 和 `es5-sham`。
+
+```javascript
+// 引入 shim 解决 IE 8 下 Object.defineProperty 的问题
+require('es5-shim');
+require('es5-shim/es5-sham');
+
+// 入口文件处不可用 import 引入模块，其他页面不受影响
+// 因为 babel 把 import 编译成了 Object.defineProperty
+// 而 IE8 中没有这个方法，上方引入的 shim 解决了这个问题
+const React = require('react');
+const ReactDOM = require('react-dom');
+const Hello = require('./component/Hello');
+
+ReactDOM.render(
+    <Hello/>,
+    document.getElementById('app')
+);
+```
 
 ## 组件规范
 
