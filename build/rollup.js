@@ -18,7 +18,7 @@ export default {
       babelrc: false,
       presets: [
         [
-          "es2015",
+          "env",
           {
             modules: false
           }
@@ -40,7 +40,6 @@ export default {
           // string or function to replaced with
           replace: json.version
         }
-     
       ]
     }),
     filesize()

@@ -1,8 +1,5 @@
-import { EMPTY_CHILDREN, typeNumber } from "./util";
-
-export var CurrentOwner = {
-  cur: null
-};
+import {emptyArray, typeNumber} from "./util";
+import {Refs} from "./Refs";
 /**
  * 创建虚拟DOM
  *
@@ -19,6 +16,13 @@ export function createElement(type, config, ...children) {
     key = null,
     ref = null,
     argsLen = children.length;
+  if (type && type.call) {
+    vtype = type.prototype && type.prototype.render
+      ? 2
+      : 4;
+  } else if (type + "" !== type) {
+        console.error("createElement第一个参数类型错误"); // eslint-disable-line
+  }
   if (config != null) {
     for (let i in config) {
       let val = config[i];
@@ -40,7 +44,8 @@ export function createElement(type, config, ...children) {
   }
 
   if (argsLen === 1) {
-    props.children = typeNumber(children[0]) > 2 ? children[0] : EMPTY_CHILDREN;
+    props.children = children[0];
+    // : EMPTY_CHILDREN;
   } else if (argsLen > 1) {
     props.children = children;
   }
@@ -54,37 +59,14 @@ export function createElement(type, config, ...children) {
       }
     }
   }
-  if (typeNumber(type) === 5) {
-    //fn
-    vtype = type.prototype && type.prototype.render
-      ? 2
-      : 4;
-  }
   return new Vnode(type, key, ref, props, vtype, checkProps);
 }
 
-//fix 0.14对此方法的改动，之前refs里面保存的是虚拟DOM
-function getDOMNode() {
-  return this;
-}
-
-function createStringRef(owner, ref) {
-  function stringRef(dom) {
-    if (dom) {
-      if (dom.nodeType) {
-        dom.getDOMNode = getDOMNode;
-      }
-      owner.refs[ref] = dom;
-    }
-  }
-  stringRef.string = ref;
-  return stringRef;
-}
 function Vnode(type, key, ref, props, vtype, checkProps) {
   this.type = type;
   this.props = props;
   this.vtype = vtype;
-  var owner = CurrentOwner.cur;
+  var owner =  Refs.currentOwner;
   this._owner = owner;
 
   if (key) {
@@ -95,20 +77,12 @@ function Vnode(type, key, ref, props, vtype, checkProps) {
     this.checkProps = checkProps;
   }
   let refType = typeNumber(ref);
-  if (refType === 4) {
-    //string
-    this.ref = createStringRef(owner, ref);
+  if (refType === 4 || refType === 3) {
+    //string, number
+    this.userRef = ref;
+    this.ref = Refs.createStringRef(owner, ref+"");
   } else if (refType === 5) {
-    if (ref.string) {
-      var ref2 = createStringRef(owner, ref.string);
-      this.ref = function (dom) {
-        ref(dom);
-        ref2(dom);
-      };
-    } else {
-      //function
-      this.ref = ref;
-    }
+    this.ref = this.userRef = ref;
   }
   /*
       this._hostNode = null
@@ -124,66 +98,122 @@ Vnode.prototype = {
   $$typeof: 1
 };
 
+export function flattenChildren(vnode) {
+  let arr = emptyArray,
+    c = vnode.props.children;
+  if (c !== null) {
+    arr = _flattenChildren(c, true);
+    if (arr.length === 0) {
+      arr = emptyArray;
+    }
+  }
+  return (vnode.vchildren = arr);
+}
+
 export function _flattenChildren(original, convert) {
   let children = [],
+    unidimensionalIndex = 0,
     lastText,
     child,
+    isMap = convert === "",
+    iteractorFn,
     temp = Array.isArray(original)
       ? original.slice(0)
       : [original];
 
   while (temp.length) {
-    //比较巧妙地判定是否为子数组
-    if ((child = temp.pop()) && child.pop) {
-      if (child.toJS) {
-        //兼容Immutable.js
-        child = child.toJS();
-      }
-      for (let i = 0; i < child.length; i++) {
-        temp[temp.length] = child[i];
-      }
-    } else {
-      // eslint-disable-next-line
-            let childType = typeNumber(child);
+    if ((child = temp.shift()) && (child.shift || (iteractorFn = getIteractor(child)))) {
+      //比较巧妙地判定是否为子数组
 
-      if (childType < 3) { // 0, 1, 2
+      if (iteractorFn) {
+        //兼容Immutable.js, Map, Set
+        child = callIteractor(iteractorFn, child);
+        iteractorFn = false;
+        temp
+          .unshift
+          .apply(temp, child);
+        continue;
+      }
+      if (isMap) {
+        if (!child._prefix) {
+          child._prefix = "." + unidimensionalIndex;
+          unidimensionalIndex++; //维护第一层元素的索引值
+        }
+        for (let i = 0; i < child.length; i++) {
+          if (child[i]) {
+            child[i]._prefix = child._prefix + ":" + i;
+          }
+        }
+      }
+      temp
+        .unshift
+        .apply(temp, child);
+    } else {
+      let childType = typeNumber(child);
+      if (childType < 3) {
+        // 0, 1, 2
         if (convert) {
           continue;
         } else {
           child = null;
         }
       } else if (childType < 6) {
-        if (lastText && convert) { //false模式下不进行合并与转换
-          children[0].text = child + children[0].text;
+        if (lastText && convert) {
+          //false模式下不进行合并与转换
+          lastText.text += child;
           continue;
         }
-        child = child + "";
         if (convert) {
           child = {
             type: "#text",
-            text: child,
+            text: child + "",
             vtype: 0
           };
+          unidimensionalIndex++;
         }
-        lastText = true;
+        lastText = child;
       } else {
+        if (isMap && !child._prefix) {
+          child._prefix = "." + unidimensionalIndex;
+          unidimensionalIndex++;
+        }
+        if (!child.type) {
+          throw Error("这不是一个虚拟DOM");
+        }
         lastText = false;
       }
 
-      children.unshift(child);
+      children.push(child);
     }
   }
   return children;
 }
-
-export function flattenChildren(vnode) {
-  let arr = EMPTY_CHILDREN,
-    c = vnode.props.children;
-  if (c !== null) {
-    arr = _flattenChildren(c, true);
-    if (arr.length === 0) {
-      arr = EMPTY_CHILDREN;
+var REAL_SYMBOL = typeof Symbol === "function" && Symbol.iterator;
+var FAKE_SYMBOL = "@@iterator";
+function getIteractor(a) {
+  if (typeNumber(a) > 7) {
+    var iteratorFn = (REAL_SYMBOL && a[REAL_SYMBOL]) || a[FAKE_SYMBOL];
+    if (iteratorFn && iteratorFn.call) {
+      return iteratorFn;
     }
   }
-  return vnode.vchildren = arr;
+}
+function callIteractor(iteratorFn, children) {
+  var iterator = iteratorFn.call(children),
+    step,
+    ret = [];
+  if (iteratorFn !== children.entries) {
+    while (!(step = iterator.next()).done) {
+      ret.push(step.value);
+    }
+  } else {
+    //Map, Set
+    while (!(step = iterator.next()).done) {
+      var entry = step.value;
+      if (entry) {
+        ret.push(entry[1]);
+      }
+    }
+  }
+  return ret;
 }

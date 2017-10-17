@@ -1,7 +1,7 @@
 import { NAMESPACE } from "./browser";
 import { patchStyle } from "./style";
 import { addGlobalEvent, getBrowserName, isEventName, eventHooks } from "./event";
-import { toLowerCase, noop, typeNumber } from "./util";
+import { toLowerCase, noop, typeNumber,emptyObject } from "./util";
 
 //布尔属性的值末必为true,false
 //https://github.com/facebook/react/issues/10589
@@ -17,7 +17,6 @@ var isSpecialAttr = {
   dangerouslySetInnerHTML: 1
 };
 
-var emptyStyle = {};
 var svgCache = {};
 var strategyCache = {};
 /**
@@ -136,17 +135,8 @@ function getSVGAttributeName(name) {
 }
 
 
-/**
- *
- * 修改dom的属性与事件
- * @export
- * @param {any} nextProps
- * @param {any} lastProps
- * @param {any} vnode
- * @param {any} lastVnode
- */
-export function diffProps(nextProps, lastProps, vnode, lastVnode, dom) {
-  let isSVG = vnode.ns === NAMESPACE.svg;
+export function diffProps(dom, lastProps, nextProps, vnode) {
+  let isSVG = vnode.namespaceURI === NAMESPACE.svg;
   let tag = vnode.type;
   //eslint-disable-next-line
     for (let name in nextProps) {
@@ -208,7 +198,7 @@ export var actionStrategy = {
   innerHTML: noop,
   children: noop,
   style: function (dom, _, val, lastProps) {
-    patchStyle(dom, lastProps.style || emptyStyle, val || emptyStyle);
+    patchStyle(dom, lastProps.style || emptyObject, val || emptyObject);
   },
   svgClass: function (dom, name, val) {
     if (!val) {

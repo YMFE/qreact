@@ -17,7 +17,7 @@ export default {
       babelrc: false,
       presets: [
         [
-          "es2015",
+          "env",
           {
             modules: false
           }

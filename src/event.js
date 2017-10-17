@@ -46,7 +46,7 @@ export function dispatchEvent(e, type, end) {
     triggerEventFlow(paths.reverse(), bubble, e);
   }
   options.async = false;
-  options.flushBatchedUpdates();
+  options.flushUpdaters();
 }
 
 function collectPaths(from, end) {
@@ -88,8 +88,6 @@ export function addGlobalEvent(name) {
 
 export function addEvent(el, type, fn, bool) {
   if (el.addEventListener) {
-    // Unable to preventDefault inside passive event listener due to target being
-    // treated as passive
     el.addEventListener(
       type,
       fn,
@@ -256,8 +254,9 @@ var doubleClickHandle = createHandle("doubleclick");
 
 //react将text,textarea,password元素中的onChange事件当成onInput事件
 eventHooks.changecapture = eventHooks.change = function (dom) {
-  var mask = /text|password/.test(dom.type) ? "input" : "change";
-  addEvent(document, mask, changeHandle);
+  if(/text|password/.test(dom.type)){
+    addEvent(document, "input", changeHandle);
+  }
 };
 
 eventHooks.doubleclick = eventHooks.doubleclickcapture = function () {

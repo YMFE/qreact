@@ -9,7 +9,7 @@ import { cloneElement } from "./cloneElement";
 import { PureComponent } from "./PureComponent";
 import { createElement } from "./createElement";
 
-import { render, findDOMNode, isValidElement, unmountComponentAtNode, unstable_renderSubtreeIntoContainer } from "./diff";
+import { render, createPortal, findDOMNode, isValidElement, unmountComponentAtNode, unstable_renderSubtreeIntoContainer } from "./diff";
 
 import "./compat";
 
@@ -23,6 +23,7 @@ var React = {
   eventSystem,
   findDOMNode,
   createClass,
+  createPortal,
   createElement,
   cloneElement,
   PureComponent,
@@ -31,7 +32,7 @@ var React = {
   unstable_renderSubtreeIntoContainer,
 
   createFactory(type) {
-        console.warn("createFactory将被废弃"); // eslint-disable-line
+        console.error("createFactory is deprecated"); // eslint-disable-line
     var factory = createElement.bind(null, type);
     factory.type = type;
     return factory;

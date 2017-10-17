@@ -1,4 +1,4 @@
-import { oneObject, recyclables, typeNumber } from "./util";
+import { recyclables, typeNumber } from "./util";
 
 //用于后端的元素节点
 export function DOMElement(type) {
@@ -11,7 +11,9 @@ export var NAMESPACE = {
   svg: "http://www.w3.org/2000/svg",
   xmlns: "http://www.w3.org/2000/xmlns/",
   xlink: "http://www.w3.org/1999/xlink",
-  math: "http://www.w3.org/1998/Math/MathML"
+  math: "http://www.w3.org/1998/Math/MathML",
+  xhtml: "http://www.w3.org/1999/xhtml",
+  html: "https://www.w3.org/TR/html4/"
 };
 
 var fn = (DOMElement.prototype = {
@@ -21,15 +23,15 @@ String(
   "replaceChild,appendChild,removeAttributeNS,setAttributeNS,removeAttribute,setAttribute" +
     ",getAttribute,insertBefore,removeChild,addEventListener,removeEventListener,attachEvent" +
     ",detachEvent"
-).replace(/\w+/g, function (name) {
-  fn[name] = function () {
-        console.log("fire " + name); // eslint-disable-line
+).replace(/\w+/g, function(name) {
+  fn[name] = function() {
+    console.log("fire " + name); // eslint-disable-line
   };
 });
 
 //用于后端的document
 export var fakeDoc = new DOMElement();
-fakeDoc.createElement = fakeDoc.createElementNS = fakeDoc.createDocumentFragment = function (
+fakeDoc.createElement = fakeDoc.createElementNS = fakeDoc.createDocumentFragment = function(
   type
 ) {
   return new DOMElement(type);
@@ -54,24 +56,22 @@ export var win = w;
 export var document = w.document || fakeDoc;
 var isStandard = "textContent" in document;
 var fragment = document.createDocumentFragment();
-function emptyElement(node) {
+export function emptyElement(node) {
   var child;
   while ((child = node.firstChild)) {
-    if (child.nodeType === 1) {
-      emptyElement(child);
-    }
+    emptyElement(child);
     node.removeChild(child);
   }
 }
 
-export function removeDOMElement(node) {
+export function removeElement(node) {
   if (node.nodeType === 1) {
     if (isStandard) {
       node.textContent = "";
     } else {
       emptyElement(node);
     }
-    node.__events = null;
+    node.vchildren = node.__events = null;
   } else if (node.nodeType === 3) {
     //只回收文本节点
     recyclables["#text"].push(node);
@@ -88,12 +88,18 @@ var versions = {
 };
 /* istanbul ignore next  */
 export var msie =
-    document.documentMode ||
-    versions[typeNumber(document.all) + "" + typeNumber(XMLHttpRequest)];
+  document.documentMode ||
+  versions[typeNumber(document.all) + "" + typeNumber(XMLHttpRequest)];
 
 export var modern = /NaN|undefined/.test(msie) || msie > 8;
-
-export function createDOMElement(vnode) {
+export function insertElement(container, target, insertPoint){
+  if(insertPoint){
+    container.insertBefore(target, insertPoint);
+  }else{
+    container.appendChild(target);
+  }
+}
+export function createElement(vnode, vparent) {
   var type = vnode.type;
   if (type === "#text") {
     //只重复利用文本节点
@@ -109,27 +115,25 @@ export function createDOMElement(vnode) {
     return document.createComment(vnode.text);
   }
 
+  var check = vparent || vnode;
+  var ns = check.namespaceURI;
+  if (type === "svg") {
+    ns = NAMESPACE.svg;
+  } else if (type === "math") {
+    ns = NAMESPACE.math;
+  } else if (
+    check.type.toLowerCase() === "foreignobject" ||
+    !ns ||
+    ns === NAMESPACE.html ||
+    ns === NAMESPACE.xhtml
+  ) {
+    return document.createElement(type);
+  }
   try {
-    if (vnode.ns) {
-      return document.createElementNS(vnode.ns, type);
-    }
+    vnode.namespaceURI = ns;
+    return document.createElementNS(ns, type);
     //eslint-disable-next-line
-    } catch (e) { }
-  return document.createElement(type);
-}
-// https://developer.mozilla.org/en-US/docs/Web/MathML/Element/math
-var rmathTags = /^m/;
-
-var namespaceMap = oneObject("svg", NAMESPACE.svg);
-namespaceMap.semantics = NAMESPACE.math;
-// http://demo.yanue.net/HTML5element/
-"meter,menu,map,meta,mark".replace(/\w+/g, function (tag) {
-  namespaceMap[tag] = null;
-});
-export function getNs(type) {
-  if (namespaceMap[type] !== void 666) {
-    return namespaceMap[type];
-  } else {
-    return namespaceMap[type] = rmathTags.test(type) ? NAMESPACE.math : null;
+  } catch (e) {
+    return document.createElement(type);
   }
 }
