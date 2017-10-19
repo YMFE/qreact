@@ -74,7 +74,7 @@ module.exports = {
             'react-dom': 'qreact',
 
             // 若要兼容 IE 请使用以下配置
-            // 'react: 'qreact/dist/ReactIE',
+            // 'react': 'qreact/dist/ReactIE',
             // 'react-dom': 'qreact/dist/ReactIE'
 
             // 如果引用了 prop-types 或 create-react-class
@@ -164,6 +164,25 @@ ReactDOM.render(
 ## 组件规范
 
 为了减少常见的编码错误，请尽量遵循[编码规范](https://qreact.ymfe.org/standard.html)。
+
+## Pull Request
+
+如果你想提 Pull Request，请先 fork 一份代码，clone 到本地之后新建一个分支，修改代码之后请在 PR 中填写你修改了哪里，为什么这么修改，并保证通过自动化测试。
+
+## 如何启动自动化测试
+```bash
+# 先将代码 clone 到本地
+cd qreact
+npm install
+
+# 安装 selenium-standalone
+npm install -g selenium-standalone
+selenium-standalone install
+selenium-standalone start
+
+# 新开一个命令行窗口
+npm test
+```
 
 ## 鸣谢
 
