@@ -62,63 +62,67 @@ var __type = Object.prototype.toString;
 var rword = /[^, ]+/g;
 
 function oneObject(array, val) {
-    if (typeNumber(array) === 4) {
-        array = array.match(rword) || [];
-    }
-    var result = {},
+  if (typeNumber(array) === 4) {
+    array = array.match(rword) || [];
+  }
+  var result = {},
 
-    //eslint-disable-next-line
-    value = val !== void 666 ? val : 1;
-    for (var i = 0, n = array.length; i < n; i++) {
-        result[array[i]] = value;
-    }
-    return result;
+  //eslint-disable-next-line
+  value = val !== void 666 ? val : 1;
+  for (var i = 0, n = array.length; i < n; i++) {
+    result[array[i]] = value;
+  }
+  return result;
 }
 
-function getChildContext(instance, context) {
-    if (instance.getChildContext) {
-        return Object.assign({}, context, instance.getChildContext());
+function getChildContext(instance, parentContext) {
+  if (instance.getChildContext) {
+    var context = instance.getChildContext();
+    if (context) {
+      parentContext = Object.assign({}, parentContext, context);
     }
+  }
+  return parentContext;
+}
+
+function getContextByTypes(curContext, contextTypes) {
+  var context = {};
+  if (!contextTypes || !curContext) {
     return context;
-}
-
-
-
-
-
-
-
-function checkNull(vnode, type) {
-    // if (Array.isArray(vnode) && vnode.length === 1) {
-    //  vnode = vnode[0];
-    // }
-    if (vnode === null || vnode === false) {
-        return { type: "#comment", text: "empty", vtype: 0 };
-    } else if (!vnode || !vnode.vtype) {
-        throw new Error("@" + type.name + "#render:You may have returned undefined, an array or some other invalid object");
+  }
+  for (var key in contextTypes) {
+    if (contextTypes.hasOwnProperty(key)) {
+      context[key] = curContext[key];
     }
-    return vnode;
+  }
+  return context;
 }
+
+
+
+
+
+
 
 var numberMap = {
-    //null undefined IE6-8这里会返回[object Object]
-    "[object Boolean]": 2,
-    "[object Number]": 3,
-    "[object String]": 4,
-    "[object Function]": 5,
-    "[object Symbol]": 6,
-    "[object Array]": 7
+  //null undefined IE6-8这里会返回[object Object]
+  "[object Boolean]": 2,
+  "[object Number]": 3,
+  "[object String]": 4,
+  "[object Function]": 5,
+  "[object Symbol]": 6,
+  "[object Array]": 7
 };
 // undefined: 0, null: 1, boolean:2, number: 3, string: 4, function: 5, symbol:6, array: 7, object:8
 function typeNumber(data) {
-    if (data === null) {
-        return 1;
-    }
-    if (data === void 666) {
-        return 0;
-    }
-    var a = numberMap[__type.call(data)];
-    return a || 8;
+  if (data === null) {
+    return 1;
+  }
+  if (data === void 666) {
+    return 0;
+  }
+  var a = numberMap[__type.call(data)];
+  return a || 8;
 }
 
 var rnumber = /^-?\d+(\.\d+)?$/;
@@ -127,8 +131,8 @@ var rnumber = /^-?\d+(\.\d+)?$/;
      * 
      * @export
      * @param {any} dom 
-     * @param {any} oldStyle 
-     * @param {any} newStyle 
+     * @param {any} lastStyle 
+     * @param {any} nextStyle 
      */
 
 
@@ -145,7 +149,7 @@ var cssMap = oneObject("float", "cssFloat");
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var React = global.React;
+var React = (typeof global === "undefined" ? "undefined" : _typeof(global)) === "object" ? global.React : window.React;
 var skipAttributes = {
     ref: 1,
     key: 1,
@@ -199,11 +203,11 @@ function renderVNode(vnode, context) {
                     str += innerHTML$$1;
                 } else {
                     //最近版本将虚拟DOM树结构调整了，children不一定为数组
-                    React.children.forEach(props.children, function (el) {
+                    React.Children.forEach(props.children, function (el) {
                         if (el && el.vtype) {
                             str += renderVNode(el, context);
-                        } else if (el) {
-                            str += el;
+                        } else {
+                            str += el || "";
                         }
                     });
                 }
@@ -275,27 +279,33 @@ function toVnode(vnode, data, parentInstance) {
     if (vnode.vtype > 1) {
         var props = vnode.props;
         // props = getComponentProps(Type, props)
+        var instanceContext = getContextByTypes(parentContext, Type.contextTypes);
         if (vnode.vtype === 4) {
             //处理无状态组件
-
-            rendered = Type(props, parentContext);
+            rendered = Type(props, instanceContext);
+            if (rendered && rendered.render) {
+                rendered = rendered.render();
+            }
             instance = {};
         } else {
-
             //处理普通组件
-            instance = new Type(props, parentContext);
+            instance = new Type(props, instanceContext);
             instance.props = instance.props || props;
-            instance.context = instance.context || parentContext;
+            instance.context = instance.context || instanceContext;
             rendered = instance.render();
         }
-
-        rendered = checkNull(rendered);
-        vnode._renderedVnode = rendered;
+        if (rendered === null || rendered === false) {
+            rendered = {
+                vtype: 0,
+                type: "#comment",
+                text: "empty"
+            };
+        }
 
         vnode._instance = instance;
         instance.__current = vnode;
         if (parentInstance) {
-            instance.parentInstance = parentInstance;
+            instance.__parentInstance = parentInstance;
         }
 
         if (instance.componentWillMount) {
@@ -393,11 +403,7 @@ function renderToString(vnode, context) {
 
 var MOD = 65521;
 
-// adler32 is not cryptographically strong, and is only used to sanity check
-// that markup generated on the server matches the markup generated on the
-// client. This implementation (a modified version of the SheetJS version) has
-// been optimized for our use case, at the expense of conforming to the adler32
-// specification for non-ascii inputs.
+//  以后考虑去掉这个东西
 function adler32(data) {
     var a = 1;
     var b = 0;

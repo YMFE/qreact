@@ -8,14 +8,12 @@ export function Updater(instance, vnode) {
   vnode._instance = instance;
   instance.updater = this;
   this._mountOrder = mountOrder++;
-  this._mountIndex = this._mountOrder;
   this._instance = instance;
   this._pendingCallbacks = [];
   this._ref = noop;
   this._didHook = noop;
   this._pendingStates = [];
   this._lifeStage = 0; //判断生命周期
-  this._uuid = Math.random();
   //update总是保存最新的数据，如state, props, context, parentContext, vparent
   this.vnode = vnode;
   //  this._hydrating = true 表示组件正在根据虚拟DOM合成真实DOM
@@ -82,7 +80,7 @@ Updater.prototype = {
     let u = this;
     do{
       u.vnode._hostNode = u._hostNode = dom;
-    }while(u = u.parentUpdater);
+    }while((u = u.parentUpdater));
 
     return dom;
   }

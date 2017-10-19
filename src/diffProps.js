@@ -1,7 +1,12 @@
 import { NAMESPACE } from "./browser";
 import { patchStyle } from "./style";
-import { addGlobalEvent, getBrowserName, isEventName, eventHooks } from "./event";
-import { toLowerCase, noop, typeNumber,emptyObject } from "./util";
+import {
+  addGlobalEvent,
+  getBrowserName,
+  isEventName,
+  eventHooks
+} from "./event";
+import { toLowerCase, noop, typeNumber, emptyObject } from "./util";
 
 //布尔属性的值末必为true,false
 //https://github.com/facebook/react/issues/10589
@@ -91,7 +96,7 @@ var repeatedKey = [
 ];
 
 function createRepaceFn(split) {
-  return function (match) {
+  return function(match) {
     return match.slice(0, 1) + split + match.slice(1).toLowerCase();
   };
 }
@@ -100,14 +105,13 @@ var rhump = /[a-z][A-Z]/;
 var toHyphen = createRepaceFn("-");
 var toColon = createRepaceFn(":");
 
-
 function getSVGAttributeName(name) {
   if (svgCache[name]) {
     return svgCache[name];
   }
   const key = name.match(rhump);
   if (!key) {
-    return svgCache[name] = name;
+    return (svgCache[name] = name);
   }
   const [prefix, postfix] = [...key[0].toLowerCase()];
   let orig = name;
@@ -115,10 +119,10 @@ function getSVGAttributeName(name) {
     const count = svgCamelCase[prefix][postfix];
 
     if (count === -1) {
-      return svgCache[orig] = {
+      return (svgCache[orig] = {
         name: name.replace(rhump, toColon),
         ifSpecial: true
-      };
+      });
     }
 
     if (~repeatedKey.indexOf(prefix + postfix)) {
@@ -131,15 +135,13 @@ function getSVGAttributeName(name) {
     name = name.replace(rhump, toHyphen);
   }
 
-  return svgCache[orig] = name;
+  return (svgCache[orig] = name);
 }
-
 
 export function diffProps(dom, lastProps, nextProps, vnode) {
   let isSVG = vnode.namespaceURI === NAMESPACE.svg;
   let tag = vnode.type;
-  //eslint-disable-next-line
-    for (let name in nextProps) {
+  for (let name in nextProps) {
     let val = nextProps[name];
     if (val !== lastProps[name]) {
       let which = tag + isSVG + name;
@@ -197,22 +199,23 @@ function getPropAction(dom, name, isSVG) {
 export var actionStrategy = {
   innerHTML: noop,
   children: noop,
-  style: function (dom, _, val, lastProps) {
+  style: function(dom, _, val, lastProps) {
     patchStyle(dom, lastProps.style || emptyObject, val || emptyObject);
   },
-  svgClass: function (dom, name, val) {
+  svgClass: function(dom, name, val) {
     if (!val) {
       dom.removeAttribute("class");
     } else {
       dom.setAttribute("class", val);
     }
   },
-  svgAttr: function (dom, name, val) {
+  svgAttr: function(dom, name, val) {
     // http://www.w3school.com.cn/xlink/xlink_reference.asp
     // https://facebook.github.io/react/blog/2015/10/07/react-v0.14.html#notable-enh
     // a ncements xlinkActuate, xlinkArcrole, xlinkHref, xlinkRole, xlinkShow,
     // xlinkTitle, xlinkType eslint-disable-next-line
-    let method = typeNumber(val) < 3 && !val ? "removeAttribute" : "setAttribute";
+    let method =
+      typeNumber(val) < 3 && !val ? "removeAttribute" : "setAttribute";
     let nameRes = getSVGAttributeName(name);
     if (nameRes.ifSpecial) {
       let prefix = nameRes.name.split(":")[0];
@@ -222,27 +225,28 @@ export var actionStrategy = {
       dom[method](nameRes, val || "");
     }
   },
-  booleanAttr: function (dom, name, val) {
+  booleanAttr: function(dom, name, val) {
     // 布尔属性必须使用el.xxx = true|false方式设值 如果为false, IE全系列下相当于setAttribute(xxx,""),
     // 会影响到样式,需要进一步处理 eslint-disable-next-line
     dom[name] = !!val;
     if (dom[name] === false) {
       dom.removeAttribute(name);
-    } else if (dom[name] === "false") { //字符串属性会将它转换为false
+    } else if (dom[name] === "false") {
+      //字符串属性会将它转换为false
       dom[name] = "";
     }
   },
-  attribute: function (dom, name, val) {
+  attribute: function(dom, name, val) {
     if (val == null || val === false) {
       return dom.removeAttribute(name);
     }
     try {
       dom.setAttribute(name, val);
     } catch (e) {
-            console.warn("setAttribute error", name, val); // eslint-disable-line
+      console.warn("setAttribute error", name, val); // eslint-disable-line
     }
   },
-  property: function (dom, name, val) {
+  property: function(dom, name, val) {
     if (name !== "value" || dom[name] !== val) {
       // 尝试直接赋值，部分情况下会失败，如给 input 元素的 size 属性赋值 0 或字符串
       // 这时如果用 setAttribute 则会静默失败
@@ -264,7 +268,7 @@ export var actionStrategy = {
       }
     }
   },
-  event: function (dom, name, val, lastProps) {
+  event: function(dom, name, val, lastProps) {
     let events = dom.__events || (dom.__events = {});
     let refName = toLowerCase(name.slice(2));
     if (val === false) {
@@ -283,7 +287,7 @@ export var actionStrategy = {
       events[refName] = val;
     }
   },
-  dangerouslySetInnerHTML: function (dom, name, val, lastProps) {
+  dangerouslySetInnerHTML: function(dom, name, val, lastProps) {
     let oldhtml = lastProps[name] && lastProps[name].__html;
     let html = val && val.__html;
     if (html !== oldhtml) {

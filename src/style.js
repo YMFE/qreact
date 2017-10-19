@@ -27,7 +27,7 @@ export function patchStyle(dom, lastStyle, nextStyle) {
         //node.style.width = undefine 在旧式IE下会抛异常
         dom.style[name] = val; //应用样式
       } catch (e) {
-                console.log("dom.style[" + name + "] = " + val + "throw error"); // eslint-disable-line
+        console.log("dom.style[" + name + "] = " + val + "throw error"); // eslint-disable-line
       }
     }
   }
