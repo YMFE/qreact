@@ -6,47 +6,47 @@ const license = require("rollup-plugin-license");
 const json = require("../package.json");
 
 export default {
-  entry: "./src/ReactShim.js",
-  format: "umd",
-  exports: "default",
-  dest: "./dist/ReactShim.js",
-  plugins: [
-    babel({
-      //  plugins: ['external-helpers'],
-      // externalHelpers: true,
-      babelrc: false,
-      presets: [
-        [
-          "env",
-          {
-            modules: false
-          }
-        ]
-      ]
-    }),
+    entry: "./src/ReactShim.js",
+    format: "umd",
+    exports: "default",
+    dest: "./dist/ReactShim.js",
+    plugins: [
+        babel({
+            //  plugins: ['external-helpers'],
+            // externalHelpers: true,
+            babelrc: false,
+            presets: [
+                [
+                    "env",
+                    {
+                        modules: false
+                    }
+                ]
+            ]
+        }),
 
-    license({
-      banner: `此版本要求浏览器没有createClass, createFactory, PropTypes, isValidElement,
+        license({
+            banner: `此版本要求浏览器没有createClass, createFactory, PropTypes, isValidElement,
         unmountComponentAtNode,unstable_renderSubtreeIntoContainer
         QQ 370262116 by 司徒正美 Copyright ${JSON.stringify(
-    new Date()
-  ).replace(/T.*|"/g, "")}`
-    }),
+        new Date()
+    ).replace(/T.*|"/g, "")}`
+        }),
 
-    replace({
-      patterns: [
-        {
-          test: "VERSION",
-          replace: json.version
-        },
-        {
-          test: "el.attachEvent(\"on\" + type, fn);",
-          replace: ""
-        }
-      ]
-    }),
-    filesize()
-  ],
-  moduleName: "React",
-  useStrict: false
+        replace({
+            patterns: [
+                {
+                    test: "VERSION",
+                    replace: json.version
+                },
+                {
+                    test: "el.attachEvent(\"on\" + type, fn);",
+                    replace: ""
+                }
+            ]
+        }),
+        filesize()
+    ],
+    moduleName: "React",
+    useStrict: false
 };

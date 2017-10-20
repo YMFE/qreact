@@ -9,17 +9,17 @@ import { PureComponent } from "./PureComponent";
 import { render,createPortal, findDOMNode, unmountComponentAtNode } from "./diff";
 
 var React = {
-  version: "VERSION",
-  render,
-  options,
-  Children, //支持react-redux
-  Component,
-  findDOMNode,
-  createPortal,
-  createElement,
-  cloneElement,
-  PureComponent,
-  unmountComponentAtNode
+    version: "VERSION",
+    render,
+    options,
+    Children, //支持react-redux
+    Component,
+    findDOMNode,
+    createPortal,
+    createElement,
+    cloneElement,
+    PureComponent,
+    unmountComponentAtNode
 };
 
 window.React = window.ReactDOM = React;

@@ -12,28 +12,28 @@ import { createElement } from "./createElement";
 import { render,createPortal, findDOMNode, isValidElement, unmountComponentAtNode, unstable_renderSubtreeIntoContainer } from "./diff";
 
 var React = {
-  version: "VERSION",
-  render,
-  options,
-  PropTypes,
-  Children, //为了react-redux
-  createPortal,
-  Component,
-  eventSystem,
-  findDOMNode,
-  createClass,
-  createElement,
-  cloneElement,
-  PureComponent,
-  isValidElement,
-  unmountComponentAtNode,
-  unstable_renderSubtreeIntoContainer,
-  createFactory(type) {
+    version: "VERSION",
+    render,
+    options,
+    PropTypes,
+    Children, //为了react-redux
+    createPortal,
+    Component,
+    eventSystem,
+    findDOMNode,
+    createClass,
+    createElement,
+    cloneElement,
+    PureComponent,
+    isValidElement,
+    unmountComponentAtNode,
+    unstable_renderSubtreeIntoContainer,
+    createFactory(type) {
         console.error("createFactory is deprecated"); // eslint-disable-line
-    var factory = createElement.bind(null, type);
-    factory.type = type;
-    return factory;
-  }
+        var factory = createElement.bind(null, type);
+        factory.type = type;
+        return factory;
+    }
 };
 
 window.React = window.ReactDOM = React;
