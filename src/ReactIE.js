@@ -13,48 +13,48 @@ import { render, createPortal, findDOMNode, isValidElement, unmountComponentAtNo
 
 import "./compat";
 function needFix(fn) {
-    return !/native code/.test(fn);
+  return !/native code/.test(fn);
 }
 function keysPolyfill() {//解决IE下Object.keys的性能问题
-    if (needFix(Object.keys)) {
-        Object.keys = function keys(obj) {
-            var a = [];
-            for(var k in obj) {
-                if (obj.hasOwnProperty(k)) {
-                    a.push(k);
-                }
-            }
-            return a;
-        };
-    }
+  if (needFix(Object.keys)) {
+    Object.keys = function keys(obj) {
+      var a = [];
+      for(var k in obj) {
+        if (obj.hasOwnProperty(k)) {
+          a.push(k);
+        }
+      }
+      return a;
+    };
+  }
 }
 keysPolyfill();
 setTimeout(keysPolyfill, 0);
 setTimeout(keysPolyfill, 100);
 var React = {
-    version: "VERSION",
-    render,
-    options,
-    PropTypes,
-    Children, //为了react-redux
-    Component,
-    eventSystem,
-    findDOMNode,
-    createClass,
-    createPortal,
-    createElement,
-    cloneElement,
-    PureComponent,
-    isValidElement,
-    unmountComponentAtNode,
-    unstable_renderSubtreeIntoContainer,
+  version: "VERSION",
+  render,
+  options,
+  PropTypes,
+  Children, //为了react-redux
+  Component,
+  eventSystem,
+  findDOMNode,
+  createClass,
+  createPortal,
+  createElement,
+  cloneElement,
+  PureComponent,
+  isValidElement,
+  unmountComponentAtNode,
+  unstable_renderSubtreeIntoContainer,
 
-    createFactory(type) {
+  createFactory(type) {
         console.error("createFactory is deprecated"); // eslint-disable-line
-        var factory = createElement.bind(null, type);
-        factory.type = type;
-        return factory;
-    }
+    var factory = createElement.bind(null, type);
+    factory.type = type;
+    return factory;
+  }
 };
 
 window.React = window.ReactDOM = React;

@@ -6,44 +6,44 @@ const license = require("rollup-plugin-license");
 const json = require("../package.json");
 
 export default {
-    entry: "./build/ReactSelection.js",
-    format: "umd",
-    exports: "default",
-    dest: "./dist/ReactSelection.js",
-    plugins: [
+  entry: "./build/ReactSelection.js",
+  format: "umd",
+  exports: "default",
+  dest: "./dist/ReactSelection.js",
+  plugins: [
   
-        babel({
-            //  plugins: ['external-helpers'],
-            // externalHelpers: true,
-            babelrc: false,
-            presets: [
-                [
-                    "env",
-                    {
-                        modules: false
-                    }
-                ]
-            ]
-        }),
+    babel({
+      //  plugins: ['external-helpers'],
+      // externalHelpers: true,
+      babelrc: false,
+      presets: [
+        [
+          "env",
+          {
+            modules: false
+          }
+        ]
+      ]
+    }),
 
-        license({
-            banner: `此版本带有selection by 司徒正美 Copyright ${JSON.stringify(new Date()).replace(/T.*|"/g,"")}
+    license({
+      banner: `此版本带有selection by 司徒正美 Copyright ${JSON.stringify(new Date()).replace(/T.*|"/g,"")}
       IE9+
       `
-        }),
+    }),
 
-        replace({
-            // ... do replace before commonjs
-            patterns: [
-                {
-                    test: "VERSION", 
-                    // string or function to replaced with
-                    replace: json.version
-                }
-            ]
-        }),
-        filesize()
-    ],
-    moduleName: "React",
-    useStrict: false
+    replace({
+      // ... do replace before commonjs
+      patterns: [
+        {
+          test: "VERSION", 
+          // string or function to replaced with
+          replace: json.version
+        }
+      ]
+    }),
+    filesize()
+  ],
+  moduleName: "React",
+  useStrict: false
 };
