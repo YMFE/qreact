@@ -4,11 +4,13 @@
   "description": "a mini React-like framework",
   "main": "dist/React.js",
   "scripts": {
-    "build": "rollup -c build/rollup.js && rollup -c build/rollup.ie.js && rollup -c build/rollup.selection.js && rollup -c build/rollup.shim.js && rollup -c build/rollup.ssr.js && node build/shim.script.js ",
+    "build": "rollup -c build/rollup.js && rollup -c build/rollup.ie.js && rollup -c build/rollup.selection.js && rollup -c build/rollup.shim.js && rollup -c build/rollup.ssr.js && node build/shim.script.js && npm run uglify",
     "test": "node node_modules/karma-event-driver-ext",
     "devtools": "rollup -c build/rollup.tools.js",
     "precommit-msg": "echo 'Linting code...' && exit 0",
-    "lint": "eslint src/ build/ --fix"
+    "lint": "eslint src/ build/ --fix",
+    "uglify": "node scripts/minify.js",
+    "sync": "node scripts/sync.js"
   },
   "pre-commit": [
     "test",
@@ -98,7 +100,10 @@
   },
   "dependencies": {
     "babel-eslint": "6",
+    "gzip-size": "^4.0.0",
+    "ora": "^1.3.0",
     "pre-commit": "^1.2.2",
+    "uglify-js": "^3.1.4",
     "user": "0.0.0"
   }
 }

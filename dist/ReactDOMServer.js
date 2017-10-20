@@ -51,41 +51,41 @@
 var rword = /[^, ]+/g;
 
 function oneObject(array, val) {
-    if (array + "" === array) {
-        //利用字符串的特征进行优化，字符串加上一个空字符串等于自身
-        array = array.match(rword) || [];
-    }
-    var result = {},
+  if (array + "" === array) {
+    //利用字符串的特征进行优化，字符串加上一个空字符串等于自身
+    array = array.match(rword) || [];
+  }
+  var result = {},
 
-    //eslint-disable-next-line
-    value = val !== void 666 ? val : 1;
-    for (var i = 0, n = array.length; i < n; i++) {
-        result[array[i]] = value;
-    }
-    return result;
+  //eslint-disable-next-line
+  value = val !== void 666 ? val : 1;
+  for (var i = 0, n = array.length; i < n; i++) {
+    result[array[i]] = value;
+  }
+  return result;
 }
 
 function getChildContext(instance, parentContext) {
-    if (instance.getChildContext) {
-        var context = instance.getChildContext();
-        if (context) {
-            parentContext = Object.assign({}, parentContext, context);
-        }
+  if (instance.getChildContext) {
+    var context = instance.getChildContext();
+    if (context) {
+      parentContext = Object.assign({}, parentContext, context);
     }
-    return parentContext;
+  }
+  return parentContext;
 }
 
 function getContextByTypes(curContext, contextTypes) {
-    var context = {};
-    if (!contextTypes || !curContext) {
-        return context;
-    }
-    for (var key in contextTypes) {
-        if (contextTypes.hasOwnProperty(key)) {
-            context[key] = curContext[key];
-        }
-    }
+  var context = {};
+  if (!contextTypes || !curContext) {
     return context;
+  }
+  for (var key in contextTypes) {
+    if (contextTypes.hasOwnProperty(key)) {
+      context[key] = curContext[key];
+    }
+  }
+  return context;
 }
 
 
