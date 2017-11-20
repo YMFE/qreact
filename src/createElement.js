@@ -134,6 +134,9 @@ export function _flattenChildren(original, convert) {
           .apply(temp, child);
         continue;
       }
+      if (child.toJS) {
+        child = child.toJS();
+      }
       if (isMap) {
         if (!child._prefix) {
           child._prefix = "." + unidimensionalIndex;

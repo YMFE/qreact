@@ -71,7 +71,17 @@ function triggerEventFlow(paths, prop, e) {
     var fn = path.events[prop];
     if (isFn(fn)) {
       e.currentTarget = path.dom;
-      fn.call(path.dom, e);
+      try {
+        fn.call(path.dom, e);
+      } catch(e) {
+        setTimeout(() => {
+          throw {
+            message: e.message,
+            vnode: path.events.vnode,
+            stack: e.stack
+          };
+        }, 0);
+      }
       if (e._stopPropagation) {
         break;
       }

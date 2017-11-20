@@ -1,5 +1,5 @@
 /**
- * IE6+，有问题请加QQ 370262116 by 司徒正美 Copyright 2017-10-20
+ * IE6+，有问题请加QQ 370262116 by 司徒正美 Copyright 2017-11-20
  */
 
 (function (global, factory) {
@@ -14,7 +14,7 @@ var emptyObject = {};
 function deprecatedWarn(methodName) {
   if (!deprecatedWarn[methodName]) {
     //eslint-disable-next-line
-    console.error(methodName + " is deprecated");
+    console.warn(methodName + " is deprecated");
     deprecatedWarn[methodName] = 1;
   }
 }
@@ -356,6 +356,9 @@ function _flattenChildren(original, convert) {
         iteractorFn = false;
         temp.unshift.apply(temp, child);
         continue;
+      }
+      if (child.toJS) {
+        child = child.toJS();
       }
       if (isMap) {
         if (!child._prefix) {
@@ -756,7 +759,17 @@ function triggerEventFlow(paths, prop, e) {
     var fn = path.events[prop];
     if (isFn(fn)) {
       e.currentTarget = path.dom;
-      fn.call(path.dom, e);
+      try {
+        fn.call(path.dom, e);
+      } catch (e) {
+        setTimeout(function () {
+          throw {
+            message: e.message,
+            vnode: path.events.vnode,
+            stack: e.stack
+          };
+        }, 0);
+      }
       if (e._stopPropagation) {
         break;
       }
@@ -1451,7 +1464,6 @@ function getSVGAttributeName(name) {
 function diffProps(dom, lastProps, nextProps, vnode) {
   var isSVG = vnode.namespaceURI === NAMESPACE.svg;
   var tag = vnode.type;
-  //eslint-disable-next-line
   for (var name in nextProps) {
     var val = nextProps[name];
     if (val !== lastProps[name]) {
@@ -1460,7 +1472,7 @@ function diffProps(dom, lastProps, nextProps, vnode) {
       if (!action) {
         action = strategyCache[which] = getPropAction(dom, name, isSVG);
       }
-      actionStrategy[action](dom, name, val, lastProps);
+      actionStrategy[action](dom, name, val, lastProps, vnode);
     }
   }
   //如果旧属性在新属性对象不存在，那么移除DOM eslint-disable-next-line
@@ -1468,7 +1480,7 @@ function diffProps(dom, lastProps, nextProps, vnode) {
     if (!nextProps.hasOwnProperty(_name)) {
       var _which = tag + isSVG + _name;
       var _action = strategyCache[_which];
-      actionStrategy[_action](dom, _name, false, lastProps);
+      actionStrategy[_action](dom, _name, false, lastProps, vnode);
     }
   }
 }
@@ -1585,8 +1597,9 @@ var actionStrategy = {
       }
     }
   },
-  event: function event(dom, name, val, lastProps) {
+  event: function event(dom, name, val, lastProps, vnode) {
     var events = dom.__events || (dom.__events = {});
+    events.vnode = vnode;
     var refName = toLowerCase(name.slice(2));
     if (val === false) {
       delete events[refName];
@@ -2204,6 +2217,11 @@ function updateElement(lastVnode, nextVnode, vparent, context, updateQueue) {
     return false;
   }
   nextVnode._hostNode = dom;
+
+  if (lastVnode.namespaceURI) {
+    nextVnode.namespaceURI = lastVnode.namespaceURI;
+  }
+
   var vchildren = lastVnode.vchildren || emptyArray,
       newChildren = void 0;
   if (nextProps[innerHTML]) {
@@ -2660,7 +2678,7 @@ keysPolyfill();
 setTimeout(keysPolyfill, 0);
 setTimeout(keysPolyfill, 100);
 var React = {
-  version: "1.1.3",
+  version: "1.1.4",
   render: render,
   options: options,
   PropTypes: PropTypes,
