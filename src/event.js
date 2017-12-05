@@ -1,5 +1,5 @@
 import { document } from "./browser";
-import { isFn, noop, options } from "./util";
+import { isFn, noop, options, parseError } from "./util";
 
 var globalEvents = {};
 export var eventPropHooks = {}; //用于在事件回调里对事件对象进行
@@ -59,27 +59,28 @@ function collectPaths(from, end) {
     if (events) {
       paths.push({ dom: from, events: events });
     }
-
   } while ((from = from.parentNode) && from.nodeType === 1);
   // target --> parentNode --> body --> html
   return paths;
 }
 
 function triggerEventFlow(paths, prop, e) {
-  for (var i = paths.length; i--;) {
+  for (var i = paths.length; i--; ) {
     var path = paths[i];
     var fn = path.events[prop];
     if (isFn(fn)) {
       e.currentTarget = path.dom;
       try {
         fn.call(path.dom, e);
-      } catch(e) {
-        setTimeout(() => {
-          throw {
-            message: e.message,
-            vnode: path.events.vnode,
-            stack: e.stack
-          };
+      } catch (e) {
+        setTimeout(function() {
+          const errorParsed = parseError(e);
+          
+          if (window.onerror) {
+            window.onerror(...errorParsed);
+          } else {
+            throw errorParsed;
+          }
         }, 0);
       }
       if (e._stopPropagation) {
@@ -98,16 +99,11 @@ export function addGlobalEvent(name) {
 
 export function addEvent(el, type, fn, bool) {
   if (el.addEventListener) {
-    el.addEventListener(
-      type,
-      fn,
-      bool || false
-    );
+    el.addEventListener(type, fn, bool || false);
   } else if (el.attachEvent) {
     el.attachEvent("on" + type, fn);
   }
 }
-
 
 var rcapture = /Capture$/;
 export function getBrowserName(onStr) {
@@ -121,8 +117,7 @@ export function getBrowserName(onStr) {
   return lower;
 }
 
-
-eventPropHooks.click = function (e) {
+eventPropHooks.click = function(e) {
   return !e.target.disabled;
 };
 
@@ -133,15 +128,15 @@ eventPropHooks.click = function (e) {
             chrome wheel deltaY 下100 上-100 */
 /* istanbul ignore next  */
 const fixWheelType =
-    "onmousewheel" in document
-      ? "mousewheel"
-      : document.onwheel !== void 666 ? "wheel" : "DOMMouseScroll";
+  "onmousewheel" in document
+    ? "mousewheel"
+    : document.onwheel !== void 666 ? "wheel" : "DOMMouseScroll";
 const fixWheelDelta =
-    fixWheelType === "mousewheel"
-      ? "wheelDetla"
-      : fixWheelType === "wheel" ? "deltaY" : "detail";
-eventHooks.wheel = function (dom) {
-  addEvent(dom, fixWheelType, function (e) {
+  fixWheelType === "mousewheel"
+    ? "wheelDetla"
+    : fixWheelType === "wheel" ? "deltaY" : "detail";
+eventHooks.wheel = function(dom) {
+  addEvent(dom, fixWheelType, function(e) {
     var delta = e[fixWheelDelta] > 0 ? -120 : 120;
     var deltaY = ~~dom.__wheel + delta;
     dom.__wheel = deltaY;
@@ -153,16 +148,11 @@ eventHooks.wheel = function (dom) {
 };
 
 var fixFocus = {};
-"blur,focus".replace(/\w+/g, function (type) {
-  eventHooks[type] = function () {
+"blur,focus".replace(/\w+/g, function(type) {
+  eventHooks[type] = function() {
     if (!fixFocus[type]) {
       fixFocus[type] = true;
-      addEvent(
-        document,
-        type,
-        dispatchEvent,
-        true
-      );
+      addEvent(document, type, dispatchEvent, true);
     }
   };
 });
@@ -192,17 +182,17 @@ function contains(a, b) {
   return false;
 }
 
-String("mouseenter,mouseleave").replace(/\w+/g, function (type) {
-  eventHooks[type] = function (dom, name) {
+String("mouseenter,mouseleave").replace(/\w+/g, function(type) {
+  eventHooks[type] = function(dom, name) {
     var mark = "__" + name;
     if (!dom[mark]) {
       dom[mark] = true;
       var mask = name === "mouseenter" ? "mouseover" : "mouseout";
-      addEvent(dom, mask, function (e) {
+      addEvent(dom, mask, function(e) {
         let t = getRelatedTarget(e);
         if (!t || (t !== dom && !contains(dom, t))) {
           var common = getLowestCommonAncestor(dom, t);
-          //由于不冒泡，因此paths长度为1 
+          //由于不冒泡，因此paths长度为1
           dispatchEvent(e, name, common);
         }
       });
@@ -244,14 +234,13 @@ function getLowestCommonAncestor(instA, instB) {
   return null;
 }
 
-
 if (isTouch) {
   eventHooks.click = noop;
   eventHooks.clickcapture = noop;
 }
 
 export function createHandle(name, fn) {
-  return function (e) {
+  return function(e) {
     if (fn && fn(e) === false) {
       return;
     }
@@ -263,13 +252,13 @@ var changeHandle = createHandle("change");
 var doubleClickHandle = createHandle("doubleclick");
 
 //react将text,textarea,password元素中的onChange事件当成onInput事件
-eventHooks.changecapture = eventHooks.change = function (dom) {
-  if(/text|password/.test(dom.type)){
+eventHooks.changecapture = eventHooks.change = function(dom) {
+  if (/text|password/.test(dom.type)) {
     addEvent(document, "input", changeHandle);
   }
 };
 
-eventHooks.doubleclick = eventHooks.doubleclickcapture = function () {
+eventHooks.doubleclick = eventHooks.doubleclickcapture = function() {
   addEvent(document, "dblclick", doubleClickHandle);
 };
 
@@ -291,16 +280,16 @@ export function SyntheticEvent(event) {
 }
 
 var eventProto = (SyntheticEvent.prototype = {
-  fixEvent: function () { }, //留给以后扩展用
-  preventDefault: function () {
+  fixEvent: function() {}, //留给以后扩展用
+  preventDefault: function() {
     var e = this.nativeEvent || {};
     e.returnValue = this.returnValue = false;
     if (e.preventDefault) {
       e.preventDefault();
     }
   },
-  fixHooks: function () { },
-  stopPropagation: function () {
+  fixHooks: function() {},
+  stopPropagation: function() {
     var e = this.nativeEvent || {};
     e.cancelBubble = this._stopPropagation = true;
     if (e.stopPropagation) {
@@ -308,18 +297,18 @@ var eventProto = (SyntheticEvent.prototype = {
     }
   },
   persist: noop,
-  stopImmediatePropagation: function () {
+  stopImmediatePropagation: function() {
     this.stopPropagation();
     this.stopImmediate = true;
   },
-  toString: function () {
+  toString: function() {
     return "[object Event]";
   }
 });
 /* istanbul ignore next  */
 //freeze_start
 Object.freeze ||
-    (Object.freeze = function (a) {
-      return a;
-    });
+  (Object.freeze = function(a) {
+    return a;
+  });
 //freeze_end

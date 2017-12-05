@@ -14,6 +14,7 @@ import { render,createPortal, findDOMNode, isValidElement, unmountComponentAtNod
 var React = {
   version: "VERSION",
   render,
+  hydrate: render,
   options,
   PropTypes,
   Children, //为了react-redux
@@ -29,7 +30,7 @@ var React = {
   unmountComponentAtNode,
   unstable_renderSubtreeIntoContainer,
   createFactory(type) {
-        console.error("createFactory is deprecated"); // eslint-disable-line
+    console.warn("createFactory is deprecated"); // eslint-disable-line
     var factory = createElement.bind(null, type);
     factory.type = type;
     return factory;

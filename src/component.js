@@ -41,10 +41,8 @@ function debounceSetState(updater, state, cb) {
   }
   if (updater._didUpdate) {
     //如果用户在componentDidUpdate中使用setState，要防止其卡死
-    setTimeout(function() {
-      updater._didUpdate = false;
-      setStateImpl(updater, state, cb);
-    }, 300);
+    updater._didUpdate = false;
+    setStateImpl(updater, state, cb);
     return;
   }
   setStateImpl(updater, state, cb);

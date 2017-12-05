@@ -11,6 +11,7 @@ import { render,createPortal, findDOMNode, unmountComponentAtNode } from "./diff
 var React = {
   version: "VERSION",
   render,
+  hydrate: render,
   options,
   Children, //支持react-redux
   Component,

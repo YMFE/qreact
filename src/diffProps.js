@@ -157,6 +157,7 @@ export function diffProps(dom, lastProps, nextProps, vnode) {
     if (!nextProps.hasOwnProperty(name)) {
       let which = tag + isSVG + name;
       let action = strategyCache[which];
+      if (!action) continue;
       actionStrategy[action](dom, name, false, lastProps, vnode);
     }
   }
@@ -224,12 +225,13 @@ export var actionStrategy = {
     let method =
       typeNumber(val) < 3 && !val ? "removeAttribute" : "setAttribute";
     let nameRes = getSVGAttributeName(name);
+    let value = (typeof val === "undefined" || val === null) ? "" : val;
     if (nameRes.ifSpecial) {
       let prefix = nameRes.name.split(":")[0];
       // 将xlinkHref 转换为 xlink:href
-      dom[method + "NS"](NAMESPACE[prefix], nameRes.name, val || "");
+      dom[method + "NS"](NAMESPACE[prefix], nameRes.name, value);
     } else {
-      dom[method](nameRes, val || "");
+      dom[method](nameRes, value);
     }
   },
   booleanAttr: function(dom, name, val) {

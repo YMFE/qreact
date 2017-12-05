@@ -204,7 +204,7 @@ function mountElement(lastNode, vnode, vparent, context, updateQueue) {
   let children = flattenChildren(vnode);
   let method = lastNode ? alignChildren : mountChildren;
   method(dom, children, vnode, context, updateQueue);
-  // dom.vchildren = children;/** fatal 不再访问真实DOM */
+
   if (vnode.checkProps) {
     diffProps(dom, emptyObject, props, vnode);
   }
@@ -325,11 +325,10 @@ function mountComponent(
       vparent,
       childContext,
       updateQueue,
-      updater //作为parentUpater往下传
+      updater // 作为parentUpater往下传
     );
   }, updater.rendered);
   updater._openRef = !!ref;
-  // Refs.createInstanceRef(updater, ref);
   let userHook = instance.componentDidMount;
   updater._didHook = function() {
     userHook && userHook.call(instance);
@@ -349,6 +348,12 @@ function updateComponent(
   updateQueue
 ) {
   let { type, _hasRef, _instance: instance, _hostNode } = lastVnode;
+
+  if (instance === null) {
+    mountVnode(null, nextVnode, vparent, parentContext, updateQueue);
+    return lastVnode._hostNode;
+  }
+
   let nextContext,
     nextProps = nextVnode.props,
     updater = instance.updater;
@@ -361,9 +366,9 @@ function updateComponent(
   nextVnode._hostNode = _hostNode;
   nextVnode._instance = instance;
   updater.willReceive = willReceive;
+
   //如果context与props都没有改变，那么就不会触发组件的receive，render，update等一系列钩子
   //但还会继续向下比较
-
   if (willReceive && instance.componentWillReceiveProps) {
     updater._receiving = true;
     instance.componentWillReceiveProps(nextProps, nextContext);
@@ -373,12 +378,10 @@ function updateComponent(
   _hasRef && Refs.detachRef(lastVnode, nextVnode);
   updater._openRef = nextVnode.ref;
   //updater上总是保持新的数据
-
   updater.context = nextContext;
   updater.props = nextProps;
   updater.vparent = vparent;
   updater.parentContext = parentContext;
-  // nextVnode._instance = instance; //不能放这里
   if (!willReceive) {
     return updater.renderComponent(function(
       nextRendered,
@@ -505,7 +508,6 @@ function diffChildren(
 ) {
   let lastChildren = parentVnode.vchildren || emptyArray, //parentNode.vchildren,
     nextLength = nextChildren.length,
-    //   childNodes = parentNode.childNodes,
     insertPoint = parentNode.firstChild,
     lastLength = lastChildren.length;
 
@@ -543,7 +545,6 @@ function diffChildren(
   let mergeChildren = [], //确保新旧数组都按原顺数排列
     fuzzyHits = {},
     i = 0,
-    // k = 0,
     hit,
     oldDom,
     dom,
@@ -570,7 +571,6 @@ function diffChildren(
       var lastIndex = mergeChildren.indexOf(oldChild);
       if (lastIndex !== -1) {
         mergeChildren[lastIndex] = fakeLastNode;
-        //  mergeChildren.splice(lastIndex, 1);
       }
       nextChild._new = oldChild;
     }
@@ -587,7 +587,7 @@ function diffChildren(
         insertPoint = dom.nextSibling;
       }
       if (lastChild === true) {
-        //新节点有两种情况，命中位置更后方的旧节点或就地创建实例化
+        // 新节点有两种情况，命中位置更后方的旧节点或就地创建实例化
         dom = mountVnode(null, nextChild, parentVnode, context, updateQueue);
         insertElement(parentNode, dom, insertPoint);
       } else {
@@ -603,7 +603,6 @@ function diffChildren(
           updateQueue
         );
       }
-      //  k++;
     } else {
       if (nextChild._hostNode) {
         removeElement(nextChild._hostNode);

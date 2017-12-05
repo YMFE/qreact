@@ -1,5 +1,5 @@
 /**
- * by 司徒正美 Copyright 2017-11-20
+ * by 司徒正美 Copyright 2017-12-05
  * IE9+
  */
 
@@ -8,6 +8,10 @@
 	typeof define === 'function' && define.amd ? define(factory) :
 	(global.React = factory());
 }(this, (function () {
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+
 
 var innerHTML = "dangerouslySetInnerHTML";
 var emptyArray = [];
@@ -144,6 +148,32 @@ function camelize(target) {
 
 function firstLetterLower(str) {
   return str.charAt(0).toLowerCase() + str.slice(1);
+}
+
+function extractLocation(urlLike) {
+  if (urlLike.indexOf(":") === -1) {
+    return [urlLike];
+  }
+
+  var regExp = /(.+?)(?::(\d+))?(?::(\d+))?$/;
+  var parts = regExp.exec(urlLike.replace(/[()]/g, ""));
+  var maybeUrl = /http.*/.exec(parts[1]);
+
+  parts[1] = Array.isArray(maybeUrl) ? maybeUrl[0] : undefined;
+
+  return [parts[1], parts[2] || undefined, parts[3] || undefined];
+}
+
+var CHROME_IE_STACK_REGEXP = /^\s*at .*(\S+:\d+|\(native\))/m;
+
+function parseError(error) {
+  var filtered = error.stack.split("\n").filter(function (line) {
+    return !!line.match(CHROME_IE_STACK_REGEXP);
+  });
+  var originError = filtered.pop();
+  var e = extractLocation(originError);
+
+  return [error.message].concat(_toConsumableArray(e), [error]);
 }
 
 var options = {
@@ -645,8 +675,7 @@ var versions = {
   "00": NaN, // other modern browsers
   "08": NaN
 };
-/* istanbul ignore next  */
-var msie = document.documentMode || versions[typeNumber(document.all) + "" + typeNumber(XMLHttpRequest)];
+var msie = document.documentMode || versions[typeNumber(document.all) + "" + typeNumber(win.XMLHttpRequest)];
 
 var modern = /NaN|undefined/.test(msie) || msie > 8;
 function insertElement(container, target, insertPoint) {
@@ -689,6 +718,8 @@ function createElement$1(vnode, vparent) {
     return document.createElement(type);
   }
 }
+
+function _toConsumableArray$1(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var globalEvents = {};
 var eventPropHooks = {}; //用于在事件回调里对事件对象进行
@@ -764,11 +795,15 @@ function triggerEventFlow(paths, prop, e) {
         fn.call(path.dom, e);
       } catch (e) {
         setTimeout(function () {
-          throw {
-            message: e.message,
-            vnode: path.events.vnode,
-            stack: e.stack
-          };
+          var errorParsed = parseError(e);
+
+          if (window.onerror) {
+            var _window;
+
+            (_window = window).onerror.apply(_window, _toConsumableArray$1(errorParsed));
+          } else {
+            throw errorParsed;
+          }
         }, 0);
       }
       if (e._stopPropagation) {
@@ -874,7 +909,7 @@ String("mouseenter,mouseleave").replace(/\w+/g, function (type) {
         var t = getRelatedTarget(e);
         if (!t || t !== dom && !contains(dom, t)) {
           var common = getLowestCommonAncestor(dom, t);
-          //由于不冒泡，因此paths长度为1 
+          //由于不冒泡，因此paths长度为1
           dispatchEvent(e, name, common);
         }
       });
@@ -1066,10 +1101,8 @@ function debounceSetState(updater, state, cb) {
   }
   if (updater._didUpdate) {
     //如果用户在componentDidUpdate中使用setState，要防止其卡死
-    setTimeout(function () {
-      updater._didUpdate = false;
-      setStateImpl(updater, state, cb);
-    }, 300);
+    updater._didUpdate = false;
+    setStateImpl(updater, state, cb);
     return;
   }
   setStateImpl(updater, state, cb);
@@ -1340,7 +1373,7 @@ function cssName(name, dom) {
   return null;
 }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+function _toConsumableArray$2(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 //布尔属性的值末必为true,false
 //https://github.com/facebook/react/issues/10589
@@ -1434,7 +1467,7 @@ function getSVGAttributeName(name) {
     return svgCache[name] = name;
   }
 
-  var _ref = [].concat(_toConsumableArray(key[0].toLowerCase())),
+  var _ref = [].concat(_toConsumableArray$2(key[0].toLowerCase())),
       prefix = _ref[0],
       postfix = _ref[1];
 
@@ -1481,6 +1514,7 @@ function diffProps(dom, lastProps, nextProps, vnode) {
     if (!nextProps.hasOwnProperty(_name)) {
       var _which = tag + isSVG + _name;
       var _action = strategyCache[_which];
+      if (!_action) continue;
       actionStrategy[_action](dom, _name, false, lastProps, vnode);
     }
   }
@@ -1545,12 +1579,13 @@ var actionStrategy = {
     // xlinkTitle, xlinkType eslint-disable-next-line
     var method = typeNumber(val) < 3 && !val ? "removeAttribute" : "setAttribute";
     var nameRes = getSVGAttributeName(name);
+    var value = typeof val === "undefined" || val === null ? "" : val;
     if (nameRes.ifSpecial) {
       var prefix = nameRes.name.split(":")[0];
       // 将xlinkHref 转换为 xlink:href
-      dom[method + "NS"](NAMESPACE[prefix], nameRes.name, val || "");
+      dom[method + "NS"](NAMESPACE[prefix], nameRes.name, value);
     } else {
-      dom[method](nameRes, val || "");
+      dom[method](nameRes, value);
     }
   },
   booleanAttr: function booleanAttr(dom, name, val) {
@@ -2191,7 +2226,7 @@ function mountElement(lastNode, vnode, vparent, context, updateQueue) {
   var children = flattenChildren(vnode);
   var method = lastNode ? alignChildren : mountChildren;
   method(dom, children, vnode, context, updateQueue);
-  // dom.vchildren = children;/** fatal 不再访问真实DOM */
+
   if (vnode.checkProps) {
     diffProps(dom, emptyObject, props, vnode);
   }
@@ -2301,11 +2336,10 @@ function mountComponent(lastNode, vnode, vparent, parentContext, updateQueue, pa
 
   updater._hydrating = true;
   var dom = updater.renderComponent(function (nextRendered, vparent, childContext) {
-    return mountVnode(lastNode, nextRendered, vparent, childContext, updateQueue, updater //作为parentUpater往下传
+    return mountVnode(lastNode, nextRendered, vparent, childContext, updateQueue, updater // 作为parentUpater往下传
     );
   }, updater.rendered);
   updater._openRef = !!ref;
-  // Refs.createInstanceRef(updater, ref);
   var userHook = instance.componentDidMount;
   updater._didHook = function () {
     userHook && userHook.call(instance);
@@ -2323,6 +2357,12 @@ function updateComponent(lastVnode, nextVnode, vparent, parentContext, updateQue
       instance = lastVnode._instance,
       _hostNode = lastVnode._hostNode;
 
+
+  if (instance === null) {
+    mountVnode(null, nextVnode, vparent, parentContext, updateQueue);
+    return lastVnode._hostNode;
+  }
+
   var nextContext = void 0,
       nextProps = nextVnode.props,
       updater = instance.updater;
@@ -2335,9 +2375,9 @@ function updateComponent(lastVnode, nextVnode, vparent, parentContext, updateQue
   nextVnode._hostNode = _hostNode;
   nextVnode._instance = instance;
   updater.willReceive = willReceive;
+
   //如果context与props都没有改变，那么就不会触发组件的receive，render，update等一系列钩子
   //但还会继续向下比较
-
   if (willReceive && instance.componentWillReceiveProps) {
     updater._receiving = true;
     instance.componentWillReceiveProps(nextProps, nextContext);
@@ -2347,12 +2387,10 @@ function updateComponent(lastVnode, nextVnode, vparent, parentContext, updateQue
   _hasRef && Refs.detachRef(lastVnode, nextVnode);
   updater._openRef = nextVnode.ref;
   //updater上总是保持新的数据
-
   updater.context = nextContext;
   updater.props = nextProps;
   updater.vparent = vparent;
   updater.parentContext = parentContext;
-  // nextVnode._instance = instance; //不能放这里
   if (!willReceive) {
     return updater.renderComponent(function (nextRendered, vparent, childContext) {
       return alignVnode(updater.rendered, nextRendered, vparent, childContext, updateQueue);
@@ -2441,9 +2479,7 @@ function diffChildren(parentVnode, nextChildren, parentNode, context, updateQueu
   var lastChildren = parentVnode.vchildren || emptyArray,
       //parentNode.vchildren,
   nextLength = nextChildren.length,
-
-  //   childNodes = parentNode.childNodes,
-  insertPoint = parentNode.firstChild,
+      insertPoint = parentNode.firstChild,
       lastLength = lastChildren.length;
 
   //optimize 1： 如果旧数组长度为零, 只进行添加
@@ -2469,9 +2505,7 @@ function diffChildren(parentVnode, nextChildren, parentNode, context, updateQueu
       //确保新旧数组都按原顺数排列
   fuzzyHits = {},
       i = 0,
-
-  // k = 0,
-  hit = void 0,
+      hit = void 0,
       oldDom = void 0,
       dom = void 0,
       nextChild = void 0;
@@ -2497,7 +2531,6 @@ function diffChildren(parentVnode, nextChildren, parentNode, context, updateQueu
       var lastIndex = mergeChildren.indexOf(oldChild);
       if (lastIndex !== -1) {
         mergeChildren[lastIndex] = fakeLastNode;
-        //  mergeChildren.splice(lastIndex, 1);
       }
       nextChild._new = oldChild;
     }
@@ -2514,7 +2547,7 @@ function diffChildren(parentVnode, nextChildren, parentNode, context, updateQueu
         insertPoint = dom.nextSibling;
       }
       if (lastChild === true) {
-        //新节点有两种情况，命中位置更后方的旧节点或就地创建实例化
+        // 新节点有两种情况，命中位置更后方的旧节点或就地创建实例化
         dom = mountVnode(null, _nextChild, parentVnode, context, updateQueue);
         insertElement(parentNode, dom, insertPoint);
       } else {
@@ -2524,7 +2557,6 @@ function diffChildren(parentVnode, nextChildren, parentNode, context, updateQueu
         }
         dom = alignVnode(lastChild, _nextChild, parentVnode, context, updateQueue);
       }
-      //  k++;
     } else {
       if (_nextChild._hostNode) {
         removeElement(_nextChild._hostNode);
@@ -2541,8 +2573,9 @@ function isSameNode(a, b) {
 }
 
 var React = {
-  version: "1.1.4",
+  version: "1.1.6",
   render: render,
+  hydrate: render,
   options: options,
   PropTypes: PropTypes,
   Children: Children, //为了react-redux
@@ -2558,7 +2591,7 @@ var React = {
   unmountComponentAtNode: unmountComponentAtNode,
   unstable_renderSubtreeIntoContainer: unstable_renderSubtreeIntoContainer,
   createFactory: function createFactory(type) {
-    console.error("createFactory is deprecated"); // eslint-disable-line
+    console.warn("createFactory is deprecated"); // eslint-disable-line
     var factory = createElement.bind(null, type);
     factory.type = type;
     return factory;

@@ -54,7 +54,6 @@ export function inherit(SubClass, SupClass) {
   return fn;
 }
 
-
 var lowerCache = {};
 /**
  * 小写化的优化
@@ -84,7 +83,8 @@ export function isFn(obj) {
 var rword = /[^, ]+/g;
 
 export function oneObject(array, val) {
-  if (array+"" === array) {//利用字符串的特征进行优化，字符串加上一个空字符串等于自身
+  if (array + "" === array) {
+    //利用字符串的特征进行优化，字符串加上一个空字符串等于自身
     array = array.match(rword) || [];
   }
   let result = {},
@@ -136,6 +136,32 @@ export function firstLetterLower(str) {
   return str.charAt(0).toLowerCase() + str.slice(1);
 }
 
+function extractLocation(urlLike) {
+  if (urlLike.indexOf(":") === -1) {
+    return [urlLike];
+  }
+
+  const regExp = /(.+?)(?::(\d+))?(?::(\d+))?$/;
+  const parts = regExp.exec(urlLike.replace(/[()]/g, ""));
+  const maybeUrl = /http.*/.exec(parts[1]);
+
+  parts[1] = Array.isArray(maybeUrl) ? maybeUrl[0] : undefined;
+
+  return [parts[1], parts[2] || undefined, parts[3] || undefined];
+}
+
+const CHROME_IE_STACK_REGEXP = /^\s*at .*(\S+:\d+|\(native\))/m;
+
+export function parseError(error) {
+  const filtered = error.stack.split("\n").filter(function(line) {
+    return !!line.match(CHROME_IE_STACK_REGEXP);
+  });
+  const originError = filtered.pop();
+  const e = extractLocation(originError);
+
+  return [error.message, ...e, error];
+}
+
 export var options = {
   beforeUnmount: noop,
   beforeRender: noop,
@@ -145,7 +171,6 @@ export var options = {
   afterMount: noop,
   afterUpdate: noop
 };
-
 
 var numberMap = {
   //null undefined IE6-8这里会返回[object Object]

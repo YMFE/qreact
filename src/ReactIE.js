@@ -34,6 +34,7 @@ setTimeout(keysPolyfill, 100);
 var React = {
   version: "VERSION",
   render,
+  hydrate: render,
   options,
   PropTypes,
   Children, //为了react-redux
@@ -48,7 +49,6 @@ var React = {
   isValidElement,
   unmountComponentAtNode,
   unstable_renderSubtreeIntoContainer,
-
   createFactory(type) {
         console.error("createFactory is deprecated"); // eslint-disable-line
     var factory = createElement.bind(null, type);

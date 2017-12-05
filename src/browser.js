@@ -88,10 +88,9 @@ var versions = {
   "00": NaN, // other modern browsers
   "08": NaN
 };
-/* istanbul ignore next  */
 export var msie =
   document.documentMode ||
-  versions[typeNumber(document.all) + "" + typeNumber(XMLHttpRequest)];
+  versions[typeNumber(document.all) + "" + typeNumber(win.XMLHttpRequest)];
 
 export var modern = /NaN|undefined/.test(msie) || msie > 8;
 export function insertElement(container, target, insertPoint){
