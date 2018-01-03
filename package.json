@@ -1,6 +1,6 @@
 {
   "name": "qreact",
-  "version": "1.1.6",
+  "version": "2.0.0-rc.0",
   "description": "a mini React-like framework",
   "main": "dist/React.js",
   "scripts": {
@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/YMFE/qreact#readme",
   "devDependencies": {
-    "babel-core": "^6.22.1",
+    "babel-core": "^6.26.0",
     "babel-loader": "^6.2.10",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-plugin-istanbul": "^4.1.1",
@@ -42,8 +42,9 @@
     "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-polyfill": "^6.26.0",
     "babel-preset-avalon": "^1.0.0",
-    "babel-preset-env": "^1.4.0",
+    "babel-preset-env": "^1.6.1",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "babel-runtime": "^5.8.38",
@@ -53,6 +54,7 @@
     "eslint": "^4.3.0",
     "eslint-plugin-react": "^7.1.0",
     "express": "^4.15.3",
+    "gzip-size": "^4.0.0",
     "husky": "^0.14.3",
     "karma": "^1.5",
     "karma-chai": "^0.1.0",
@@ -66,17 +68,21 @@
     "lint-staged": "^4.0.2",
     "mocha": "^3.2.0",
     "node-jsx": "^0.13.3",
+    "ora": "^1.3.0",
     "prettier": "^1.5.3",
     "rollup": "^0.41.6",
     "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-filesize": "^1.4.2",
     "rollup-plugin-istanbul": "^1.1.0",
     "rollup-plugin-license": "^0.4.0",
+    "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-re": "^1.0.6",
     "selenium-standalone": "^6.9.0",
     "semicolon-less": "^0.7.0",
     "sinon": "^2.3.4",
     "sinon-chai": "^2.11.0",
+    "uglify-js": "^3.1.4",
     "webpack": "^1.14.0"
   },
   "ghooks": {
@@ -99,14 +105,10 @@
     "helpMessage": "Commit message 格式错误, \n请查看规范: http://wiki.corp.qunar.com/pages/viewpage.action?pageId=159698767"
   },
   "dependencies": {
+    "@types/fs-extra": "^5.0.0",
     "babel-eslint": "6",
     "babel-plugin-transform-class-properties": "^6.24.1",
-    "gzip-size": "^4.0.0",
-    "ora": "^1.3.0",
-    "pre-commit": "^1.2.2",
-    "rollup-plugin-commonjs": "^8.2.6",
-    "rollup-plugin-node-resolve": "^3.0.0",
-    "uglify-js": "^3.1.4",
-    "user": "0.0.0"
+    "fs-extra": "^5.0.0",
+    "pre-commit": "^1.2.2"
   }
 }

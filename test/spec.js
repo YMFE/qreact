@@ -11,14 +11,22 @@ import "./modules/cloneElement.spec";
 
 require("./modules/context.spec.jsx");
 
-require("./modules/component.spec.jsx");
-require("./modules/lifecycle.spec.jsx");
+require("./modules/ReactDOMSVG-test.jsx");
+require("./modules/ReactDOMTextComponent-test.jsx");
+require("./modules/ReactDOMTextarea-test.jsx");
 
-require("./modules/svg.spec.jsx");
+require("./modules/ReactDOMSelect-test.jsx");
+require("./modules/ReactDOMOption-test.jsx");
+
+require("./modules/ReactDOMInput-test.jsx");
+
+
+require("./modules/lifecycle.spec.jsx");
 
 require("./modules/diffProps.spec.jsx");
 
-require("./modules/event.spec.jsx");
+
+require("./modules/component.spec.jsx");
 
 require("./modules/node.spec.jsx");
 
@@ -28,21 +36,25 @@ require("./modules/redux.spec.jsx");
 
 require("./modules/ReactTestUtils-test.jsx");
 
-require("./modules/ReactComponent-test.jsx");
-
 require("./modules/ReactChildren-test.jsx");
+
+require("./modules/ReactComponent-test.jsx");
 
 require("./modules/ReactMultiChild-test.jsx");
 
 require("./modules/refs-test.jsx");
 require("./modules/refs-destruction-test.jsx");
+
 require("./modules/ReactUpdates-test.jsx");
+
 require("./modules/ReactStatelessComponent-test.jsx");
 
-require("./modules/ReactEmptyComponent-test.jsx");
-require("./modules/ReactIdentity-test.jsx");
-require("./modules/ReactCompositeComponentNestedState-test.jsx");
 
+require("./modules/ReactEmptyComponent-test.jsx");
+
+require("./modules/ReactIdentity-test.jsx");
+
+require("./modules/ReactCompositeComponentNestedState-test.jsx");
 
 require("./modules/ReactComponentLifeCycle-test.jsx");
 
@@ -58,16 +70,23 @@ require("./modules/ReactCompositeComponentState-test.jsx");
 require("./modules/ReactElementClone-test.jsx");
 
 
-require("./modules/ReactDOM-test.jsx");
-
-
 require("./modules/findDOMNode-test.jsx");
 
 require("./modules/ReactES6Class-test.jsx");
 
+require("./modules/ReactErrorBoundaries-test.jsx");
+
+require("./modules/insert.spec.jsx");
+
+require("./modules/createPortal.spec.jsx");
+
+require("./modules/event.spec.jsx");
 
 
+require("./modules/ReactDOM-test.jsx");
 
+/*
 
-
-
+用到selenium
+event.spec
+*/

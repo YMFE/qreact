@@ -15,7 +15,7 @@ describe("ReactMultiChild", function() {
     it("should update children when possible", () => {
         var container = document.createElement("div");
 
-        var mockMount = spyOn.createSpy();
+        var mockMount = spyOn.createSpy()
         var mockUpdate = spyOn.createSpy();
         var mockUnmount = spyOn.createSpy();
 
@@ -289,24 +289,28 @@ describe("ReactMultiChild", function() {
         expect(container.textContent).toBe("8ABC4D5EFGH");
         ReactDOM.render(<Letters letters="GFE9DBACH" />, container);
         expect(container.textContent).toBe("GFE9DBACH");
+        ReactDOM.render(<Letters letters="AERCHOG" />, container);
+        expect(container.textContent).toBe("AERCHOG");
     });
 
     it("prepares new children before unmounting old", () => {
         var list = [];
-
+        function logger(e){
+            list.push(e)
+        }
         class Spy extends React.Component {
             componentWillMount() {
-                list.push(this.props.name + " componentWillMount");
+                logger(this.props.name + " componentWillMount");
             }
             render() {
-                list.push(this.props.name + " render");
+                logger(this.props.name + " render");
                 return <div />;
             }
             componentDidMount() {
-                list.push(this.props.name + " componentDidMount");
+                logger(this.props.name + " componentDidMount");
             }
             componentWillUnmount() {
-                list.push(this.props.name + " componentWillUnmount");
+                logger(this.props.name + " componentWillUnmount");
             }
         }
 
@@ -330,7 +334,7 @@ describe("ReactMultiChild", function() {
             </div>,
             container
         );
-        expect(list).toEqual([
+        expect(list.join("\n")).toBe([
             "oneA componentWillMount",
             "oneA render",
             "twoA componentWillMount",
@@ -338,15 +342,15 @@ describe("ReactMultiChild", function() {
             "oneA componentDidMount",
             "twoA componentDidMount",
 
-            "oneA componentWillUnmount",
             "oneB componentWillMount",
             "oneB render",
-            "twoA componentWillUnmount",
+          
             "twoB componentWillMount",
             "twoB render",
-
+            "oneA componentWillUnmount",
+            "twoA componentWillUnmount",
             "oneB componentDidMount",
             "twoB componentDidMount"
-        ]);
+        ].join("\n"));
     });
 });

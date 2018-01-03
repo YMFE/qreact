@@ -5,7 +5,7 @@ export default {
   format: "umd",
   exports: "default",
   dest: "./lib/devtools.js",
-  plugins: [babel() ],
+  plugins: [babel()],
   moduleName: "DevTools",
   useStrict: false
 };

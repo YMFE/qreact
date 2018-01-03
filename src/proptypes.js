@@ -1,6 +1,6 @@
-//为了兼容yo
+
 var check = function () {
-  return check;
+  return null;
 };
 check.isRequired = check;
 export var PropTypes = {

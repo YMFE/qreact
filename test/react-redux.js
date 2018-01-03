@@ -1,100 +1,100 @@
 (function webpackUniversalModuleDefinition(root, factory) {
-	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("react"), require("redux"));
-	else if(typeof define === 'function' && define.amd)
-		define(["react", "redux"], factory);
-	else if(typeof exports === 'object')
-	//require("react"),
-		exports["ReactRedux"] = factory(require("react"),  require("redux"));
-	else
-		root["ReactRedux"] = factory(root["React"], root["Redux"]);
+  if(typeof exports === "object" && typeof module === "object")
+    module.exports = factory(require("react"), require("redux"));
+  else if(typeof define === "function" && define.amd)
+    define(["react", "redux"], factory);
+  else if(typeof exports === "object")
+  //require("react"),
+    exports["ReactRedux"] = factory(require("react"),  require("redux"));
+  else
+    root["ReactRedux"] = factory(root["React"], root["Redux"]);
 })(this, function(__WEBPACK_EXTERNAL_MODULE_12__, __WEBPACK_EXTERNAL_MODULE_35__) {
-return /******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
+  return /******/ (function(modules) { // webpackBootstrap
+    /******/ 	// The module cache
+    /******/ 	var installedModules = {};
 
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
+    /******/ 	// The require function
+    /******/ 	function __webpack_require__(moduleId) {
 
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId])
-/******/ 			return installedModules[moduleId].exports;
+      /******/ 		// Check if module is in cache
+      /******/ 		if(installedModules[moduleId])
+      /******/ 			return installedModules[moduleId].exports;
 
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			exports: {},
-/******/ 			id: moduleId,
-/******/ 			loaded: false
-/******/ 		};
+      /******/ 		// Create a new module (and put it into the cache)
+      /******/ 		var module = installedModules[moduleId] = {
+        /******/ 			exports: {},
+        /******/ 			id: moduleId,
+        /******/ 			loaded: false
+        /******/ 		};
 
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+      /******/ 		// Execute the module function
+      /******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
 
-/******/ 		// Flag the module as loaded
-/******/ 		module.loaded = true;
+      /******/ 		// Flag the module as loaded
+      /******/ 		module.loaded = true;
 
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
+      /******/ 		// Return the exports of the module
+      /******/ 		return module.exports;
+      /******/ 	}
 
 
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
+    /******/ 	// expose the modules object (__webpack_modules__)
+    /******/ 	__webpack_require__.m = modules;
 
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
+    /******/ 	// expose the module cache
+    /******/ 	__webpack_require__.c = installedModules;
 
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
+    /******/ 	// __webpack_public_path__
+    /******/ 	__webpack_require__.p = "";
 
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(0);
-/******/ })
-/************************************************************************/
-/******/ ([
-/* 0 */
-/***/ function(module, exports, __webpack_require__) {
+    /******/ 	// Load entry module and return exports
+    /******/ 	return __webpack_require__(0);
+    /******/ })
+  /************************************************************************/
+  /******/ ([
+    /* 0 */
+    /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+      "use strict";
 
-	exports.__esModule = true;
-	exports.connect = exports.connectAdvanced = exports.Provider = undefined;
+      exports.__esModule = true;
+      exports.connect = exports.connectAdvanced = exports.Provider = undefined;
 
-	var _Provider = __webpack_require__(13);
+      var _Provider = __webpack_require__(13);
 
-	var _Provider2 = _interopRequireDefault(_Provider);
+      var _Provider2 = _interopRequireDefault(_Provider);
 
-	var _connectAdvanced = __webpack_require__(2);
+      var _connectAdvanced = __webpack_require__(2);
 
-	var _connectAdvanced2 = _interopRequireDefault(_connectAdvanced);
+      var _connectAdvanced2 = _interopRequireDefault(_connectAdvanced);
 
-	var _connect = __webpack_require__(14);
+      var _connect = __webpack_require__(14);
 
-	var _connect2 = _interopRequireDefault(_connect);
+      var _connect2 = _interopRequireDefault(_connect);
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+      function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	exports.Provider = _Provider2.default;
-	exports.connectAdvanced = _connectAdvanced2.default;
-	exports.connect = _connect2.default;
+      exports.Provider = _Provider2.default;
+      exports.connectAdvanced = _connectAdvanced2.default;
+      exports.connect = _connect2.default;
 
-/***/ },
-/* 1 */
-/***/ function(module, exports) {
+      /***/ },
+    /* 1 */
+    /***/ function(module, exports) {
 
-	'use strict';
+      "use strict";
 
-	exports.__esModule = true;
-	exports.default = warning;
-	/**
+      exports.__esModule = true;
+      exports.default = warning;
+      /**
 	 * Prints a warning in the console if it exists.
 	 *
 	 * @param {String} message The warning message.
 	 * @returns {void}
 	 */
-	function warning(message) {
+      function warning(message) {
 	  /* eslint-disable no-console */
-	  if (typeof console !== 'undefined' && typeof console.error === 'function') {
+	  if (typeof console !== "undefined" && typeof console.error === "function") {
 	    console.error(message);
 	  }
 	  /* eslint-enable no-console */
@@ -106,50 +106,50 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /* eslint-disable no-empty */
 	  } catch (e) {}
 	  /* eslint-enable no-empty */
-	}
+      }
 
-/***/ },
-/* 2 */
-/***/ function(module, exports, __webpack_require__) {
+      /***/ },
+    /* 2 */
+    /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+      "use strict";
 
-	exports.__esModule = true;
+      exports.__esModule = true;
 
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+      var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	exports.default = connectAdvanced;
+      exports.default = connectAdvanced;
 
-	var _hoistNonReactStatics = __webpack_require__(22);
+      var _hoistNonReactStatics = __webpack_require__(22);
 
-	var _hoistNonReactStatics2 = _interopRequireDefault(_hoistNonReactStatics);
+      var _hoistNonReactStatics2 = _interopRequireDefault(_hoistNonReactStatics);
 
-	var _invariant = __webpack_require__(23);
+      var _invariant = __webpack_require__(23);
 
-	var _invariant2 = _interopRequireDefault(_invariant);
+      var _invariant2 = _interopRequireDefault(_invariant);
 
-	var _react = __webpack_require__(12);
+      var _react = __webpack_require__(12);
 
-	var _Subscription = __webpack_require__(20);
+      var _Subscription = __webpack_require__(20);
 
-	var _Subscription2 = _interopRequireDefault(_Subscription);
+      var _Subscription2 = _interopRequireDefault(_Subscription);
 
-	var _PropTypes = __webpack_require__(4);
+      var _PropTypes = __webpack_require__(4);
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+      function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+      function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+      function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+      function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+      function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-	var hotReloadingVersion = 0;
-	var dummyState = {};
-	function noop() {}
-	function makeSelectorStateful(sourceSelector, store) {
+      var hotReloadingVersion = 0;
+      var dummyState = {};
+      function noop() {}
+      function makeSelectorStateful(sourceSelector, store) {
 	  // wrap the selector in an object that tracks its results between runs.
 	  var selector = {
 	    run: function runComponentSelector(props) {
@@ -168,10 +168,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  return selector;
-	}
+      }
 
-	function connectAdvanced(
-	/*
+      function connectAdvanced(
+        /*
 	  selectorFactory is a func that is responsible for returning the selector function used to
 	  compute new props from state, props, and dispatch. For example:
 	     export default connectAdvanced((dispatch, options) => (state, props) => ({
@@ -185,36 +185,36 @@ return /******/ (function(modules) { // webpackBootstrap
 	  props. Do not use connectAdvanced directly without memoizing results between calls to your
 	  selector, otherwise the Connect component will re-render on every state or props change.
 	*/
-	selectorFactory) {
+        selectorFactory) {
 	  var _contextTypes, _childContextTypes;
 
 	  var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
 	      _ref$getDisplayName = _ref.getDisplayName,
 	      getDisplayName = _ref$getDisplayName === undefined ? function (name) {
-	    return 'ConnectAdvanced(' + name + ')';
+	    return "ConnectAdvanced(" + name + ")";
 	  } : _ref$getDisplayName,
 	      _ref$methodName = _ref.methodName,
-	      methodName = _ref$methodName === undefined ? 'connectAdvanced' : _ref$methodName,
+	      methodName = _ref$methodName === undefined ? "connectAdvanced" : _ref$methodName,
 	      _ref$renderCountProp = _ref.renderCountProp,
 	      renderCountProp = _ref$renderCountProp === undefined ? undefined : _ref$renderCountProp,
 	      _ref$shouldHandleStat = _ref.shouldHandleStateChanges,
 	      shouldHandleStateChanges = _ref$shouldHandleStat === undefined ? true : _ref$shouldHandleStat,
 	      _ref$storeKey = _ref.storeKey,
-	      storeKey = _ref$storeKey === undefined ? 'store' : _ref$storeKey,
+	      storeKey = _ref$storeKey === undefined ? "store" : _ref$storeKey,
 	      _ref$withRef = _ref.withRef,
 	      withRef = _ref$withRef === undefined ? false : _ref$withRef,
-	      connectOptions = _objectWithoutProperties(_ref, ['getDisplayName', 'methodName', 'renderCountProp', 'shouldHandleStateChanges', 'storeKey', 'withRef']);
+	      connectOptions = _objectWithoutProperties(_ref, ["getDisplayName", "methodName", "renderCountProp", "shouldHandleStateChanges", "storeKey", "withRef"]);
 
-	  var subscriptionKey = storeKey + 'Subscription';
+	  var subscriptionKey = storeKey + "Subscription";
 	  var version = hotReloadingVersion++;
 
 	  var contextTypes = (_contextTypes = {}, _contextTypes[storeKey] = _PropTypes.storeShape, _contextTypes[subscriptionKey] = _PropTypes.subscriptionShape, _contextTypes);
 	  var childContextTypes = (_childContextTypes = {}, _childContextTypes[subscriptionKey] = _PropTypes.subscriptionShape, _childContextTypes);
 
 	  return function wrapWithConnect(WrappedComponent) {
-	    (0, _invariant2.default)(typeof WrappedComponent == 'function', 'You must pass a component to the function returned by ' + ('connect. Instead received ' + JSON.stringify(WrappedComponent)));
+	    (0, _invariant2.default)(typeof WrappedComponent == "function", "You must pass a component to the function returned by " + ("connect. Instead received " + JSON.stringify(WrappedComponent)));
 
-	    var wrappedComponentName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
+	    var wrappedComponentName = WrappedComponent.displayName || WrappedComponent.name || "Component";
 
 	    var displayName = getDisplayName(wrappedComponentName);
 
@@ -245,7 +245,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _this.propsMode = Boolean(props[storeKey]);
 	        _this.setWrappedInstance = _this.setWrappedInstance.bind(_this);
 
-	        (0, _invariant2.default)(_this.store, 'Could not find "' + storeKey + '" in either the context or props of ' + ('"' + displayName + '". Either wrap the root component in a <Provider>, ') + ('or explicitly pass "' + storeKey + '" as a prop to "' + displayName + '".'));
+	        (0, _invariant2.default)(_this.store, "Could not find \"" + storeKey + "\" in either the context or props of " + ("\"" + displayName + "\". Either wrap the root component in a <Provider>, ") + ("or explicitly pass \"" + storeKey + "\" as a prop to \"" + displayName + "\"."));
 
 	        _this.initSelector();
 	        _this.initSubscription();
@@ -295,7 +295,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      };
 
 	      Connect.prototype.getWrappedInstance = function getWrappedInstance() {
-	        (0, _invariant2.default)(withRef, 'To access the wrapped instance, you need to specify ' + ('{ withRef: true } in the options argument of the ' + methodName + '() call.'));
+	        (0, _invariant2.default)(withRef, "To access the wrapped instance, you need to specify " + ("{ withRef: true } in the options argument of the " + methodName + "() call."));
 	        return this.wrappedInstance;
 	      };
 
@@ -399,26 +399,26 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    return (0, _hoistNonReactStatics2.default)(Connect, WrappedComponent);
 	  };
-	}
+      }
 
-/***/ },
-/* 3 */
-/***/ function(module, exports, __webpack_require__) {
+      /***/ },
+    /* 3 */
+    /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+      "use strict";
 
-	exports.__esModule = true;
-	exports.wrapMapToPropsConstant = wrapMapToPropsConstant;
-	exports.getDependsOnOwnProps = getDependsOnOwnProps;
-	exports.wrapMapToPropsFunc = wrapMapToPropsFunc;
+      exports.__esModule = true;
+      exports.wrapMapToPropsConstant = wrapMapToPropsConstant;
+      exports.getDependsOnOwnProps = getDependsOnOwnProps;
+      exports.wrapMapToPropsFunc = wrapMapToPropsFunc;
 
-	var _verifyPlainObject = __webpack_require__(5);
+      var _verifyPlainObject = __webpack_require__(5);
 
-	var _verifyPlainObject2 = _interopRequireDefault(_verifyPlainObject);
+      var _verifyPlainObject2 = _interopRequireDefault(_verifyPlainObject);
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+      function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function wrapMapToPropsConstant(getConstant) {
+      function wrapMapToPropsConstant(getConstant) {
 	  return function initConstantSelector(dispatch, options) {
 	    var constant = getConstant(dispatch, options);
 
@@ -428,32 +428,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	    constantSelector.dependsOnOwnProps = false;
 	    return constantSelector;
 	  };
-	}
+      }
 
-	// dependsOnOwnProps is used by createMapToPropsProxy to determine whether to pass props as args
-	// to the mapToProps function being wrapped. It is also used by makePurePropsSelector to determine
-	// whether mapToProps needs to be invoked when props have changed.
-	// 
-	// A length of one signals that mapToProps does not depend on props from the parent component.
-	// A length of zero is assumed to mean mapToProps is getting args via arguments or ...args and
-	// therefore not reporting its length accurately..
-	function getDependsOnOwnProps(mapToProps) {
+      // dependsOnOwnProps is used by createMapToPropsProxy to determine whether to pass props as args
+      // to the mapToProps function being wrapped. It is also used by makePurePropsSelector to determine
+      // whether mapToProps needs to be invoked when props have changed.
+      // 
+      // A length of one signals that mapToProps does not depend on props from the parent component.
+      // A length of zero is assumed to mean mapToProps is getting args via arguments or ...args and
+      // therefore not reporting its length accurately..
+      function getDependsOnOwnProps(mapToProps) {
 	  return mapToProps.dependsOnOwnProps !== null && mapToProps.dependsOnOwnProps !== undefined ? Boolean(mapToProps.dependsOnOwnProps) : mapToProps.length !== 1;
-	}
+      }
 
-	// Used by whenMapStateToPropsIsFunction and whenMapDispatchToPropsIsFunction,
-	// this function wraps mapToProps in a proxy function which does several things:
-	// 
-	//  * Detects whether the mapToProps function being called depends on props, which
-	//    is used by selectorFactory to decide if it should reinvoke on props changes.
-	//    
-	//  * On first call, handles mapToProps if returns another function, and treats that
-	//    new function as the true mapToProps for subsequent calls.
-	//    
-	//  * On first call, verifies the first result is a plain object, in order to warn
-	//    the developer that their mapToProps function is not returning a valid result.
-	//    
-	function wrapMapToPropsFunc(mapToProps, methodName) {
+      // Used by whenMapStateToPropsIsFunction and whenMapDispatchToPropsIsFunction,
+      // this function wraps mapToProps in a proxy function which does several things:
+      // 
+      //  * Detects whether the mapToProps function being called depends on props, which
+      //    is used by selectorFactory to decide if it should reinvoke on props changes.
+      //    
+      //  * On first call, handles mapToProps if returns another function, and treats that
+      //    new function as the true mapToProps for subsequent calls.
+      //    
+      //  * On first call, verifies the first result is a plain object, in order to warn
+      //    the developer that their mapToProps function is not returning a valid result.
+      //    
+      function wrapMapToPropsFunc(mapToProps, methodName) {
 	  return function initProxySelector(dispatch, _ref) {
 	    var displayName = _ref.displayName;
 
@@ -469,7 +469,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      proxy.dependsOnOwnProps = getDependsOnOwnProps(mapToProps);
 	      var props = proxy(stateOrDispatch, ownProps);
 
-	      if (typeof props === 'function') {
+	      if (typeof props === "function") {
 	        proxy.mapToProps = props;
 	        proxy.dependsOnOwnProps = getDependsOnOwnProps(props);
 	        props = proxy(stateOrDispatch, ownProps);
@@ -482,68 +482,68 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    return proxy;
 	  };
-	}
+      }
 
-/***/ },
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
+      /***/ },
+    /* 4 */
+    /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+      "use strict";
 
-	exports.__esModule = true;
-	exports.storeShape = exports.subscriptionShape = undefined;
+      exports.__esModule = true;
+      exports.storeShape = exports.subscriptionShape = undefined;
 
-	var _propTypes = __webpack_require__(10);
+      var _propTypes = __webpack_require__(10);
 
-	var _propTypes2 = _interopRequireDefault(_propTypes);
+      var _propTypes2 = _interopRequireDefault(_propTypes);
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+      function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var subscriptionShape = exports.subscriptionShape = _propTypes2.default.shape({
+      var subscriptionShape = exports.subscriptionShape = _propTypes2.default.shape({
 	  trySubscribe: _propTypes2.default.func.isRequired,
 	  tryUnsubscribe: _propTypes2.default.func.isRequired,
 	  notifyNestedSubs: _propTypes2.default.func.isRequired,
 	  isSubscribed: _propTypes2.default.func.isRequired
-	});
+      });
 
-	var storeShape = exports.storeShape = _propTypes2.default.shape({
+      var storeShape = exports.storeShape = _propTypes2.default.shape({
 	  subscribe: _propTypes2.default.func.isRequired,
 	  dispatch: _propTypes2.default.func.isRequired,
 	  getState: _propTypes2.default.func.isRequired
-	});
+      });
 
-/***/ },
-/* 5 */
-/***/ function(module, exports, __webpack_require__) {
+      /***/ },
+    /* 5 */
+    /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+      "use strict";
 
-	exports.__esModule = true;
-	exports.default = verifyPlainObject;
+      exports.__esModule = true;
+      exports.default = verifyPlainObject;
 
-	var _isPlainObject = __webpack_require__(32);
+      var _isPlainObject = __webpack_require__(32);
 
-	var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
+      var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
 
-	var _warning = __webpack_require__(1);
+      var _warning = __webpack_require__(1);
 
-	var _warning2 = _interopRequireDefault(_warning);
+      var _warning2 = _interopRequireDefault(_warning);
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+      function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function verifyPlainObject(value, displayName, methodName) {
+      function verifyPlainObject(value, displayName, methodName) {
 	  if (!(0, _isPlainObject2.default)(value)) {
-	    (0, _warning2.default)(methodName + '() in ' + displayName + ' must return a plain object. Instead received ' + value + '.');
+	    (0, _warning2.default)(methodName + "() in " + displayName + " must return a plain object. Instead received " + value + ".");
 	  }
-	}
+      }
 
-/***/ },
-/* 6 */
-/***/ function(module, exports) {
+      /***/ },
+    /* 6 */
+    /***/ function(module, exports) {
 
-	"use strict";
+      "use strict";
 
-	/**
+      /**
 	 * Copyright (c) 2013-present, Facebook, Inc.
 	 * All rights reserved.
 	 *
@@ -554,37 +554,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * 
 	 */
 
-	function makeEmptyFunction(arg) {
+      function makeEmptyFunction(arg) {
 	  return function () {
 	    return arg;
 	  };
-	}
+      }
 
-	/**
+      /**
 	 * This function accepts and discards inputs; it has no side effects. This is
 	 * primarily useful idiomatically for overridable function endpoints which
 	 * always need to be callable, since JS lacks a null-call idiom ala Cocoa.
 	 */
-	var emptyFunction = function emptyFunction() {};
+      var emptyFunction = function emptyFunction() {};
 
-	emptyFunction.thatReturns = makeEmptyFunction;
-	emptyFunction.thatReturnsFalse = makeEmptyFunction(false);
-	emptyFunction.thatReturnsTrue = makeEmptyFunction(true);
-	emptyFunction.thatReturnsNull = makeEmptyFunction(null);
-	emptyFunction.thatReturnsThis = function () {
+      emptyFunction.thatReturns = makeEmptyFunction;
+      emptyFunction.thatReturnsFalse = makeEmptyFunction(false);
+      emptyFunction.thatReturnsTrue = makeEmptyFunction(true);
+      emptyFunction.thatReturnsNull = makeEmptyFunction(null);
+      emptyFunction.thatReturnsThis = function () {
 	  return this;
-	};
-	emptyFunction.thatReturnsArgument = function (arg) {
+      };
+      emptyFunction.thatReturnsArgument = function (arg) {
 	  return arg;
-	};
+      };
 
-	module.exports = emptyFunction;
+      module.exports = emptyFunction;
 
-/***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
+      /***/ },
+    /* 7 */
+    /***/ function(module, exports, __webpack_require__) {
 
-	/**
+      /**
 	 * Copyright (c) 2013-present, Facebook, Inc.
 	 * All rights reserved.
 	 *
@@ -594,9 +594,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 */
 
-	'use strict';
+      "use strict";
 
-	/**
+      /**
 	 * Use invariant() to assert state which your program assumes to be true.
 	 *
 	 * Provide sprintf-style format (only %s is supported) and arguments
@@ -607,44 +607,44 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * will remain to ensure logic does not differ in production.
 	 */
 
-	var validateFormat = function validateFormat(format) {};
+      var validateFormat = function validateFormat(format) {};
 
-	if (true) {
+      if (true) {
 	  validateFormat = function validateFormat(format) {
 	    if (format === undefined) {
-	      throw new Error('invariant requires an error message argument');
+	      throw new Error("invariant requires an error message argument");
 	    }
 	  };
-	}
+      }
 
-	function invariant(condition, format, a, b, c, d, e, f) {
+      function invariant(condition, format, a, b, c, d, e, f) {
 	  validateFormat(format);
 
 	  if (!condition) {
 	    var error;
 	    if (format === undefined) {
-	      error = new Error('Minified exception occurred; use the non-minified dev environment ' + 'for the full error message and additional helpful warnings.');
+	      error = new Error("Minified exception occurred; use the non-minified dev environment " + "for the full error message and additional helpful warnings.");
 	    } else {
 	      var args = [a, b, c, d, e, f];
 	      var argIndex = 0;
 	      error = new Error(format.replace(/%s/g, function () {
 	        return args[argIndex++];
 	      }));
-	      error.name = 'Invariant Violation';
+	      error.name = "Invariant Violation";
 	    }
 
 	    error.framesToPop = 1; // we don't care about invariant's own frame
 	    throw error;
 	  }
-	}
+      }
 
-	module.exports = invariant;
+      module.exports = invariant;
 
-/***/ },
-/* 8 */
-/***/ function(module, exports, __webpack_require__) {
+      /***/ },
+    /* 8 */
+    /***/ function(module, exports, __webpack_require__) {
 
-	/**
+      /**
 	 * Copyright 2014-2015, Facebook, Inc.
 	 * All rights reserved.
 	 *
@@ -654,20 +654,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 */
 
-	'use strict';
+      "use strict";
 
-	var emptyFunction = __webpack_require__(6);
+      var emptyFunction = __webpack_require__(6);
 
-	/**
+      /**
 	 * Similar to invariant but only logs a warning if the condition is not met.
 	 * This can be used to log issues in development environments in critical
 	 * paths. Removing the logging code for production environments will keep the
 	 * same logic and follow the same code paths.
 	 */
 
-	var warning = emptyFunction;
+      var warning = emptyFunction;
 
-	if (true) {
+      if (true) {
 	  (function () {
 	    var printWarning = function printWarning(format) {
 	      for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -675,10 +675,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      var argIndex = 0;
-	      var message = 'Warning: ' + format.replace(/%s/g, function () {
+	      var message = "Warning: " + format.replace(/%s/g, function () {
 	        return args[argIndex++];
 	      });
-	      if (typeof console !== 'undefined') {
+	      if (typeof console !== "undefined") {
 	        console.error(message);
 	      }
 	      try {
@@ -691,10 +691,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    warning = function warning(condition, format) {
 	      if (format === undefined) {
-	        throw new Error('`warning(condition, format, ...args)` requires a warning ' + 'message argument');
+	        throw new Error("`warning(condition, format, ...args)` requires a warning " + "message argument");
 	      }
 
-	      if (format.indexOf('Failed Composite propType: ') === 0) {
+	      if (format.indexOf("Failed Composite propType: ") === 0) {
 	        return; // Ignore CompositeComponent proptype check.
 	      }
 
@@ -707,27 +707,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    };
 	  })();
-	}
+      }
 
-	module.exports = warning;
+      module.exports = warning;
 
-/***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
+      /***/ },
+    /* 9 */
+    /***/ function(module, exports, __webpack_require__) {
 
-	var root = __webpack_require__(30);
+      var root = __webpack_require__(30);
 
-	/** Built-in value references. */
-	var Symbol = root.Symbol;
+      /** Built-in value references. */
+      var Symbol = root.Symbol;
 
-	module.exports = Symbol;
+      module.exports = Symbol;
 
 
-/***/ },
-/* 10 */
-/***/ function(module, exports, __webpack_require__) {
+      /***/ },
+    /* 10 */
+    /***/ function(module, exports, __webpack_require__) {
 
-	/**
+      /**
 	 * Copyright 2013-present, Facebook, Inc.
 	 * All rights reserved.
 	 *
@@ -736,27 +736,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 */
 
-	var factory = __webpack_require__(34);
+      var factory = __webpack_require__(34);
 
-	var REACT_ELEMENT_TYPE = (typeof Symbol === 'function' &&
+      var REACT_ELEMENT_TYPE = (typeof Symbol === "function" &&
 	  Symbol.for &&
-	  Symbol.for('react.element')) ||
+	  Symbol.for("react.element")) ||
 	  0xeac7;
 
-	function isValidElement(object) {
-	  return typeof object === 'object' &&
+      function isValidElement(object) {
+	  return typeof object === "object" &&
 	    object !== null &&
 	    object.$$typeof === REACT_ELEMENT_TYPE;
-	}
+      }
 
-	module.exports = factory(isValidElement);
+      module.exports = factory(isValidElement);
 
 
-/***/ },
-/* 11 */
-/***/ function(module, exports) {
+      /***/ },
+    /* 11 */
+    /***/ function(module, exports) {
 
-	/**
+      /**
 	 * Copyright 2013-present, Facebook, Inc.
 	 * All rights reserved.
 	 *
@@ -765,59 +765,59 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 */
 
-	'use strict';
+      "use strict";
 
-	var ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
+      var ReactPropTypesSecret = "SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED";
 
-	module.exports = ReactPropTypesSecret;
+      module.exports = ReactPropTypesSecret;
 
 
-/***/ },
-/* 12 */
-/***/ function(module, exports) {
+      /***/ },
+    /* 12 */
+    /***/ function(module, exports) {
 
-	module.exports = __WEBPACK_EXTERNAL_MODULE_12__;
+      module.exports = __WEBPACK_EXTERNAL_MODULE_12__;
 
-/***/ },
-/* 13 */
-/***/ function(module, exports, __webpack_require__) {
+      /***/ },
+    /* 13 */
+    /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+      "use strict";
 
-	exports.__esModule = true;
-	exports.default = undefined;
+      exports.__esModule = true;
+      exports.default = undefined;
 
-	var _react = __webpack_require__(12);
+      var _react = __webpack_require__(12);
 
-	var _propTypes = __webpack_require__(10);
+      var _propTypes = __webpack_require__(10);
 
-	var _propTypes2 = _interopRequireDefault(_propTypes);
+      var _propTypes2 = _interopRequireDefault(_propTypes);
 
-	var _PropTypes = __webpack_require__(4);
+      var _PropTypes = __webpack_require__(4);
 
-	var _warning = __webpack_require__(1);
+      var _warning = __webpack_require__(1);
 
-	var _warning2 = _interopRequireDefault(_warning);
+      var _warning2 = _interopRequireDefault(_warning);
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+      function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+      function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+      function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+      function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var didWarnAboutReceivingStore = false;
-	function warnAboutReceivingStore() {
+      var didWarnAboutReceivingStore = false;
+      function warnAboutReceivingStore() {
 	  if (didWarnAboutReceivingStore) {
 	    return;
 	  }
 	  didWarnAboutReceivingStore = true;
 
-	  (0, _warning2.default)('<Provider> does not support changing `store` on the fly. ' + 'It is most likely that you see this error because you updated to ' + 'Redux 2.x and React Redux 2.x which no longer hot reload reducers ' + 'automatically. See https://github.com/reactjs/react-redux/releases/' + 'tag/v2.0.0 for the migration instructions.');
-	}
+	  (0, _warning2.default)("<Provider> does not support changing `store` on the fly. " + "It is most likely that you see this error because you updated to " + "Redux 2.x and React Redux 2.x which no longer hot reload reducers " + "automatically. See https://github.com/reactjs/react-redux/releases/" + "tag/v2.0.0 for the migration instructions.");
+      }
 
-	var Provider = function (_Component) {
+      var Provider = function (_Component) {
 	  _inherits(Provider, _Component);
 
 	  Provider.prototype.getChildContext = function getChildContext() {
@@ -837,12 +837,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  return Provider;
-	}(_react.Component);
+      }(_react.Component);
 
-	exports.default = Provider;
+      exports.default = Provider;
 
 
-	if (true) {
+      if (true) {
 	  Provider.prototype.componentWillReceiveProps = function (nextProps) {
 	    var store = this.store;
 	    var nextStore = nextProps.store;
@@ -852,59 +852,59 @@ return /******/ (function(modules) { // webpackBootstrap
 	      warnAboutReceivingStore();
 	    }
 	  };
-	}
+      }
 
-	Provider.propTypes = {
+      Provider.propTypes = {
 	  store: _PropTypes.storeShape.isRequired,
 	  children: _propTypes2.default.element.isRequired
-	};
-	Provider.childContextTypes = {
+      };
+      Provider.childContextTypes = {
 	  store: _PropTypes.storeShape.isRequired,
 	  storeSubscription: _PropTypes.subscriptionShape
-	};
-	Provider.displayName = 'Provider';
+      };
+      Provider.displayName = "Provider";
 
-/***/ },
-/* 14 */
-/***/ function(module, exports, __webpack_require__) {
+      /***/ },
+    /* 14 */
+    /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+      "use strict";
 
-	exports.__esModule = true;
+      exports.__esModule = true;
 
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+      var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	exports.createConnect = createConnect;
+      exports.createConnect = createConnect;
 
-	var _connectAdvanced = __webpack_require__(2);
+      var _connectAdvanced = __webpack_require__(2);
 
-	var _connectAdvanced2 = _interopRequireDefault(_connectAdvanced);
+      var _connectAdvanced2 = _interopRequireDefault(_connectAdvanced);
 
-	var _shallowEqual = __webpack_require__(21);
+      var _shallowEqual = __webpack_require__(21);
 
-	var _shallowEqual2 = _interopRequireDefault(_shallowEqual);
+      var _shallowEqual2 = _interopRequireDefault(_shallowEqual);
 
-	var _mapDispatchToProps = __webpack_require__(15);
+      var _mapDispatchToProps = __webpack_require__(15);
 
-	var _mapDispatchToProps2 = _interopRequireDefault(_mapDispatchToProps);
+      var _mapDispatchToProps2 = _interopRequireDefault(_mapDispatchToProps);
 
-	var _mapStateToProps = __webpack_require__(16);
+      var _mapStateToProps = __webpack_require__(16);
 
-	var _mapStateToProps2 = _interopRequireDefault(_mapStateToProps);
+      var _mapStateToProps2 = _interopRequireDefault(_mapStateToProps);
 
-	var _mergeProps = __webpack_require__(17);
+      var _mergeProps = __webpack_require__(17);
 
-	var _mergeProps2 = _interopRequireDefault(_mergeProps);
+      var _mergeProps2 = _interopRequireDefault(_mergeProps);
 
-	var _selectorFactory = __webpack_require__(18);
+      var _selectorFactory = __webpack_require__(18);
 
-	var _selectorFactory2 = _interopRequireDefault(_selectorFactory);
+      var _selectorFactory2 = _interopRequireDefault(_selectorFactory);
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+      function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+      function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-	/*
+      /*
 	  connect is a facade over connectAdvanced. It turns its args into a compatible
 	  selectorFactory, which has the signature:
 
@@ -921,24 +921,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	  it receives new props or store state.
 	 */
 
-	function match(arg, factories, name) {
+      function match(arg, factories, name) {
 	  for (var i = factories.length - 1; i >= 0; i--) {
 	    var result = factories[i](arg);
 	    if (result) return result;
 	  }
 
 	  return function (dispatch, options) {
-	    throw new Error('Invalid value of type ' + typeof arg + ' for ' + name + ' argument when connecting component ' + options.wrappedComponentName + '.');
+	    throw new Error("Invalid value of type " + typeof arg + " for " + name + " argument when connecting component " + options.wrappedComponentName + ".");
 	  };
-	}
+      }
 
-	function strictEqual(a, b) {
+      function strictEqual(a, b) {
 	  return a === b;
-	}
+      }
 
-	// createConnect with default args builds the 'official' connect behavior. Calling it with
-	// different options opens up some testing and extensibility scenarios
-	function createConnect() {
+      // createConnect with default args builds the 'official' connect behavior. Calling it with
+      // different options opens up some testing and extensibility scenarios
+      function createConnect() {
 	  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
 	      _ref$connectHOC = _ref.connectHOC,
 	      connectHOC = _ref$connectHOC === undefined ? _connectAdvanced2.default : _ref$connectHOC,
@@ -963,19 +963,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	        areStatePropsEqual = _ref2$areStatePropsEq === undefined ? _shallowEqual2.default : _ref2$areStatePropsEq,
 	        _ref2$areMergedPropsE = _ref2.areMergedPropsEqual,
 	        areMergedPropsEqual = _ref2$areMergedPropsE === undefined ? _shallowEqual2.default : _ref2$areMergedPropsE,
-	        extraOptions = _objectWithoutProperties(_ref2, ['pure', 'areStatesEqual', 'areOwnPropsEqual', 'areStatePropsEqual', 'areMergedPropsEqual']);
+	        extraOptions = _objectWithoutProperties(_ref2, ["pure", "areStatesEqual", "areOwnPropsEqual", "areStatePropsEqual", "areMergedPropsEqual"]);
 
-	    var initMapStateToProps = match(mapStateToProps, mapStateToPropsFactories, 'mapStateToProps');
-	    var initMapDispatchToProps = match(mapDispatchToProps, mapDispatchToPropsFactories, 'mapDispatchToProps');
-	    var initMergeProps = match(mergeProps, mergePropsFactories, 'mergeProps');
+	    var initMapStateToProps = match(mapStateToProps, mapStateToPropsFactories, "mapStateToProps");
+	    var initMapDispatchToProps = match(mapDispatchToProps, mapDispatchToPropsFactories, "mapDispatchToProps");
+	    var initMergeProps = match(mergeProps, mergePropsFactories, "mergeProps");
 
 	    return connectHOC(selectorFactory, _extends({
 	      // used in error messages
-	      methodName: 'connect',
+	      methodName: "connect",
 
 	      // used to compute Connect's displayName from the wrapped component's displayName.
 	      getDisplayName: function getDisplayName(name) {
-	        return 'Connect(' + name + ')';
+	        return "Connect(" + name + ")";
 	      },
 
 	      // if mapStateToProps is falsy, the Connect component doesn't subscribe to store state changes
@@ -993,93 +993,93 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    }, extraOptions));
 	  };
-	}
+      }
 
-	exports.default = createConnect();
+      exports.default = createConnect();
 
-/***/ },
-/* 15 */
-/***/ function(module, exports, __webpack_require__) {
+      /***/ },
+    /* 15 */
+    /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+      "use strict";
 
-	exports.__esModule = true;
-	exports.whenMapDispatchToPropsIsFunction = whenMapDispatchToPropsIsFunction;
-	exports.whenMapDispatchToPropsIsMissing = whenMapDispatchToPropsIsMissing;
-	exports.whenMapDispatchToPropsIsObject = whenMapDispatchToPropsIsObject;
+      exports.__esModule = true;
+      exports.whenMapDispatchToPropsIsFunction = whenMapDispatchToPropsIsFunction;
+      exports.whenMapDispatchToPropsIsMissing = whenMapDispatchToPropsIsMissing;
+      exports.whenMapDispatchToPropsIsObject = whenMapDispatchToPropsIsObject;
 
-	var _redux = __webpack_require__(35);
+      var _redux = __webpack_require__(35);
 
-	var _wrapMapToProps = __webpack_require__(3);
+      var _wrapMapToProps = __webpack_require__(3);
 
-	function whenMapDispatchToPropsIsFunction(mapDispatchToProps) {
-	  return typeof mapDispatchToProps === 'function' ? (0, _wrapMapToProps.wrapMapToPropsFunc)(mapDispatchToProps, 'mapDispatchToProps') : undefined;
-	}
+      function whenMapDispatchToPropsIsFunction(mapDispatchToProps) {
+	  return typeof mapDispatchToProps === "function" ? (0, _wrapMapToProps.wrapMapToPropsFunc)(mapDispatchToProps, "mapDispatchToProps") : undefined;
+      }
 
-	function whenMapDispatchToPropsIsMissing(mapDispatchToProps) {
+      function whenMapDispatchToPropsIsMissing(mapDispatchToProps) {
 	  return !mapDispatchToProps ? (0, _wrapMapToProps.wrapMapToPropsConstant)(function (dispatch) {
 	    return { dispatch: dispatch };
 	  }) : undefined;
-	}
+      }
 
-	function whenMapDispatchToPropsIsObject(mapDispatchToProps) {
-	  return mapDispatchToProps && typeof mapDispatchToProps === 'object' ? (0, _wrapMapToProps.wrapMapToPropsConstant)(function (dispatch) {
+      function whenMapDispatchToPropsIsObject(mapDispatchToProps) {
+	  return mapDispatchToProps && typeof mapDispatchToProps === "object" ? (0, _wrapMapToProps.wrapMapToPropsConstant)(function (dispatch) {
 	    return (0, _redux.bindActionCreators)(mapDispatchToProps, dispatch);
 	  }) : undefined;
-	}
+      }
 
-	exports.default = [whenMapDispatchToPropsIsFunction, whenMapDispatchToPropsIsMissing, whenMapDispatchToPropsIsObject];
+      exports.default = [whenMapDispatchToPropsIsFunction, whenMapDispatchToPropsIsMissing, whenMapDispatchToPropsIsObject];
 
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
+      /***/ },
+    /* 16 */
+    /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+      "use strict";
 
-	exports.__esModule = true;
-	exports.whenMapStateToPropsIsFunction = whenMapStateToPropsIsFunction;
-	exports.whenMapStateToPropsIsMissing = whenMapStateToPropsIsMissing;
+      exports.__esModule = true;
+      exports.whenMapStateToPropsIsFunction = whenMapStateToPropsIsFunction;
+      exports.whenMapStateToPropsIsMissing = whenMapStateToPropsIsMissing;
 
-	var _wrapMapToProps = __webpack_require__(3);
+      var _wrapMapToProps = __webpack_require__(3);
 
-	function whenMapStateToPropsIsFunction(mapStateToProps) {
-	  return typeof mapStateToProps === 'function' ? (0, _wrapMapToProps.wrapMapToPropsFunc)(mapStateToProps, 'mapStateToProps') : undefined;
-	}
+      function whenMapStateToPropsIsFunction(mapStateToProps) {
+	  return typeof mapStateToProps === "function" ? (0, _wrapMapToProps.wrapMapToPropsFunc)(mapStateToProps, "mapStateToProps") : undefined;
+      }
 
-	function whenMapStateToPropsIsMissing(mapStateToProps) {
+      function whenMapStateToPropsIsMissing(mapStateToProps) {
 	  return !mapStateToProps ? (0, _wrapMapToProps.wrapMapToPropsConstant)(function () {
 	    return {};
 	  }) : undefined;
-	}
+      }
 
-	exports.default = [whenMapStateToPropsIsFunction, whenMapStateToPropsIsMissing];
+      exports.default = [whenMapStateToPropsIsFunction, whenMapStateToPropsIsMissing];
 
-/***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
+      /***/ },
+    /* 17 */
+    /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+      "use strict";
 
-	exports.__esModule = true;
+      exports.__esModule = true;
 
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+      var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	exports.defaultMergeProps = defaultMergeProps;
-	exports.wrapMergePropsFunc = wrapMergePropsFunc;
-	exports.whenMergePropsIsFunction = whenMergePropsIsFunction;
-	exports.whenMergePropsIsOmitted = whenMergePropsIsOmitted;
+      exports.defaultMergeProps = defaultMergeProps;
+      exports.wrapMergePropsFunc = wrapMergePropsFunc;
+      exports.whenMergePropsIsFunction = whenMergePropsIsFunction;
+      exports.whenMergePropsIsOmitted = whenMergePropsIsOmitted;
 
-	var _verifyPlainObject = __webpack_require__(5);
+      var _verifyPlainObject = __webpack_require__(5);
 
-	var _verifyPlainObject2 = _interopRequireDefault(_verifyPlainObject);
+      var _verifyPlainObject2 = _interopRequireDefault(_verifyPlainObject);
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+      function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function defaultMergeProps(stateProps, dispatchProps, ownProps) {
+      function defaultMergeProps(stateProps, dispatchProps, ownProps) {
 	  return _extends({}, ownProps, stateProps, dispatchProps);
-	}
+      }
 
-	function wrapMergePropsFunc(mergeProps) {
+      function wrapMergePropsFunc(mergeProps) {
 	  return function initMergePropsProxy(dispatch, _ref) {
 	    var displayName = _ref.displayName,
 	        pure = _ref.pure,
@@ -1097,52 +1097,52 @@ return /******/ (function(modules) { // webpackBootstrap
 	        hasRunOnce = true;
 	        mergedProps = nextMergedProps;
 
-	        if (true) (0, _verifyPlainObject2.default)(mergedProps, displayName, 'mergeProps');
+	        if (true) (0, _verifyPlainObject2.default)(mergedProps, displayName, "mergeProps");
 	      }
 
 	      return mergedProps;
 	    };
 	  };
-	}
+      }
 
-	function whenMergePropsIsFunction(mergeProps) {
-	  return typeof mergeProps === 'function' ? wrapMergePropsFunc(mergeProps) : undefined;
-	}
+      function whenMergePropsIsFunction(mergeProps) {
+	  return typeof mergeProps === "function" ? wrapMergePropsFunc(mergeProps) : undefined;
+      }
 
-	function whenMergePropsIsOmitted(mergeProps) {
+      function whenMergePropsIsOmitted(mergeProps) {
 	  return !mergeProps ? function () {
 	    return defaultMergeProps;
 	  } : undefined;
-	}
+      }
 
-	exports.default = [whenMergePropsIsFunction, whenMergePropsIsOmitted];
+      exports.default = [whenMergePropsIsFunction, whenMergePropsIsOmitted];
 
-/***/ },
-/* 18 */
-/***/ function(module, exports, __webpack_require__) {
+      /***/ },
+    /* 18 */
+    /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+      "use strict";
 
-	exports.__esModule = true;
-	exports.impureFinalPropsSelectorFactory = impureFinalPropsSelectorFactory;
-	exports.pureFinalPropsSelectorFactory = pureFinalPropsSelectorFactory;
-	exports.default = finalPropsSelectorFactory;
+      exports.__esModule = true;
+      exports.impureFinalPropsSelectorFactory = impureFinalPropsSelectorFactory;
+      exports.pureFinalPropsSelectorFactory = pureFinalPropsSelectorFactory;
+      exports.default = finalPropsSelectorFactory;
 
-	var _verifySubselectors = __webpack_require__(19);
+      var _verifySubselectors = __webpack_require__(19);
 
-	var _verifySubselectors2 = _interopRequireDefault(_verifySubselectors);
+      var _verifySubselectors2 = _interopRequireDefault(_verifySubselectors);
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+      function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+      function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-	function impureFinalPropsSelectorFactory(mapStateToProps, mapDispatchToProps, mergeProps, dispatch) {
+      function impureFinalPropsSelectorFactory(mapStateToProps, mapDispatchToProps, mergeProps, dispatch) {
 	  return function impureFinalPropsSelector(state, ownProps) {
 	    return mergeProps(mapStateToProps(state, ownProps), mapDispatchToProps(dispatch, ownProps), ownProps);
 	  };
-	}
+      }
 
-	function pureFinalPropsSelectorFactory(mapStateToProps, mapDispatchToProps, mergeProps, dispatch, _ref) {
+      function pureFinalPropsSelectorFactory(mapStateToProps, mapDispatchToProps, mergeProps, dispatch, _ref) {
 	  var areStatesEqual = _ref.areStatesEqual,
 	      areOwnPropsEqual = _ref.areOwnPropsEqual,
 	      areStatePropsEqual = _ref.areStatePropsEqual;
@@ -1207,20 +1207,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return function pureFinalPropsSelector(nextState, nextOwnProps) {
 	    return hasRunAtLeastOnce ? handleSubsequentCalls(nextState, nextOwnProps) : handleFirstCall(nextState, nextOwnProps);
 	  };
-	}
+      }
 
-	// TODO: Add more comments
+      // TODO: Add more comments
 
-	// If pure is true, the selector returned by selectorFactory will memoize its results,
-	// allowing connectAdvanced's shouldComponentUpdate to return false if final
-	// props have not changed. If false, the selector will always return a new
-	// object and shouldComponentUpdate will always return true.
+      // If pure is true, the selector returned by selectorFactory will memoize its results,
+      // allowing connectAdvanced's shouldComponentUpdate to return false if final
+      // props have not changed. If false, the selector will always return a new
+      // object and shouldComponentUpdate will always return true.
 
-	function finalPropsSelectorFactory(dispatch, _ref2) {
+      function finalPropsSelectorFactory(dispatch, _ref2) {
 	  var initMapStateToProps = _ref2.initMapStateToProps,
 	      initMapDispatchToProps = _ref2.initMapDispatchToProps,
 	      initMergeProps = _ref2.initMergeProps,
-	      options = _objectWithoutProperties(_ref2, ['initMapStateToProps', 'initMapDispatchToProps', 'initMergeProps']);
+	      options = _objectWithoutProperties(_ref2, ["initMapStateToProps", "initMapDispatchToProps", "initMergeProps"]);
 
 	  var mapStateToProps = initMapStateToProps(dispatch, options);
 	  var mapDispatchToProps = initMapDispatchToProps(dispatch, options);
@@ -1233,59 +1233,59 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var selectorFactory = options.pure ? pureFinalPropsSelectorFactory : impureFinalPropsSelectorFactory;
 
 	  return selectorFactory(mapStateToProps, mapDispatchToProps, mergeProps, dispatch, options);
-	}
+      }
 
-/***/ },
-/* 19 */
-/***/ function(module, exports, __webpack_require__) {
+      /***/ },
+    /* 19 */
+    /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+      "use strict";
 
-	exports.__esModule = true;
-	exports.default = verifySubselectors;
+      exports.__esModule = true;
+      exports.default = verifySubselectors;
 
-	var _warning = __webpack_require__(1);
+      var _warning = __webpack_require__(1);
 
-	var _warning2 = _interopRequireDefault(_warning);
+      var _warning2 = _interopRequireDefault(_warning);
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+      function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function verify(selector, methodName, displayName) {
+      function verify(selector, methodName, displayName) {
 	  if (!selector) {
-	    throw new Error('Unexpected value for ' + methodName + ' in ' + displayName + '.');
-	  } else if (methodName === 'mapStateToProps' || methodName === 'mapDispatchToProps') {
-	    if (!selector.hasOwnProperty('dependsOnOwnProps')) {
-	      (0, _warning2.default)('The selector for ' + methodName + ' of ' + displayName + ' did not specify a value for dependsOnOwnProps.');
+	    throw new Error("Unexpected value for " + methodName + " in " + displayName + ".");
+	  } else if (methodName === "mapStateToProps" || methodName === "mapDispatchToProps") {
+	    if (!selector.hasOwnProperty("dependsOnOwnProps")) {
+	      (0, _warning2.default)("The selector for " + methodName + " of " + displayName + " did not specify a value for dependsOnOwnProps.");
 	    }
 	  }
-	}
+      }
 
-	function verifySubselectors(mapStateToProps, mapDispatchToProps, mergeProps, displayName) {
-	  verify(mapStateToProps, 'mapStateToProps', displayName);
-	  verify(mapDispatchToProps, 'mapDispatchToProps', displayName);
-	  verify(mergeProps, 'mergeProps', displayName);
-	}
+      function verifySubselectors(mapStateToProps, mapDispatchToProps, mergeProps, displayName) {
+	  verify(mapStateToProps, "mapStateToProps", displayName);
+	  verify(mapDispatchToProps, "mapDispatchToProps", displayName);
+	  verify(mergeProps, "mergeProps", displayName);
+      }
 
-/***/ },
-/* 20 */
-/***/ function(module, exports) {
+      /***/ },
+    /* 20 */
+    /***/ function(module, exports) {
 
-	"use strict";
+      "use strict";
 
-	exports.__esModule = true;
+      exports.__esModule = true;
 
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+      function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	// encapsulates the subscription logic for connecting a component to the redux store, as
-	// well as nesting subscriptions of descendant components, so that we can ensure the
-	// ancestor components re-render before descendants
+      // encapsulates the subscription logic for connecting a component to the redux store, as
+      // well as nesting subscriptions of descendant components, so that we can ensure the
+      // ancestor components re-render before descendants
 
-	var CLEARED = null;
-	var nullListeners = {
+      var CLEARED = null;
+      var nullListeners = {
 	  notify: function notify() {}
-	};
+      };
 
-	function createListenerCollection() {
+      function createListenerCollection() {
 	  // the current/next pattern is copied from redux's createStore code.
 	  // TODO: refactor+expose that code to be reusable here?
 	  var current = [];
@@ -1316,9 +1316,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      };
 	    }
 	  };
-	}
+      }
 
-	var Subscription = function () {
+      var Subscription = function () {
 	  function Subscription(store, parentSub, onStateChange) {
 	    _classCallCheck(this, Subscription);
 
@@ -1360,32 +1360,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  return Subscription;
-	}();
+      }();
 
-	exports.default = Subscription;
+      exports.default = Subscription;
 
-/***/ },
-/* 21 */
-/***/ function(module, exports) {
+      /***/ },
+    /* 21 */
+    /***/ function(module, exports) {
 
-	'use strict';
+      "use strict";
 
-	exports.__esModule = true;
-	exports.default = shallowEqual;
-	var hasOwn = Object.prototype.hasOwnProperty;
+      exports.__esModule = true;
+      exports.default = shallowEqual;
+      var hasOwn = Object.prototype.hasOwnProperty;
 
-	function is(x, y) {
+      function is(x, y) {
 	  if (x === y) {
 	    return x !== 0 || y !== 0 || 1 / x === 1 / y;
 	  } else {
 	    return x !== x && y !== y;
 	  }
-	}
+      }
 
-	function shallowEqual(objA, objB) {
+      function shallowEqual(objA, objB) {
 	  if (is(objA, objB)) return true;
 
-	  if (typeof objA !== 'object' || objA === null || typeof objB !== 'object' || objB === null) {
+	  if (typeof objA !== "object" || objA === null || typeof objB !== "object" || objB === null) {
 	    return false;
 	  }
 
@@ -1401,19 +1401,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  return true;
-	}
+      }
 
-/***/ },
-/* 22 */
-/***/ function(module, exports) {
+      /***/ },
+    /* 22 */
+    /***/ function(module, exports) {
 
-	/**
+      /**
 	 * Copyright 2015, Yahoo! Inc.
 	 * Copyrights licensed under the New BSD License. See the accompanying LICENSE file for terms.
 	 */
-	'use strict';
+      "use strict";
 
-	var REACT_STATICS = {
+      var REACT_STATICS = {
 	    childContextTypes: true,
 	    contextTypes: true,
 	    defaultProps: true,
@@ -1422,21 +1422,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	    mixins: true,
 	    propTypes: true,
 	    type: true
-	};
+      };
 
-	var KNOWN_STATICS = {
+      var KNOWN_STATICS = {
 	    name: true,
 	    length: true,
 	    prototype: true,
 	    caller: true,
 	    arguments: true,
 	    arity: true
-	};
+      };
 
-	var isGetOwnPropertySymbolsAvailable = typeof Object.getOwnPropertySymbols === 'function';
+      var isGetOwnPropertySymbolsAvailable = typeof Object.getOwnPropertySymbols === "function";
 
-	module.exports = function hoistNonReactStatics(targetComponent, sourceComponent, customStatics) {
-	    if (typeof sourceComponent !== 'string') { // don't hoist over string (html) components
+      module.exports = function hoistNonReactStatics(targetComponent, sourceComponent, customStatics) {
+	    if (typeof sourceComponent !== "string") { // don't hoist over string (html) components
 	        var keys = Object.getOwnPropertyNames(sourceComponent);
 
 	        /* istanbul ignore else */
@@ -1456,14 +1456,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    return targetComponent;
-	};
+      };
 
 
-/***/ },
-/* 23 */
-/***/ function(module, exports, __webpack_require__) {
+      /***/ },
+    /* 23 */
+    /***/ function(module, exports, __webpack_require__) {
 
-	/**
+      /**
 	 * Copyright 2013-2015, Facebook, Inc.
 	 * All rights reserved.
 	 *
@@ -1472,9 +1472,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 */
 
-	'use strict';
+      "use strict";
 
-	/**
+      /**
 	 * Use invariant() to assert state which your program assumes to be true.
 	 *
 	 * Provide sprintf-style format (only %s is supported) and arguments
@@ -1485,10 +1485,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * will remain to ensure logic does not differ in production.
 	 */
 
-	var invariant = function(condition, format, a, b, c, d, e, f) {
+      var invariant = function(condition, format, a, b, c, d, e, f) {
 	  if (true) {
 	    if (format === undefined) {
-	      throw new Error('invariant requires an error message argument');
+	      throw new Error("invariant requires an error message argument");
 	    }
 	  }
 
@@ -1496,8 +1496,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var error;
 	    if (format === undefined) {
 	      error = new Error(
-	        'Minified exception occurred; use the non-minified dev environment ' +
-	        'for the full error message and additional helpful warnings.'
+	        "Minified exception occurred; use the non-minified dev environment " +
+	        "for the full error message and additional helpful warnings."
 	      );
 	    } else {
 	      var args = [a, b, c, d, e, f];
@@ -1505,104 +1505,104 @@ return /******/ (function(modules) { // webpackBootstrap
 	      error = new Error(
 	        format.replace(/%s/g, function() { return args[argIndex++]; })
 	      );
-	      error.name = 'Invariant Violation';
+	      error.name = "Invariant Violation";
 	    }
 
 	    error.framesToPop = 1; // we don't care about invariant's own frame
 	    throw error;
 	  }
-	};
+      };
 
-	module.exports = invariant;
+      module.exports = invariant;
 
 
-/***/ },
-/* 24 */
-/***/ function(module, exports, __webpack_require__) {
+      /***/ },
+    /* 24 */
+    /***/ function(module, exports, __webpack_require__) {
 
-	var Symbol = __webpack_require__(9),
+      var Symbol = __webpack_require__(9),
 	    getRawTag = __webpack_require__(27),
 	    objectToString = __webpack_require__(28);
 
-	/** `Object#toString` result references. */
-	var nullTag = '[object Null]',
-	    undefinedTag = '[object Undefined]';
+      /** `Object#toString` result references. */
+      var nullTag = "[object Null]",
+	    undefinedTag = "[object Undefined]";
 
-	/** Built-in value references. */
-	var symToStringTag = Symbol ? Symbol.toStringTag : undefined;
+      /** Built-in value references. */
+      var symToStringTag = Symbol ? Symbol.toStringTag : undefined;
 
-	/**
+      /**
 	 * The base implementation of `getTag` without fallbacks for buggy environments.
 	 *
 	 * @private
 	 * @param {*} value The value to query.
 	 * @returns {string} Returns the `toStringTag`.
 	 */
-	function baseGetTag(value) {
+      function baseGetTag(value) {
 	  if (value == null) {
 	    return value === undefined ? undefinedTag : nullTag;
 	  }
 	  return (symToStringTag && symToStringTag in Object(value))
 	    ? getRawTag(value)
 	    : objectToString(value);
-	}
+      }
 
-	module.exports = baseGetTag;
-
-
-/***/ },
-/* 25 */
-/***/ function(module, exports) {
-
-	/* WEBPACK VAR INJECTION */(function(global) {/** Detect free variable `global` from Node.js. */
-	var freeGlobal = typeof global == 'object' && global && global.Object === Object && global;
-
-	module.exports = freeGlobal;
-
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()) || Function('return this')()))
-
-/***/ },
-/* 26 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var overArg = __webpack_require__(29);
-
-	/** Built-in value references. */
-	var getPrototype = overArg(Object.getPrototypeOf, Object);
-
-	module.exports = getPrototype;
+      module.exports = baseGetTag;
 
 
-/***/ },
-/* 27 */
-/***/ function(module, exports, __webpack_require__) {
+      /***/ },
+    /* 25 */
+    /***/ function(module, exports) {
 
-	var Symbol = __webpack_require__(9);
+      /* WEBPACK VAR INJECTION */(function(global) {/** Detect free variable `global` from Node.js. */
+        var freeGlobal = typeof global == "object" && global && global.Object === Object && global;
 
-	/** Used for built-in method references. */
-	var objectProto = Object.prototype;
+        module.exports = freeGlobal;
 
-	/** Used to check objects for own properties. */
-	var hasOwnProperty = objectProto.hasOwnProperty;
+        /* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()) || Function("return this")()));
 
-	/**
+      /***/ },
+    /* 26 */
+    /***/ function(module, exports, __webpack_require__) {
+
+      var overArg = __webpack_require__(29);
+
+      /** Built-in value references. */
+      var getPrototype = overArg(Object.getPrototypeOf, Object);
+
+      module.exports = getPrototype;
+
+
+      /***/ },
+    /* 27 */
+    /***/ function(module, exports, __webpack_require__) {
+
+      var Symbol = __webpack_require__(9);
+
+      /** Used for built-in method references. */
+      var objectProto = Object.prototype;
+
+      /** Used to check objects for own properties. */
+      var hasOwnProperty = objectProto.hasOwnProperty;
+
+      /**
 	 * Used to resolve the
 	 * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
 	 * of values.
 	 */
-	var nativeObjectToString = objectProto.toString;
+      var nativeObjectToString = objectProto.toString;
 
-	/** Built-in value references. */
-	var symToStringTag = Symbol ? Symbol.toStringTag : undefined;
+      /** Built-in value references. */
+      var symToStringTag = Symbol ? Symbol.toStringTag : undefined;
 
-	/**
+      /**
 	 * A specialized version of `baseGetTag` which ignores `Symbol.toStringTag` values.
 	 *
 	 * @private
 	 * @param {*} value The value to query.
 	 * @returns {string} Returns the raw `toStringTag`.
 	 */
-	function getRawTag(value) {
+      function getRawTag(value) {
 	  var isOwn = hasOwnProperty.call(value, symToStringTag),
 	      tag = value[symToStringTag];
 
@@ -1620,44 +1620,44 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }
 	  return result;
-	}
+      }
 
-	module.exports = getRawTag;
+      module.exports = getRawTag;
 
 
-/***/ },
-/* 28 */
-/***/ function(module, exports) {
+      /***/ },
+    /* 28 */
+    /***/ function(module, exports) {
 
-	/** Used for built-in method references. */
-	var objectProto = Object.prototype;
+      /** Used for built-in method references. */
+      var objectProto = Object.prototype;
 
-	/**
+      /**
 	 * Used to resolve the
 	 * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
 	 * of values.
 	 */
-	var nativeObjectToString = objectProto.toString;
+      var nativeObjectToString = objectProto.toString;
 
-	/**
+      /**
 	 * Converts `value` to a string using `Object.prototype.toString`.
 	 *
 	 * @private
 	 * @param {*} value The value to convert.
 	 * @returns {string} Returns the converted string.
 	 */
-	function objectToString(value) {
+      function objectToString(value) {
 	  return nativeObjectToString.call(value);
-	}
+      }
 
-	module.exports = objectToString;
+      module.exports = objectToString;
 
 
-/***/ },
-/* 29 */
-/***/ function(module, exports) {
+      /***/ },
+    /* 29 */
+    /***/ function(module, exports) {
 
-	/**
+      /**
 	 * Creates a unary function that invokes `func` with its argument transformed.
 	 *
 	 * @private
@@ -1665,35 +1665,35 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {Function} transform The argument transform.
 	 * @returns {Function} Returns the new function.
 	 */
-	function overArg(func, transform) {
+      function overArg(func, transform) {
 	  return function(arg) {
 	    return func(transform(arg));
 	  };
-	}
+      }
 
-	module.exports = overArg;
-
-
-/***/ },
-/* 30 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var freeGlobal = __webpack_require__(25);
-
-	/** Detect free variable `self`. */
-	var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
-
-	/** Used as a reference to the global object. */
-	var root = freeGlobal || freeSelf || Function('return this')();
-
-	module.exports = root;
+      module.exports = overArg;
 
 
-/***/ },
-/* 31 */
-/***/ function(module, exports) {
+      /***/ },
+    /* 30 */
+    /***/ function(module, exports, __webpack_require__) {
 
-	/**
+      var freeGlobal = __webpack_require__(25);
+
+      /** Detect free variable `self`. */
+      var freeSelf = typeof self == "object" && self && self.Object === Object && self;
+
+      /** Used as a reference to the global object. */
+      var root = freeGlobal || freeSelf || Function("return this")();
+
+      module.exports = root;
+
+
+      /***/ },
+    /* 31 */
+    /***/ function(module, exports) {
+
+      /**
 	 * Checks if `value` is object-like. A value is object-like if it's not `null`
 	 * and has a `typeof` result of "object".
 	 *
@@ -1717,38 +1717,38 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * _.isObjectLike(null);
 	 * // => false
 	 */
-	function isObjectLike(value) {
-	  return value != null && typeof value == 'object';
-	}
+      function isObjectLike(value) {
+	  return value != null && typeof value == "object";
+      }
 
-	module.exports = isObjectLike;
+      module.exports = isObjectLike;
 
 
-/***/ },
-/* 32 */
-/***/ function(module, exports, __webpack_require__) {
+      /***/ },
+    /* 32 */
+    /***/ function(module, exports, __webpack_require__) {
 
-	var baseGetTag = __webpack_require__(24),
+      var baseGetTag = __webpack_require__(24),
 	    getPrototype = __webpack_require__(26),
 	    isObjectLike = __webpack_require__(31);
 
-	/** `Object#toString` result references. */
-	var objectTag = '[object Object]';
+      /** `Object#toString` result references. */
+      var objectTag = "[object Object]";
 
-	/** Used for built-in method references. */
-	var funcProto = Function.prototype,
+      /** Used for built-in method references. */
+      var funcProto = Function.prototype,
 	    objectProto = Object.prototype;
 
-	/** Used to resolve the decompiled source of functions. */
-	var funcToString = funcProto.toString;
+      /** Used to resolve the decompiled source of functions. */
+      var funcToString = funcProto.toString;
 
-	/** Used to check objects for own properties. */
-	var hasOwnProperty = objectProto.hasOwnProperty;
+      /** Used to check objects for own properties. */
+      var hasOwnProperty = objectProto.hasOwnProperty;
 
-	/** Used to infer the `Object` constructor. */
-	var objectCtorString = funcToString.call(Object);
+      /** Used to infer the `Object` constructor. */
+      var objectCtorString = funcToString.call(Object);
 
-	/**
+      /**
 	 * Checks if `value` is a plain object, that is, an object created by the
 	 * `Object` constructor or one with a `[[Prototype]]` of `null`.
 	 *
@@ -1776,7 +1776,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * _.isPlainObject(Object.create(null));
 	 * // => true
 	 */
-	function isPlainObject(value) {
+      function isPlainObject(value) {
 	  if (!isObjectLike(value) || baseGetTag(value) != objectTag) {
 	    return false;
 	  }
@@ -1784,19 +1784,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	  if (proto === null) {
 	    return true;
 	  }
-	  var Ctor = hasOwnProperty.call(proto, 'constructor') && proto.constructor;
-	  return typeof Ctor == 'function' && Ctor instanceof Ctor &&
+	  var Ctor = hasOwnProperty.call(proto, "constructor") && proto.constructor;
+	  return typeof Ctor == "function" && Ctor instanceof Ctor &&
 	    funcToString.call(Ctor) == objectCtorString;
-	}
+      }
 
-	module.exports = isPlainObject;
+      module.exports = isPlainObject;
 
 
-/***/ },
-/* 33 */
-/***/ function(module, exports, __webpack_require__) {
+      /***/ },
+    /* 33 */
+    /***/ function(module, exports, __webpack_require__) {
 
-	/**
+      /**
 	 * Copyright 2013-present, Facebook, Inc.
 	 * All rights reserved.
 	 *
@@ -1805,16 +1805,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 */
 
-	'use strict';
+      "use strict";
 
-	var invariant = __webpack_require__(7);
-	var warning = __webpack_require__(8);
+      var invariant = __webpack_require__(7);
+      var warning = __webpack_require__(8);
 
-	var ReactPropTypesSecret = __webpack_require__(11);
+      var ReactPropTypesSecret = __webpack_require__(11);
 
-	var loggedTypeFailures = {};
+      var loggedTypeFailures = {};
 
-	/**
+      /**
 	 * Assert that the values match with the type specs.
 	 * Error messages are memorized and will only be shown once.
 	 *
@@ -1825,7 +1825,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {?Function} getStack Returns the component stack.
 	 * @private
 	 */
-	function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
+      function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
 	  if (true) {
 	    for (var typeSpecName in typeSpecs) {
 	      if (typeSpecs.hasOwnProperty(typeSpecName)) {
@@ -1836,34 +1836,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	        try {
 	          // This is intentionally an invariant that gets caught. It's the same
 	          // behavior as without this statement except with a better message.
-	          invariant(typeof typeSpecs[typeSpecName] === 'function', '%s: %s type `%s` is invalid; it must be a function, usually from ' + 'React.PropTypes.', componentName || 'React class', location, typeSpecName);
+	          invariant(typeof typeSpecs[typeSpecName] === "function", "%s: %s type `%s` is invalid; it must be a function, usually from " + "React.PropTypes.", componentName || "React class", location, typeSpecName);
 	          error = typeSpecs[typeSpecName](values, typeSpecName, componentName, location, null, ReactPropTypesSecret);
 	        } catch (ex) {
 	          error = ex;
 	        }
-	         true ? warning(!error || error instanceof Error, '%s: type specification of %s `%s` is invalid; the type checker ' + 'function must return `null` or an `Error` but returned a %s. ' + 'You may have forgotten to pass an argument to the type checker ' + 'creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and ' + 'shape all require an argument).', componentName || 'React class', location, typeSpecName, typeof error) : void 0;
+	         true ? warning(!error || error instanceof Error, "%s: type specification of %s `%s` is invalid; the type checker " + "function must return `null` or an `Error` but returned a %s. " + "You may have forgotten to pass an argument to the type checker " + "creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and " + "shape all require an argument).", componentName || "React class", location, typeSpecName, typeof error) : void 0;
 	        if (error instanceof Error && !(error.message in loggedTypeFailures)) {
 	          // Only monitor this failure once because there tends to be a lot of the
 	          // same error.
 	          loggedTypeFailures[error.message] = true;
 
-	          var stack = getStack ? getStack() : '';
+	          var stack = getStack ? getStack() : "";
 
-	           true ? warning(false, 'Failed %s type: %s%s', location, error.message, stack != null ? stack : '') : void 0;
+	           true ? warning(false, "Failed %s type: %s%s", location, error.message, stack != null ? stack : "") : void 0;
 	        }
 	      }
 	    }
 	  }
-	}
+      }
 
-	module.exports = checkPropTypes;
+      module.exports = checkPropTypes;
 
 
-/***/ },
-/* 34 */
-/***/ function(module, exports, __webpack_require__) {
+      /***/ },
+    /* 34 */
+    /***/ function(module, exports, __webpack_require__) {
 
-	/**
+      /**
 	 * Copyright 2013-present, Facebook, Inc.
 	 * All rights reserved.
 	 *
@@ -1872,19 +1872,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 */
 
-	'use strict';
+      "use strict";
 
-	var emptyFunction = __webpack_require__(6);
-	var invariant = __webpack_require__(7);
-	var warning = __webpack_require__(8);
+      var emptyFunction = __webpack_require__(6);
+      var invariant = __webpack_require__(7);
+      var warning = __webpack_require__(8);
 
-	var ReactPropTypesSecret = __webpack_require__(11);
-	var checkPropTypes = __webpack_require__(33);
+      var ReactPropTypesSecret = __webpack_require__(11);
+      var checkPropTypes = __webpack_require__(33);
 
-	module.exports = function (isValidElement) {
+      module.exports = function (isValidElement) {
 	  /* global Symbol */
-	  var ITERATOR_SYMBOL = typeof Symbol === 'function' && Symbol.iterator;
-	  var FAUX_ITERATOR_SYMBOL = '@@iterator'; // Before Symbol spec.
+	  var ITERATOR_SYMBOL = typeof Symbol === "function" && Symbol.iterator;
+	  var FAUX_ITERATOR_SYMBOL = "@@iterator"; // Before Symbol spec.
 
 	  /**
 	   * Returns the iterator method function contained on the iterable object.
@@ -1902,7 +1902,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 	  function getIteratorFn(maybeIterable) {
 	    var iteratorFn = maybeIterable && (ITERATOR_SYMBOL && maybeIterable[ITERATOR_SYMBOL] || maybeIterable[FAUX_ITERATOR_SYMBOL]);
-	    if (typeof iteratorFn === 'function') {
+	    if (typeof iteratorFn === "function") {
 	      return iteratorFn;
 	    }
 	  }
@@ -1954,20 +1954,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * @internal
 	   */
 
-	  var ANONYMOUS = '<<anonymous>>';
+	  var ANONYMOUS = "<<anonymous>>";
 
 	  var ReactPropTypes;
 
 	  if (true) {
 	    // Keep in sync with production version below
 	    ReactPropTypes = {
-	      array: createPrimitiveTypeChecker('array'),
-	      bool: createPrimitiveTypeChecker('boolean'),
-	      func: createPrimitiveTypeChecker('function'),
-	      number: createPrimitiveTypeChecker('number'),
-	      object: createPrimitiveTypeChecker('object'),
-	      string: createPrimitiveTypeChecker('string'),
-	      symbol: createPrimitiveTypeChecker('symbol'),
+	      array: createPrimitiveTypeChecker("array"),
+	      bool: createPrimitiveTypeChecker("boolean"),
+	      func: createPrimitiveTypeChecker("function"),
+	      number: createPrimitiveTypeChecker("number"),
+	      object: createPrimitiveTypeChecker("object"),
+	      string: createPrimitiveTypeChecker("string"),
+	      symbol: createPrimitiveTypeChecker("symbol"),
 
 	      any: createAnyTypeChecker(),
 	      arrayOf: createArrayOfTypeChecker,
@@ -1981,7 +1981,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	  } else {
 	    var productionTypeChecker = function () {
-	      invariant(false, 'React.PropTypes type checking code is stripped in production.');
+	      invariant(false, "React.PropTypes type checking code is stripped in production.");
 	    };
 	    productionTypeChecker.isRequired = productionTypeChecker;
 	    var getProductionTypeChecker = function () {
@@ -2036,7 +2036,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 	  function PropTypeError(message) {
 	    this.message = message;
-	    this.stack = '';
+	    this.stack = "";
 	  }
 	  // Make `instanceof Error` still work for returned errors.
 	  PropTypeError.prototype = Error.prototype;
@@ -2049,10 +2049,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      componentName = componentName || ANONYMOUS;
 	      propFullName = propFullName || propName;
 	      if (true) {
-	        if (secret !== ReactPropTypesSecret && typeof console !== 'undefined') {
-	          var cacheKey = componentName + ':' + propName;
+	        if (secret !== ReactPropTypesSecret && typeof console !== "undefined") {
+	          var cacheKey = componentName + ":" + propName;
 	          if (!manualPropTypeCallCache[cacheKey]) {
-	             true ? warning(false, 'You are manually calling a React.PropTypes validation ' + 'function for the `%s` prop on `%s`. This is deprecated ' + 'and will not work in production with the next major version. ' + 'You may be seeing this warning due to a third-party PropTypes ' + 'library. See https://fb.me/react-warning-dont-call-proptypes ' + 'for details.', propFullName, componentName) : void 0;
+	             true ? warning(false, "You are manually calling a React.PropTypes validation " + "function for the `%s` prop on `%s`. This is deprecated " + "and will not work in production with the next major version. " + "You may be seeing this warning due to a third-party PropTypes " + "library. See https://fb.me/react-warning-dont-call-proptypes " + "for details.", propFullName, componentName) : void 0;
 	            manualPropTypeCallCache[cacheKey] = true;
 	          }
 	        }
@@ -2060,9 +2060,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (props[propName] == null) {
 	        if (isRequired) {
 	          if (props[propName] === null) {
-	            return new PropTypeError('The ' + location + ' `' + propFullName + '` is marked as required ' + ('in `' + componentName + '`, but its value is `null`.'));
+	            return new PropTypeError("The " + location + " `" + propFullName + "` is marked as required " + ("in `" + componentName + "`, but its value is `null`."));
 	          }
-	          return new PropTypeError('The ' + location + ' `' + propFullName + '` is marked as required in ' + ('`' + componentName + '`, but its value is `undefined`.'));
+	          return new PropTypeError("The " + location + " `" + propFullName + "` is marked as required in " + ("`" + componentName + "`, but its value is `undefined`."));
 	        }
 	        return null;
 	      } else {
@@ -2086,7 +2086,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // 'of type `object`'.
 	        var preciseType = getPreciseType(propValue);
 
-	        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + preciseType + '` supplied to `' + componentName + '`, expected ') + ('`' + expectedType + '`.'));
+	        return new PropTypeError("Invalid " + location + " `" + propFullName + "` of type " + ("`" + preciseType + "` supplied to `" + componentName + "`, expected ") + ("`" + expectedType + "`."));
 	      }
 	      return null;
 	    }
@@ -2099,16 +2099,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  function createArrayOfTypeChecker(typeChecker) {
 	    function validate(props, propName, componentName, location, propFullName) {
-	      if (typeof typeChecker !== 'function') {
-	        return new PropTypeError('Property `' + propFullName + '` of component `' + componentName + '` has invalid PropType notation inside arrayOf.');
+	      if (typeof typeChecker !== "function") {
+	        return new PropTypeError("Property `" + propFullName + "` of component `" + componentName + "` has invalid PropType notation inside arrayOf.");
 	      }
 	      var propValue = props[propName];
 	      if (!Array.isArray(propValue)) {
 	        var propType = getPropType(propValue);
-	        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected an array.'));
+	        return new PropTypeError("Invalid " + location + " `" + propFullName + "` of type " + ("`" + propType + "` supplied to `" + componentName + "`, expected an array."));
 	      }
 	      for (var i = 0; i < propValue.length; i++) {
-	        var error = typeChecker(propValue, i, componentName, location, propFullName + '[' + i + ']', ReactPropTypesSecret);
+	        var error = typeChecker(propValue, i, componentName, location, propFullName + "[" + i + "]", ReactPropTypesSecret);
 	        if (error instanceof Error) {
 	          return error;
 	        }
@@ -2123,7 +2123,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var propValue = props[propName];
 	      if (!isValidElement(propValue)) {
 	        var propType = getPropType(propValue);
-	        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected a single ReactElement.'));
+	        return new PropTypeError("Invalid " + location + " `" + propFullName + "` of type " + ("`" + propType + "` supplied to `" + componentName + "`, expected a single ReactElement."));
 	      }
 	      return null;
 	    }
@@ -2135,7 +2135,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (!(props[propName] instanceof expectedClass)) {
 	        var expectedClassName = expectedClass.name || ANONYMOUS;
 	        var actualClassName = getClassName(props[propName]);
-	        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + actualClassName + '` supplied to `' + componentName + '`, expected ') + ('instance of `' + expectedClassName + '`.'));
+	        return new PropTypeError("Invalid " + location + " `" + propFullName + "` of type " + ("`" + actualClassName + "` supplied to `" + componentName + "`, expected ") + ("instance of `" + expectedClassName + "`."));
 	      }
 	      return null;
 	    }
@@ -2144,7 +2144,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  function createEnumTypeChecker(expectedValues) {
 	    if (!Array.isArray(expectedValues)) {
-	       true ? warning(false, 'Invalid argument supplied to oneOf, expected an instance of array.') : void 0;
+	       true ? warning(false, "Invalid argument supplied to oneOf, expected an instance of array.") : void 0;
 	      return emptyFunction.thatReturnsNull;
 	    }
 
@@ -2157,24 +2157,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      var valuesString = JSON.stringify(expectedValues);
-	      return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of value `' + propValue + '` ' + ('supplied to `' + componentName + '`, expected one of ' + valuesString + '.'));
+	      return new PropTypeError("Invalid " + location + " `" + propFullName + "` of value `" + propValue + "` " + ("supplied to `" + componentName + "`, expected one of " + valuesString + "."));
 	    }
 	    return createChainableTypeChecker(validate);
 	  }
 
 	  function createObjectOfTypeChecker(typeChecker) {
 	    function validate(props, propName, componentName, location, propFullName) {
-	      if (typeof typeChecker !== 'function') {
-	        return new PropTypeError('Property `' + propFullName + '` of component `' + componentName + '` has invalid PropType notation inside objectOf.');
+	      if (typeof typeChecker !== "function") {
+	        return new PropTypeError("Property `" + propFullName + "` of component `" + componentName + "` has invalid PropType notation inside objectOf.");
 	      }
 	      var propValue = props[propName];
 	      var propType = getPropType(propValue);
-	      if (propType !== 'object') {
-	        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected an object.'));
+	      if (propType !== "object") {
+	        return new PropTypeError("Invalid " + location + " `" + propFullName + "` of type " + ("`" + propType + "` supplied to `" + componentName + "`, expected an object."));
 	      }
 	      for (var key in propValue) {
 	        if (propValue.hasOwnProperty(key)) {
-	          var error = typeChecker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret);
+	          var error = typeChecker(propValue, key, componentName, location, propFullName + "." + key, ReactPropTypesSecret);
 	          if (error instanceof Error) {
 	            return error;
 	          }
@@ -2187,7 +2187,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  function createUnionTypeChecker(arrayOfTypeCheckers) {
 	    if (!Array.isArray(arrayOfTypeCheckers)) {
-	       true ? warning(false, 'Invalid argument supplied to oneOfType, expected an instance of array.') : void 0;
+	       true ? warning(false, "Invalid argument supplied to oneOfType, expected an instance of array.") : void 0;
 	      return emptyFunction.thatReturnsNull;
 	    }
 
@@ -2199,7 +2199,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	      }
 
-	      return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` supplied to ' + ('`' + componentName + '`.'));
+	      return new PropTypeError("Invalid " + location + " `" + propFullName + "` supplied to " + ("`" + componentName + "`."));
 	    }
 	    return createChainableTypeChecker(validate);
 	  }
@@ -2207,7 +2207,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function createNodeChecker() {
 	    function validate(props, propName, componentName, location, propFullName) {
 	      if (!isNode(props[propName])) {
-	        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` supplied to ' + ('`' + componentName + '`, expected a ReactNode.'));
+	        return new PropTypeError("Invalid " + location + " `" + propFullName + "` supplied to " + ("`" + componentName + "`, expected a ReactNode."));
 	      }
 	      return null;
 	    }
@@ -2218,15 +2218,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function validate(props, propName, componentName, location, propFullName) {
 	      var propValue = props[propName];
 	      var propType = getPropType(propValue);
-	      if (propType !== 'object') {
-	        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type `' + propType + '` ' + ('supplied to `' + componentName + '`, expected `object`.'));
+	      if (propType !== "object") {
+	        return new PropTypeError("Invalid " + location + " `" + propFullName + "` of type `" + propType + "` " + ("supplied to `" + componentName + "`, expected `object`."));
 	      }
 	      for (var key in shapeTypes) {
 	        var checker = shapeTypes[key];
 	        if (!checker) {
 	          continue;
 	        }
-	        var error = checker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret);
+	        var error = checker(propValue, key, componentName, location, propFullName + "." + key, ReactPropTypesSecret);
 	        if (error) {
 	          return error;
 	        }
@@ -2238,13 +2238,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  function isNode(propValue) {
 	    switch (typeof propValue) {
-	      case 'number':
-	      case 'string':
-	      case 'undefined':
+	      case "number":
+	      case "string":
+	      case "undefined":
 	        return true;
-	      case 'boolean':
+	      case "boolean":
 	        return !propValue;
-	      case 'object':
+	      case "object":
 	        if (Array.isArray(propValue)) {
 	          return propValue.every(isNode);
 	        }
@@ -2285,17 +2285,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  function isSymbol(propType, propValue) {
 	    // Native Symbol.
-	    if (propType === 'symbol') {
+	    if (propType === "symbol") {
 	      return true;
 	    }
 
 	    // 19.4.3.5 Symbol.prototype[@@toStringTag] === 'Symbol'
-	    if (propValue['@@toStringTag'] === 'Symbol') {
+	    if (propValue["@@toStringTag"] === "Symbol") {
 	      return true;
 	    }
 
 	    // Fallback for non-spec compliant Symbols which are polyfilled.
-	    if (typeof Symbol === 'function' && propValue instanceof Symbol) {
+	    if (typeof Symbol === "function" && propValue instanceof Symbol) {
 	      return true;
 	    }
 
@@ -2306,16 +2306,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function getPropType(propValue) {
 	    var propType = typeof propValue;
 	    if (Array.isArray(propValue)) {
-	      return 'array';
+	      return "array";
 	    }
 	    if (propValue instanceof RegExp) {
 	      // Old webkits (at least until Android 4.0) return 'function' rather than
 	      // 'object' for typeof a RegExp. We'll normalize this here so that /bla/
 	      // passes PropTypes.object.
-	      return 'object';
+	      return "object";
 	    }
 	    if (isSymbol(propType, propValue)) {
-	      return 'symbol';
+	      return "symbol";
 	    }
 	    return propType;
 	  }
@@ -2324,11 +2324,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  // See `createPrimitiveTypeChecker`.
 	  function getPreciseType(propValue) {
 	    var propType = getPropType(propValue);
-	    if (propType === 'object') {
+	    if (propType === "object") {
 	      if (propValue instanceof Date) {
-	        return 'date';
+	        return "date";
 	      } else if (propValue instanceof RegExp) {
-	        return 'regexp';
+	        return "regexp";
 	      }
 	    }
 	    return propType;
@@ -2346,16 +2346,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	  ReactPropTypes.PropTypes = ReactPropTypes;
 
 	  return ReactPropTypes;
-	};
+      };
 
 
-/***/ },
-/* 35 */
-/***/ function(module, exports) {
+      /***/ },
+    /* 35 */
+    /***/ function(module, exports) {
 
-	module.exports = __WEBPACK_EXTERNAL_MODULE_35__;
+      module.exports = __WEBPACK_EXTERNAL_MODULE_35__;
 
-/***/ }
-/******/ ])
+      /***/ }
+    /******/ ]);
 });
-;

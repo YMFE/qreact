@@ -1,10 +1,8 @@
 import React from "dist/React";
-import getTestDocument from "./getTestDocument";
 import ReactTestUtils from "lib/ReactTestUtils";
-import ReactDOMServer from "dist/ReactDOMServer";
 // https://github.com/facebook/react/blob/master/src/renderers/__tests__/EventPluginHub-test.js
 var ReactDOM = window.ReactDOM || React;
-
+React.uuid = false;
 describe("findDOMNode", function() {
     this.timeout(200000);
 
@@ -41,7 +39,7 @@ describe("findDOMNode", function() {
 
         var myNodeA = ReactDOM.render(<MyNode />, container);
         var a = ReactDOM.findDOMNode(myNodeA);
-        expect(a && a.nodeType).toBe(8);
+        expect(a).toBe(null);
 
         var myNodeB = ReactDOM.render(<MyNode flag={true} />, container);
         expect(myNodeA === myNodeB).toBe(true);

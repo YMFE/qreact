@@ -1,22 +1,21 @@
-import { NAMESPACE } from "./browser";
+import { NAMESPACE, duplexMap } from "./browser";
 import { patchStyle } from "./style";
-import {
-  addGlobalEvent,
-  getBrowserName,
-  isEventName,
-  eventHooks
-} from "./event";
-import { toLowerCase, noop, typeNumber, emptyObject } from "./util";
+import { addGlobalEvent, getBrowserName, isEventName, eventHooks } from "./event";
+import { toLowerCase, noop, typeNumber, emptyObject, options } from "./util";
+import { inputMonitor } from "./inputMonitor";
 
 //布尔属性的值末必为true,false
 //https://github.com/facebook/react/issues/10589
 var controlled = {
   value: 1,
-  defaultValue: 1
+  checked: 1
 };
 
 var isSpecialAttr = {
   style: 1,
+  autoFocus: 1,
+  defaultValue: 1,
+  defaultChecked: 1,
   children: 1,
   innerHTML: 1,
   dangerouslySetInnerHTML: 1
@@ -79,21 +78,7 @@ var specialSVGPropertyName = {
 };
 
 // 重复属性名的特征值列表
-var repeatedKey = [
-  "et",
-  "ep",
-  "em",
-  "es",
-  "pp",
-  "ts",
-  "td",
-  "to",
-  "lr",
-  "rr",
-  "re",
-  "ht",
-  "gc"
-];
+var repeatedKey = ["et", "ep", "em", "es", "pp", "ts", "td", "to", "lr", "rr", "re", "ht", "gc"];
 
 function createRepaceFn(split) {
   return function(match) {
@@ -139,9 +124,11 @@ function getSVGAttributeName(name) {
 }
 
 export function diffProps(dom, lastProps, nextProps, vnode) {
+  options.beforeProps(vnode);
   let isSVG = vnode.namespaceURI === NAMESPACE.svg;
   let tag = vnode.type;
-  for (let name in nextProps) {
+  //eslint-disable-next-line
+    for (let name in nextProps) {
     let val = nextProps[name];
     if (val !== lastProps[name]) {
       let which = tag + isSVG + name;
@@ -157,7 +144,9 @@ export function diffProps(dom, lastProps, nextProps, vnode) {
     if (!nextProps.hasOwnProperty(name)) {
       let which = tag + isSVG + name;
       let action = strategyCache[which];
-      if (!action) continue;
+      if (!action) {
+        continue;
+      }
       actionStrategy[action](dom, name, false, lastProps, vnode);
     }
   }
@@ -169,11 +158,11 @@ function isBooleanAttr(dom, name) {
 }
 /**
  * 根据一个属性所在的元素或元素的文档类型，就可以永久决定该使用什么策略操作它
- * 
+ *
  * @param {any} dom 元素节点
  * @param {any} name 属性名
- * @param {any} isSVG 
- * @returns 
+ * @param {any} isSVG
+ * @returns
  */
 function getPropAction(dom, name, isSVG) {
   if (isSVG && name === "className") {
@@ -192,23 +181,49 @@ function getPropAction(dom, name, isSVG) {
     return "booleanAttr";
   }
 
-  return name.indexOf("data-") === 0 || dom[name] === void 666
-    ? "attribute"
-    : "property";
+  return name.indexOf("data-") === 0 || dom[name] === void 666 ? "attribute" : "property";
 }
 var builtinStringProps = {
   className: 1,
   title: 1,
   name: 1,
+  type: 1,
   alt: 1,
-  lang: 1,
-  value: 1
+  lang: 1
 };
+
+var rform = /textarea|input|select/i;
+function uncontrolled(dom, name, val, lastProps, vnode) {
+  if (rform.test(dom.nodeName)) {
+    if (!dom._uncontrolled) {
+      dom._uncontrolled = true;
+      inputMonitor.observe(dom, name); //重写defaultXXX的setter/getter
+    }
+    dom._observing = false;
+    if (vnode.type === "select" && dom._setValue && !lastProps.multiple !== !vnode.props.multiple) {
+      //当select的multiple发生变化，需要重置selectedIndex，让底下的selected生效
+      dom.selectedIndex = dom.selectedIndex;
+      dom._setValue = false;
+    }
+    dom[name] = val;
+    dom._observing = true;
+  } else {
+    dom.setAttribute(name, val);
+  }
+}
+
 export var actionStrategy = {
   innerHTML: noop,
+  defaultValue: uncontrolled,
+  defaultChecked: uncontrolled,
   children: noop,
   style: function(dom, _, val, lastProps) {
     patchStyle(dom, lastProps.style || emptyObject, val || emptyObject);
+  },
+  autoFocus: function(dom){
+    if(duplexMap[dom.type] < 3  || dom.contentEditable === "true"){
+      dom.focus();
+    }
   },
   svgClass: function(dom, name, val) {
     if (!val) {
@@ -222,16 +237,14 @@ export var actionStrategy = {
     // https://facebook.github.io/react/blog/2015/10/07/react-v0.14.html#notable-enh
     // a ncements xlinkActuate, xlinkArcrole, xlinkHref, xlinkRole, xlinkShow,
     // xlinkTitle, xlinkType eslint-disable-next-line
-    let method =
-      typeNumber(val) < 3 && !val ? "removeAttribute" : "setAttribute";
+    let method = typeNumber(val) < 3 && !val ? "removeAttribute" : "setAttribute";
     let nameRes = getSVGAttributeName(name);
-    let value = (typeof val === "undefined" || val === null) ? "" : val;
     if (nameRes.ifSpecial) {
       let prefix = nameRes.name.split(":")[0];
       // 将xlinkHref 转换为 xlink:href
-      dom[method + "NS"](NAMESPACE[prefix], nameRes.name, value);
+      dom[method + "NS"](NAMESPACE[prefix], nameRes.name, val || "");
     } else {
-      dom[method](nameRes, value);
+      dom[method](nameRes, val || "");
     }
   },
   booleanAttr: function(dom, name, val) {
@@ -252,32 +265,30 @@ export var actionStrategy = {
     try {
       dom.setAttribute(name, val);
     } catch (e) {
-      console.warn("setAttribute error", name, val); // eslint-disable-line
+            console.warn("setAttribute error", name, val); // eslint-disable-line
     }
   },
   property: function(dom, name, val) {
-    if (name !== "value" || dom[name] !== val) {
-      // 尝试直接赋值，部分情况下会失败，如给 input 元素的 size 属性赋值 0 或字符串
-      // 这时如果用 setAttribute 则会静默失败
-      try {
-        if (!val && val !== 0) {
-          //如果它是字符串属性，并且不等于""，清空
-          // if (typeNumber(dom[name]) === 4 && dom[name] !== "") {
-          if (builtinStringProps[name]) {
-            dom[name] = "";
-          }
-          // }
-          dom.removeAttribute(name);
-        } else {
-          dom[name] = val;
-        }
-      } catch (e) {
-        dom.setAttribute(name, val);
-      }
-      if (controlled[name]) {
-        dom._lastValue = val;
-      }
+    // if (dom[name] !== val) {
+    // 尝试直接赋值，部分情况下会失败，如给 input 元素的 size 属性赋值 0 或字符串
+    // 这时如果用 setAttribute 则会静默失败
+    if (controlled[name]) {
+      return;
     }
+    try {
+      if (!val && val !== 0) {
+        //如果它是字符串属性，并且不等于""，清空
+        if (builtinStringProps[name]) {
+          dom[name] = "";
+        }
+        dom.removeAttribute(name);
+      } else {
+        dom[name] = val;
+      }
+    } catch (e) {
+      dom.setAttribute(name, val);
+    }
+    // }
   },
   event: function(dom, name, val, lastProps, vnode) {
     let events = dom.__events || (dom.__events = {});

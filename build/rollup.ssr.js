@@ -3,7 +3,7 @@ import resolve from "rollup-plugin-node-resolve";
 import commonjs from "rollup-plugin-commonjs";
 
 export default {
-  entry: "./ssr/index.js",
+  entry: "./server/index.js",
   format: "umd",
   exports: "default",
   dest: "./dist/ReactDOMServer.js",
@@ -30,10 +30,7 @@ export default {
       // 以支持低版本 node 的运行
       runtimeHelpers: true,
       externalHelpers: true,
-      plugins: [
-        "external-helpers",
-        "transform-runtime"
-      ],
+      plugins: ["external-helpers", "transform-runtime"],
       exclude: "node_modules/**"
     })
   ],

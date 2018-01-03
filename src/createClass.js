@@ -94,7 +94,7 @@ function newCtor(className, spec) {
       if (spec.getInitialState) {
         var test = this.state = spec.getInitialState.call(this);
         if(!(test === null || ({}).toString.call(test) == "[object Object]")){
-          throw "getInitialState(): must return an object or null"
+          throw "getInitialState只能返回纯JS对象或者null"
         }
       }
 
@@ -128,7 +128,7 @@ export function createClass(spec) {
         if (name !== "displayName") {
           for (let i in props) {
             if (!isFn(props[i])) {
-              console.error(`${i} in ${name} must be a function`); // eslint-disable-line
+                            console.error(`${i} in ${name} must be a function`); // eslint-disable-line
             }
           }
         }

@@ -1,6 +1,14 @@
 export var __push = Array.prototype.push;
-
+export var hasSymbol = typeof Symbol === "function" && Symbol["for"];
+export var REACT_ELEMENT_TYPE = hasSymbol
+  ? Symbol["for"]("react.element")
+  : 0xeac7;
 export var innerHTML = "dangerouslySetInnerHTML";
+export var hasOwnProperty = Object.prototype.hasOwnProperty;
+export var REACT_FRAGMENT_TYPE = hasSymbol
+  ? Symbol["for"]("react.fragment")
+  : 0xeacb;
+
 export var emptyArray = [];
 export var emptyObject = {};
 export function deprecatedWarn(methodName) {
@@ -25,8 +33,13 @@ export function extend(obj, props) {
   }
   return obj;
 }
-
-let __type = Object.prototype.toString;
+export function returnFalse() {
+  return false;
+}
+export function returnTrue() {
+  return true;
+}
+export let __type = Object.prototype.toString;
 
 /**
  * 一个空函数
@@ -55,13 +68,6 @@ export function inherit(SubClass, SupClass) {
 }
 
 var lowerCache = {};
-/**
- * 小写化的优化
- *
- * @export
- * @param {any} s
- * @returns
- */
 export function toLowerCase(s) {
   return lowerCache[s] || (lowerCache[s] = s.toLowerCase());
 }
@@ -70,12 +76,6 @@ export function clearArray(a) {
   return a.splice(0, a.length);
 }
 
-/**
- *
- *
- * @param {any} obj
- * @returns
- */
 export function isFn(obj) {
   return __type.call(obj) === "[object Function]";
 }
@@ -96,29 +96,6 @@ export function oneObject(array, val) {
   return result;
 }
 
-export function getChildContext(instance, parentContext) {
-  if (instance.getChildContext) {
-    let context = instance.getChildContext();
-    if (context) {
-      parentContext = Object.assign({}, parentContext, context);
-    }
-  }
-  return parentContext;
-}
-
-export function getContextByTypes(curContext, contextTypes) {
-  let context = {};
-  if (!contextTypes || !curContext) {
-    return context;
-  }
-  for (let key in contextTypes) {
-    if (contextTypes.hasOwnProperty(key)) {
-      context[key] = curContext[key];
-    }
-  }
-  return context;
-}
-
 var rcamelize = /[-_][^-_]/g;
 export function camelize(target) {
   //提前判断，提高getStyle等的效率
@@ -136,41 +113,21 @@ export function firstLetterLower(str) {
   return str.charAt(0).toLowerCase() + str.slice(1);
 }
 
-function extractLocation(urlLike) {
-  if (urlLike.indexOf(":") === -1) {
-    return [urlLike];
-  }
-
-  const regExp = /(.+?)(?::(\d+))?(?::(\d+))?$/;
-  const parts = regExp.exec(urlLike.replace(/[()]/g, ""));
-  const maybeUrl = /http.*/.exec(parts[1]);
-
-  parts[1] = Array.isArray(maybeUrl) ? maybeUrl[0] : undefined;
-
-  return [parts[1], parts[2] || undefined, parts[3] || undefined];
-}
-
-const CHROME_IE_STACK_REGEXP = /^\s*at .*(\S+:\d+|\(native\))/m;
-
-export function parseError(error) {
-  const filtered = error.stack.split("\n").filter(function(line) {
-    return !!line.match(CHROME_IE_STACK_REGEXP);
-  });
-  const originError = filtered.pop();
-  const e = extractLocation(originError);
-
-  return [error.message, ...e, error];
-}
-
-export var options = {
-  beforeUnmount: noop,
-  beforeRender: noop,
-  beforePatch: noop,
-  afterRender: noop,
-  afterPatch: noop,
-  afterMount: noop,
-  afterUpdate: noop
-};
+export var options = oneObject(
+  [
+    "beforeProps",
+    "afterCreate",
+    "beforeInsert",
+    "beforeDelete",
+    "beforeUpdate",
+    "afterUpdate",
+    "beforePatch",
+    "afterPatch",
+    "beforeUnmount",
+    "afterMount"
+  ],
+  noop
+);
 
 var numberMap = {
   //null undefined IE6-8这里会返回[object Object]
@@ -193,6 +150,12 @@ export function typeNumber(data) {
   return a || 8;
 }
 
-export var recyclables = {
-  "#text": []
-};
+export var toArray =
+  Array.from ||
+  function(a) {
+    var ret = [];
+    for (var i = 0, n = a.length; i < n; i++) {
+      ret[i] = a[i];
+    }
+    return ret;
+  };

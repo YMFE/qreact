@@ -1,5 +1,7 @@
 import { document } from "./browser";
-import { isFn, noop, options, parseError } from "./util";
+import { isFn, noop } from "./util";
+import { flushUpdaters } from "./scheduler";
+import { Refs } from "./Refs";
 
 var globalEvents = {};
 export var eventPropHooks = {}; //用于在事件回调里对事件对象进行
@@ -31,36 +33,74 @@ export function dispatchEvent(e, type, end) {
     e.type = type;
   }
   var bubble = e.type;
+  var dom = e.target;
+  if (bubble === "blur") {
+    if (Refs.nodeOperate) {
+      Refs.focusNode = dom;
+      Refs.type = bubble;
+    }
+  } else if (bubble === "focus") {
+    if (dom.__inner__) {
+      dom.__inner__ = false;
+      return;
+    }
+  }
 
   var hook = eventPropHooks[bubble];
   if (hook && false === hook(e)) {
     return;
   }
-
   var paths = collectPaths(e.target, end || document);
   var captured = bubble + "capture";
-  options.async = true;
+  document.__async = true;
+
   triggerEventFlow(paths, captured, e);
 
   if (!e._stopPropagation) {
     triggerEventFlow(paths.reverse(), bubble, e);
   }
-  options.async = false;
-  options.flushUpdaters();
+  document.__async = false;
+
+  flushUpdaters();
+  Refs.controlledCbs.forEach(function(el) {
+    if (el.stateNode) {
+      el.controlledCb({
+        target: el.stateNode
+      });
+    }
+  });
+  Refs.controlledCbs.length = 0;
 }
 
 function collectPaths(from, end) {
   var paths = [];
+  var node = from;
+  while (node && !node.__events) {
+    node = node.parentNode;
+    if (end === from) {
+      return paths;
+    }
+  }
+  if (!node || node.nodeType > 1) {
+    //如果跑到document上
+    return paths;
+  }
+  var mid = node.__events;
+  var vnode = mid.child || mid.vnode;
   do {
-    if (from === end) {
-      break;
+    if (vnode.vtype === 1) {
+      var dom = vnode.stateNode;
+      if (dom === end) {
+        break;
+      }
+      if (!dom) {
+        break;
+      }
+      if (dom.__events) {
+        paths.push({ dom: dom, events: dom.__events });
+      }
     }
-    var events = from.__events;
-    if (events) {
-      paths.push({ dom: from, events: events });
-    }
-  } while ((from = from.parentNode) && from.nodeType === 1);
-  // target --> parentNode --> body --> html
+    } while ((vnode = vnode.return)); // eslint-disable-line
   return paths;
 }
 
@@ -70,19 +110,7 @@ function triggerEventFlow(paths, prop, e) {
     var fn = path.events[prop];
     if (isFn(fn)) {
       e.currentTarget = path.dom;
-      try {
-        fn.call(path.dom, e);
-      } catch (e) {
-        setTimeout(function() {
-          const errorParsed = parseError(e);
-          
-          if (window.onerror) {
-            window.onerror(...errorParsed);
-          } else {
-            throw errorParsed;
-          }
-        }, 0);
-      }
+      fn.call(void 666, e);
       if (e._stopPropagation) {
         break;
       }
@@ -90,10 +118,10 @@ function triggerEventFlow(paths, prop, e) {
   }
 }
 
-export function addGlobalEvent(name) {
+export function addGlobalEvent(name, capture) {
   if (!globalEvents[name]) {
     globalEvents[name] = true;
-    addEvent(document, name, dispatchEvent);
+    addEvent(document, name, dispatchEvent, capture);
   }
 }
 
@@ -127,14 +155,8 @@ eventPropHooks.click = function(e) {
             IE9-11 wheel deltaY 下40 上-40
             chrome wheel deltaY 下100 上-100 */
 /* istanbul ignore next  */
-const fixWheelType =
-  "onmousewheel" in document
-    ? "mousewheel"
-    : document.onwheel !== void 666 ? "wheel" : "DOMMouseScroll";
-const fixWheelDelta =
-  fixWheelType === "mousewheel"
-    ? "wheelDetla"
-    : fixWheelType === "wheel" ? "deltaY" : "detail";
+const fixWheelType = "onmousewheel" in document ? "mousewheel" : document.onwheel !== void 666 ? "wheel" : "DOMMouseScroll";
+const fixWheelDelta = fixWheelType === "mousewheel" ? "wheelDetla" : fixWheelType === "wheel" ? "deltaY" : "detail";
 eventHooks.wheel = function(dom) {
   addEvent(dom, fixWheelType, function(e) {
     var delta = e[fixWheelDelta] > 0 ? -120 : 120;
@@ -147,15 +169,13 @@ eventHooks.wheel = function(dom) {
   });
 };
 
-var fixFocus = {};
 "blur,focus".replace(/\w+/g, function(type) {
-  eventHooks[type] = function() {
-    if (!fixFocus[type]) {
-      fixFocus[type] = true;
-      addEvent(document, type, dispatchEvent, true);
-    }
-  };
+  if (!document["__" + type]) {
+    document["__" + type] = true;
+    addGlobalEvent(type, true);
+  }
 });
+
 /**
  * 
 DOM通过event对象的relatedTarget属性提供了相关元素的信息。这个属性只对于mouseover和mouseout事件才包含值；
@@ -235,8 +255,7 @@ function getLowestCommonAncestor(instA, instB) {
 }
 
 if (isTouch) {
-  eventHooks.click = noop;
-  eventHooks.clickcapture = noop;
+  eventHooks.click = eventHooks.clickcapture = noop;
 }
 
 export function createHandle(name, fn) {
@@ -280,7 +299,7 @@ export function SyntheticEvent(event) {
 }
 
 var eventProto = (SyntheticEvent.prototype = {
-  fixEvent: function() {}, //留给以后扩展用
+  fixEvent: noop, //留给以后扩展用
   preventDefault: function() {
     var e = this.nativeEvent || {};
     e.returnValue = this.returnValue = false;
@@ -288,7 +307,7 @@ var eventProto = (SyntheticEvent.prototype = {
       e.preventDefault();
     }
   },
-  fixHooks: function() {},
+  fixHooks: noop,
   stopPropagation: function() {
     var e = this.nativeEvent || {};
     e.cancelBubble = this._stopPropagation = true;
@@ -308,7 +327,7 @@ var eventProto = (SyntheticEvent.prototype = {
 /* istanbul ignore next  */
 //freeze_start
 Object.freeze ||
-  (Object.freeze = function(a) {
-    return a;
-  });
+    (Object.freeze = function(a) {
+      return a;
+    });
 //freeze_end

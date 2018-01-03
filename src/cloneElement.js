@@ -4,7 +4,9 @@ import { extend } from "./util";
 
 export function cloneElement(vnode, props) {
   if (!vnode.vtype) {
-    return extend({}, vnode);
+    var clone = extend({}, vnode);
+    delete clone._disposed;
+    return clone;
   }
   let owner = vnode._owner,
     lastOwn = Refs.currentOwner,
@@ -19,8 +21,14 @@ export function cloneElement(vnode, props) {
     }else if(vnode._hasRef){
       configs.ref = vnode.ref;
     }
+        
   }else{
     configs = old;
+  }
+  for(var i in configs){
+    if(i !== "children" && configs[i] && configs[i].$$typeof){
+      configs[i] = cloneElement(configs[i]);
+    }
   }
   Refs.currentOwner = owner;
 
@@ -29,6 +37,7 @@ export function cloneElement(vnode, props) {
   args[0] = vnode.type;
   args[1] = configs;
   if (argsLength === 2 && configs.children) {
+    delete configs.children._disposed;
     args.push(configs.children);
   }
   let ret = createElement.apply(null, args);

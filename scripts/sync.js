@@ -5,7 +5,7 @@ const ora = require("ora");
 
 const anuPath = path.join(__dirname, "../../anu");
 const qreactPath = path.join(__dirname, "../");
-const dirs = ["build", "lib", "src", "ssr", "test"];
+const dirs = ["build", "lib", "src", "server", "test"];
 const spinner = ora("开始同步").start();
 
 function empty(dir) {
@@ -78,20 +78,5 @@ function start() {
       spinner.fail("同步失败");
     });
 }
-
-// async function start() {
-//   try {
-//     await emptyDirs(dirs);
-//     spinner.succeed("已清除 QReact 下目录");
-//     await copyDirs(dirs);
-//     spinner.succeed("已复制 anujs 至 QReact");
-//     spinner.start("正在编译...");
-//     await build();
-//     spinner.succeed("已完成编译");
-//   } catch (e) {
-//     console.error(e); // eslint-disable-line
-//     spinner.fail("同步失败");
-//   }
-// }
 
 start();
