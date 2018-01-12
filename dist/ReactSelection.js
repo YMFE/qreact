@@ -1,5 +1,5 @@
 /**
- * IE6+，有问题请加QQ 370262116 by 司徒正美 Copyright 2017-12-05
+ * IE6+，有问题请加QQ 370262116 by 司徒正美 Copyright 2018-01-12
  */
 
 (function (global, factory) {
@@ -951,8 +951,9 @@ function getLowestCommonAncestor(instA, instB) {
 }
 
 if (isTouch) {
-  eventHooks.click = noop;
-  eventHooks.clickcapture = noop;
+  eventHooks.click = eventHooks.clickcapture = function (dom) {
+    dom.onclick = dom.onclick = noop;
+  };
 }
 
 function createHandle(name, fn) {
@@ -2710,7 +2711,7 @@ keysPolyfill();
 setTimeout(keysPolyfill, 0);
 setTimeout(keysPolyfill, 100);
 var React = {
-  version: "1.1.6",
+  version: "1.1.7",
   render: render,
   hydrate: render,
   options: options,

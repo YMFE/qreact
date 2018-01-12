@@ -1,5 +1,5 @@
 /**
- * by 司徒正美 Copyright 2017-12-05
+ * by 司徒正美 Copyright 2018-01-12
  * IE9+
  */
 
@@ -952,8 +952,9 @@ function getLowestCommonAncestor(instA, instB) {
 }
 
 if (isTouch) {
-  eventHooks.click = noop;
-  eventHooks.clickcapture = noop;
+  eventHooks.click = eventHooks.clickcapture = function (dom) {
+    dom.onclick = dom.onclick = noop;
+  };
 }
 
 function createHandle(name, fn) {
@@ -2573,7 +2574,7 @@ function isSameNode(a, b) {
 }
 
 var React = {
-  version: "1.1.6",
+  version: "1.1.7",
   render: render,
   hydrate: render,
   options: options,
