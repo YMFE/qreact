@@ -9,13 +9,7 @@ import { cloneElement } from "./cloneElement";
 import { PureComponent } from "./PureComponent";
 import { createElement } from "./createElement";
 import { createPortal } from "./createPortal";
-import {
-  render,
-  findDOMNode,
-  isValidElement,
-  unmountComponentAtNode,
-  unstable_renderSubtreeIntoContainer
-} from "./diff";
+import { render, findDOMNode, isValidElement, unmountComponentAtNode, unstable_renderSubtreeIntoContainer } from "./diff";
 
 var React;
 if (window.React && window.React.options) {
@@ -41,7 +35,7 @@ if (window.React && window.React.options) {
     unmountComponentAtNode,
     unstable_renderSubtreeIntoContainer,
     createFactory(type) {
-      console.warn("createFactory is deprecated"); // eslint-disable-line
+            console.warn("createFactory is deprecated"); // eslint-disable-line
       var factory = createElement.bind(null, type);
       factory.type = type;
       return factory;

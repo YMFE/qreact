@@ -10,13 +10,8 @@ import { PureComponent } from "../src/PureComponent";
 import { createElement } from "../src/createElement";
 import { createPortal } from "../src/createPortal";
 
-import {
-  render,
-  findDOMNode,
-  isValidElement,
-  unmountComponentAtNode,
-  unstable_renderSubtreeIntoContainer
-} from "../src/diff";
+import { render, findDOMNode, isValidElement, unmountComponentAtNode, unstable_renderSubtreeIntoContainer } from "../src/diff";
+
 
 var React = {
   version: "VERSION",
@@ -25,7 +20,7 @@ var React = {
   options,
   PropTypes,
   createPortal,
-  Children,
+  Children, 
   Component,
   eventSystem,
   findDOMNode,
@@ -38,12 +33,14 @@ var React = {
   unstable_renderSubtreeIntoContainer,
 
   createFactory(type) {
-    console.warn("createFactory is deprecated"); // eslint-disable-line
+        console.warn("createFactory is deprecated"); // eslint-disable-line
     var factory = createElement.bind(null, type);
     factory.type = type;
     return factory;
   }
 };
+
+
 
 function isInDocument(node) {
   if (!inBrowser) {
@@ -72,11 +69,17 @@ function focusNode(node) {
 }
 
 function getNodeTag(node) {
-  return node.nodeName ? node.nodeName.toLowerCase() : "";
+  return node.nodeName
+    ? node
+      .nodeName
+      .toLowerCase()
+    : "";
 }
 
 function getActiveElement(doc) {
-  doc = doc || (inBrowser ? document : undefined);
+  doc = doc || (inBrowser
+    ? document
+    : undefined);
   if (typeof doc === "undefined") {
     return null;
   }
@@ -93,26 +96,19 @@ function getActiveElement(doc) {
  * Input selection module for React.
  */
 var ReactInputSelection = {
-  hasSelectionCapabilities: function(elem) {
+  hasSelectionCapabilities: function (elem) {
     var nodeName = getNodeTag(elem || {});
-    return (
-      nodeName &&
-      ((nodeName === "input" && elem.type === "text") ||
-        nodeName === "textarea" ||
-        elem.contentEditable === "true")
-    );
+    return nodeName && (nodeName === "input" && elem.type === "text" || nodeName === "textarea" || elem.contentEditable === "true");
   },
 
-  getSelectionInformation: function() {
+  getSelectionInformation: function () {
     let focusedElem = getActiveElement();
-    var selectionRange = ReactInputSelection.hasSelectionCapabilities(
-      focusedElem
-    )
+    var selectionRange = ReactInputSelection.hasSelectionCapabilities(focusedElem)
       ? ReactInputSelection.getSelection(focusedElem)
       : null;
     return { focusedElem, selectionRange };
   },
-  restoreSelection: function(lastInformation) {
+  restoreSelection: function (lastInformation) {
     var curFocusedElem = getActiveElement();
     var priorFocusedElem = lastInformation.focusedElem;
     var priorSelectionRange = lastInformation.selectionRange;
@@ -124,7 +120,7 @@ var ReactInputSelection = {
       focusNode(priorFocusedElem);
     }
   },
-  getSelection: function(input) {
+  getSelection: function (input) {
     var selection;
 
     if ("selectionStart" in input) {
@@ -135,7 +131,9 @@ var ReactInputSelection = {
       };
     } else if (document.selection && getNodeTag(input) === "input") {
       // IE8 input.
-      var range = document.selection.createRange();
+      var range = document
+        .selection
+        .createRange();
       // There can only be one selection per document in IE, so it must be in our
       // element.
       if (range.parentElement() === input) {
@@ -149,15 +147,13 @@ var ReactInputSelection = {
       selection = ReactDOMSelection.getOffsets(input);
     }
 
-    return (
-      selection || {
-        start: 0,
-        end: 0
-      }
-    );
+    return selection || {
+      start: 0,
+      end: 0
+    };
   },
 
-  setSelection: function(input, offsets) {
+  setSelection: function (input, offsets) {
     var start = offsets.start;
     var end = offsets.end;
     if (end === undefined) {
@@ -236,27 +232,25 @@ function getModernOffsets(node) {
   // If the node and offset values are the same, the selection is collapsed.
   // `Selection.isCollapsed` is available natively, but IE sometimes gets this
   // value wrong.
-  var isSelectionCollapsed = isCollapsed(
-    selection.anchorNode,
-    selection.anchorOffset,
-    selection.focusNode,
-    selection.focusOffset
-  );
+  var isSelectionCollapsed = isCollapsed(selection.anchorNode, selection.anchorOffset, selection.focusNode, selection.focusOffset);
 
-  var rangeLength = isSelectionCollapsed ? 0 : currentRange.toString().length;
+  var rangeLength = isSelectionCollapsed
+    ? 0
+    : currentRange
+      .toString()
+      .length;
 
   var tempRange = currentRange.cloneRange();
   tempRange.selectNodeContents(node);
   tempRange.setEnd(currentRange.startContainer, currentRange.startOffset);
 
-  var isTempRangeCollapsed = isCollapsed(
-    tempRange.startContainer,
-    tempRange.startOffset,
-    tempRange.endContainer,
-    tempRange.endOffset
-  );
+  var isTempRangeCollapsed = isCollapsed(tempRange.startContainer, tempRange.startOffset, tempRange.endContainer, tempRange.endOffset);
 
-  var start = isTempRangeCollapsed ? 0 : tempRange.toString().length;
+  var start = isTempRangeCollapsed
+    ? 0
+    : tempRange
+      .toString()
+      .length;
   var end = start + rangeLength;
 
   // Detect whether the selection is backward.
@@ -266,8 +260,12 @@ function getModernOffsets(node) {
   var isBackward = detectionRange.collapsed;
 
   return {
-    start: isBackward ? end : start,
-    end: isBackward ? start : end
+    start: isBackward
+      ? end
+      : start,
+    end: isBackward
+      ? start
+      : end
   };
 }
 
@@ -276,8 +274,12 @@ function getModernOffsets(node) {
  * @param {object} offsets
  */
 function setIEOffsets(node, offsets) {
-  var range = document.selection.createRange().duplicate();
-  var start, end;
+  var range = document
+    .selection
+    .createRange()
+    .duplicate();
+  var start,
+    end;
 
   if (offsets.end === undefined) {
     start = offsets.start;
@@ -317,10 +319,12 @@ function setModernOffsets(node, offsets) {
   var selection = window.getSelection();
   var length = node.textContent.length;
   var start = Math.min(offsets.start, length);
-  var end = offsets.end === undefined ? start : Math.min(offsets.end, length);
+  var end = offsets.end === undefined
+    ? start
+    : Math.min(offsets.end, length);
 
-  // IE 11 uses modern selection, but doesn"t support the extend method. Flip
-  // backward selections, so we can set with a single range.
+    // IE 11 uses modern selection, but doesn"t support the extend method. Flip
+    // backward selections, so we can set with a single range.
   if (!selection.extend && start > end) {
     var temp = end;
     end = start;
@@ -345,11 +349,14 @@ function setModernOffsets(node, offsets) {
   }
 }
 
-var useIEOffsets =
-  inBrowser && "selection" in document && !("getSelection" in window);
+var useIEOffsets = inBrowser && "selection" in document && !("getSelection" in window);
 var ReactDOMSelection = {
-  getOffsets: useIEOffsets ? getIEOffsets : getModernOffsets,
-  setOffsets: useIEOffsets ? setIEOffsets : setModernOffsets
+  getOffsets: useIEOffsets
+    ? getIEOffsets
+    : getModernOffsets,
+  setOffsets: useIEOffsets
+    ? setIEOffsets
+    : setModernOffsets
 };
 
 function getLeafNode(node) {
@@ -406,7 +413,7 @@ var newOptions = {
 };
 function fixOptions(obj, name, oldFn, fn) {
   if (oldFn) {
-    obj[name] = function(a) {
+    obj[name] = function (a) {
       fn(a);
       oldFn(a);
     };
@@ -418,6 +425,7 @@ function fixOptions(obj, name, oldFn, fn) {
 for (let i in newOptions) {
   fixOptions(options, i, options[i], newOptions[i]);
 }
+
 
 window.React = window.ReactDOM = React;
 

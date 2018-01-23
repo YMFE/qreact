@@ -1,5 +1,5 @@
 /**
- * IE6+，有问题请加QQ 370262116 by 司徒正美 Copyright 2018-01-03
+ * IE6+，有问题请加QQ 370262116 by 司徒正美 Copyright 2018-01-23
  */
 
 (function (global, factory) {
@@ -62,12 +62,12 @@ function noop() {}
  */
 function inherit(SubClass, SupClass) {
   function Bridge() {}
+  var orig = SubClass.prototype;
   Bridge.prototype = SupClass.prototype;
-
   var fn = SubClass.prototype = new Bridge();
 
   // 避免原型链拉长导致方法查找的性能开销
-  extend(fn, SupClass.prototype);
+  extend(fn, orig);
   fn.constructor = SubClass;
   return fn;
 }
@@ -150,209 +150,12 @@ var toArray = Array.from || function (a) {
   return ret;
 };
 
-//用于后端的元素节点
-function DOMElement(type) {
-  this.nodeName = type;
-  this.style = {};
-  this.children = [];
-}
-
-var NAMESPACE = {
-  svg: "http://www.w3.org/2000/svg",
-  xmlns: "http://www.w3.org/2000/xmlns/",
-  xlink: "http://www.w3.org/1999/xlink",
-  math: "http://www.w3.org/1998/Math/MathML"
-};
-
-var fn = DOMElement.prototype = {
-  contains: Boolean
-};
-String("replaceChild,appendChild,removeAttributeNS,setAttributeNS,removeAttribute,setAttribute" + ",getAttribute,insertBefore,removeChild,addEventListener,removeEventListener,attachEvent" + ",detachEvent").replace(/\w+/g, function (name) {
-  fn[name] = function () {
-    console.log("fire " + name); // eslint-disable-line
-  };
-});
-
-//用于后端的document
-var fakeDoc = new DOMElement();
-fakeDoc.createElement = fakeDoc.createElementNS = fakeDoc.createDocumentFragment = function (type) {
-  return new DOMElement(type);
-};
-fakeDoc.createTextNode = fakeDoc.createComment = Boolean;
-fakeDoc.documentElement = new DOMElement("html");
-fakeDoc.body = new DOMElement("body");
-fakeDoc.nodeName = "#document";
-fakeDoc.textContent = "";
-try {
-  var w = window;
-  var b = !!w.alert;
-} catch (e) {
-  b = false;
-  w = {
-    document: fakeDoc
-  };
-}
-
-
-var win = w;
-
-var document = w.document || fakeDoc;
-
-var duplexMap = {
-  color: 1,
-  date: 1,
-  datetime: 1,
-  "datetime-local": 1,
-  email: 1,
-  month: 1,
-  number: 1,
-  password: 1,
-  range: 1,
-  search: 1,
-  tel: 1,
-  text: 1,
-  time: 1,
-  url: 1,
-  week: 1,
-  textarea: 1,
-  checkbox: 2,
-  radio: 2,
-  "select-one": 3,
-  "select-multiple": 3
-};
-var isStandard = "textContent" in document;
-var fragment = document.createDocumentFragment();
-function emptyElement(node) {
-  var child;
-  while (child = node.firstChild) {
-    emptyElement(child);
-    node.removeChild(child);
-  }
-}
-
-var recyclables = {
-  "#text": []
-};
-function removeElement(node) {
-  if (!node) {
-    return;
-  }
-  Refs.nodeOperate = true;
-  if (node.nodeType === 1) {
-    if (isStandard) {
-      node.textContent = "";
-    } else {
-      emptyElement(node);
-    }
-    node.__events = null;
-  } else if (node.nodeType === 3) {
-    //只回收文本节点
-    if (recyclables["#text"].length < 100) {
-      recyclables["#text"].push(node);
-    }
-  }
-  fragment.appendChild(node);
-  fragment.removeChild(node);
-  Refs.nodeOperate = false;
-}
-
-var versions = {
-  88: 7, //IE7-8 objectobject
-  80: 6, //IE6 objectundefined
-  "00": NaN, // other modern browsers
-  "08": NaN
-};
-/* istanbul ignore next  */
-var msie = document.documentMode || versions[typeNumber(document.all) + "" + typeNumber(win.XMLHttpRequest)];
-
-var modern = /NaN|undefined/.test(msie) || msie > 8;
-
-function createElement$1(vnode, p) {
-  var type = vnode.type,
-      ns;
-  switch (type) {
-    case "#text":
-      //只重复利用文本节点
-      var node = recyclables[type].pop();
-      if (node) {
-        node.nodeValue = vnode.text;
-        return node;
-      }
-      return document.createTextNode(vnode.text);
-    case "#comment":
-      return document.createComment(vnode.text);
-    case "svg":
-      ns = NAMESPACE.svg;
-      break;
-    case "math":
-      ns = NAMESPACE.math;
-      break;
-    case "div":
-    case "span":
-    case "p":
-    case "tr":
-    case "td":
-    case "li":
-      ns = "";
-      break;
-    default:
-      ns = vnode.namespaceURI;
-      if (!ns) {
-        do {
-          if (p.vtype === 1) {
-            ns = p.namespaceURI;
-            if (p.type === "foreignObject") {
-              ns = "";
-            }
-            break;
-          }
-        } while (p = p.return);
-      }
-      break;
-  }
-  try {
-    if (ns) {
-      vnode.namespaceURI = ns;
-      return document.createElementNS(ns, type);
-    }
-    //eslint-disable-next-line
-  } catch (e) {}
-  return document.createElement(type);
-}
-
-function insertElement(vnode, insertPoint) {
-  if (vnode._disposed) {
-    return;
-  }
-  //找到可用的父节点
-  var p = vnode.return,
-      parentNode;
-  while (p) {
-    if (p.vtype === 1) {
-      parentNode = p.stateNode;
-      break;
-    }
-    p = p.superReturn || p.return;
-  }
-
-  var dom = vnode.stateNode,
-
-  //如果没有插入点，则插入到当前父节点的第一个节点之前
-  after = insertPoint ? insertPoint.nextSibling : parentNode.firstChild;
-  if (after === dom) {
-    return;
-  }
-  Refs.nodeOperate = true;
-  parentNode.insertBefore(dom, after);
-  Refs.nodeOperate = false;
-}
-
 //fix 0.14对此方法的改动，之前refs里面保存的是虚拟DOM
 function getDOMNode() {
   return this;
 }
 var pendingRefs = [];
-win.pendingRefs = pendingRefs;
+window.pendingRefs = pendingRefs;
 var Refs = {
   mountOrder: 1,
   currentOwner: null,
@@ -766,6 +569,203 @@ var escaperLookup = {
 
 function escaperFn(match) {
   return escaperLookup[match];
+}
+
+//用于后端的元素节点
+function DOMElement(type) {
+  this.nodeName = type;
+  this.style = {};
+  this.children = [];
+}
+
+var NAMESPACE = {
+  svg: "http://www.w3.org/2000/svg",
+  xmlns: "http://www.w3.org/2000/xmlns/",
+  xlink: "http://www.w3.org/1999/xlink",
+  math: "http://www.w3.org/1998/Math/MathML"
+};
+
+var fn = DOMElement.prototype = {
+  contains: Boolean
+};
+String("replaceChild,appendChild,removeAttributeNS,setAttributeNS,removeAttribute,setAttribute" + ",getAttribute,insertBefore,removeChild,addEventListener,removeEventListener,attachEvent" + ",detachEvent").replace(/\w+/g, function (name) {
+  fn[name] = function () {
+    console.log("fire " + name); // eslint-disable-line
+  };
+});
+
+//用于后端的document
+var fakeDoc = new DOMElement();
+fakeDoc.createElement = fakeDoc.createElementNS = fakeDoc.createDocumentFragment = function (type) {
+  return new DOMElement(type);
+};
+fakeDoc.createTextNode = fakeDoc.createComment = Boolean;
+fakeDoc.documentElement = new DOMElement("html");
+fakeDoc.body = new DOMElement("body");
+fakeDoc.nodeName = "#document";
+fakeDoc.textContent = "";
+try {
+  var w = window;
+  var b = !!w.alert;
+} catch (e) {
+  b = false;
+  w = {
+    document: fakeDoc
+  };
+}
+
+
+var win = w;
+
+var document = w.document || fakeDoc;
+
+var duplexMap = {
+  color: 1,
+  date: 1,
+  datetime: 1,
+  "datetime-local": 1,
+  email: 1,
+  month: 1,
+  number: 1,
+  password: 1,
+  range: 1,
+  search: 1,
+  tel: 1,
+  text: 1,
+  time: 1,
+  url: 1,
+  week: 1,
+  textarea: 1,
+  checkbox: 2,
+  radio: 2,
+  "select-one": 3,
+  "select-multiple": 3
+};
+var isStandard = "textContent" in document;
+var fragment = document.createDocumentFragment();
+function emptyElement(node) {
+  var child;
+  while (child = node.firstChild) {
+    emptyElement(child);
+    node.removeChild(child);
+  }
+}
+
+var recyclables = {
+  "#text": []
+};
+function removeElement(node) {
+  if (!node) {
+    return;
+  }
+  Refs.nodeOperate = true;
+  if (node.nodeType === 1) {
+    if (isStandard) {
+      node.textContent = "";
+    } else {
+      emptyElement(node);
+    }
+    node.__events = null;
+  } else if (node.nodeType === 3) {
+    //只回收文本节点
+    if (recyclables["#text"].length < 100) {
+      recyclables["#text"].push(node);
+    }
+  }
+  fragment.appendChild(node);
+  fragment.removeChild(node);
+  Refs.nodeOperate = false;
+}
+
+var versions = {
+  88: 7, //IE7-8 objectobject
+  80: 6, //IE6 objectundefined
+  "00": NaN, // other modern browsers
+  "08": NaN
+};
+/* istanbul ignore next  */
+var msie = document.documentMode || versions[typeNumber(document.all) + "" + typeNumber(win.XMLHttpRequest)];
+
+var modern = /NaN|undefined/.test(msie) || msie > 8;
+
+function createElement$1(vnode, p) {
+  var type = vnode.type,
+      ns;
+  switch (type) {
+    case "#text":
+      //只重复利用文本节点
+      var node = recyclables[type].pop();
+      if (node) {
+        node.nodeValue = vnode.text;
+        return node;
+      }
+      return document.createTextNode(vnode.text);
+    case "#comment":
+      return document.createComment(vnode.text);
+    case "svg":
+      ns = NAMESPACE.svg;
+      break;
+    case "math":
+      ns = NAMESPACE.math;
+      break;
+    case "div":
+    case "span":
+    case "p":
+    case "tr":
+    case "td":
+    case "li":
+      ns = "";
+      break;
+    default:
+      ns = vnode.namespaceURI;
+      if (!ns) {
+        do {
+          if (p.vtype === 1) {
+            ns = p.namespaceURI;
+            if (p.type === "foreignObject") {
+              ns = "";
+            }
+            break;
+          }
+        } while (p = p.return);
+      }
+      break;
+  }
+  try {
+    if (ns) {
+      vnode.namespaceURI = ns;
+      return document.createElementNS(ns, type);
+    }
+    //eslint-disable-next-line
+  } catch (e) {}
+  return document.createElement(type);
+}
+
+function insertElement(vnode, insertPoint) {
+  if (vnode._disposed) {
+    return;
+  }
+  //找到可用的父节点
+  var p = vnode.return,
+      parentNode;
+  while (p) {
+    if (p.vtype === 1) {
+      parentNode = p.stateNode;
+      break;
+    }
+    p = p.superReturn || p.return;
+  }
+
+  var dom = vnode.stateNode,
+
+  //如果没有插入点，则插入到当前父节点的第一个节点之前
+  after = insertPoint ? insertPoint.nextSibling : parentNode.firstChild;
+  if (after === dom) {
+    return;
+  }
+  Refs.nodeOperate = true;
+  parentNode.insertBefore(dom, after);
+  Refs.nodeOperate = false;
 }
 
 var topVnodes = [];
@@ -1209,7 +1209,9 @@ function getLowestCommonAncestor(instA, instB) {
 }
 
 if (isTouch) {
-  eventHooks.click = eventHooks.clickcapture = noop;
+  eventHooks.click = eventHooks.clickcapture = function (dom) {
+    dom.onclick = dom.onclick || noop;
+  };
 }
 
 function createHandle(name, fn) {
@@ -1223,12 +1225,17 @@ function createHandle(name, fn) {
 
 var changeHandle = createHandle("change");
 var doubleClickHandle = createHandle("doubleclick");
+var scrollHandle = createHandle("scroll");
 
 //react将text,textarea,password元素中的onChange事件当成onInput事件
 eventHooks.changecapture = eventHooks.change = function (dom) {
   if (/text|password/.test(dom.type)) {
     addEvent(document, "input", changeHandle);
   }
+};
+
+eventHooks.scrollcapture = eventHooks.scroll = function (dom) {
+  addEvent(dom, "scroll", scrollHandle);
 };
 
 eventHooks.doubleclick = eventHooks.doubleclickcapture = function () {
@@ -1296,7 +1303,7 @@ var eventSystem = extend({
 });
 
 var check = function check() {
-  return null;
+  return check;
 };
 check.isRequired = check;
 var PropTypes = {
@@ -1341,6 +1348,8 @@ Component.prototype = {
   replaceState: function replaceState() {
     deprecatedWarn("replaceState");
   },
+
+  isReactComponent: returnTrue,
   isMounted: function isMounted() {
     deprecatedWarn("isMounted");
     return (this.updater || fakeObject).isMounted();
@@ -1603,6 +1612,7 @@ function inputControll(vnode, dom, props) {
     var keys = data[1];
     var converter = data[2];
     var sideEffect = data[3];
+
     var value = converter(isUncontrolled ? dom._persistValue : props[duplexProp]);
     sideEffect(dom, value, vnode, isUncontrolled);
     if (isUncontrolled) {
@@ -1687,7 +1697,7 @@ function updateOptionsOne(options, n, propValue) {
     //字符串模糊匹配
     return setOptionSelected(match, true);
   }
-  if (n) {
+  if (n && noDisableds[0]) {
     //选中第一个没有变disable的元素
     setOptionSelected(noDisableds[0], true);
   }
@@ -2754,25 +2764,24 @@ function unmountComponentAtNode(container) {
   }
 }
 //[Top API] ReactDOM.findDOMNode
-function findDOMNode(ref) {
-  if (ref == null) {
+function findDOMNode(componentOrElement) {
+  if (componentOrElement == null) {
     //如果是null
     return null;
   }
-  if (ref.nodeType) {
+  if (componentOrElement.nodeType) {
     //如果本身是元素节点
-    return ref;
+    return componentOrElement;
   }
   //实例必然拥有updater与render
-  if (ref.render) {
-    //如果是组件实例
-    return findDOMNode(ref.updater.vnode);
-  }
-  var vnode = ref.stateNode; //如果是虚拟DOM或组件实例
-  if (vnode.nodeType) {
-    return vnode.nodeType === 8 ? null : vnode;
-  } else {
-    return findDOMNode(ref.child);
+  if (componentOrElement.render) {
+    var node = componentOrElement.updater.vnode;
+    var c = node.child;
+    if (c) {
+      return findDOMNode(c.stateNode);
+    } else {
+      return null;
+    }
   }
 }
 
@@ -3211,7 +3220,7 @@ if (win.React && win.React.options) {
   React = win.React;
 } else {
   React = win.React = win.ReactDOM = {
-    version: "2.0.0-rc.0",
+    version: "2.0.0",
     render: render,
     hydrate: render,
     Fragment: REACT_FRAGMENT_TYPE,

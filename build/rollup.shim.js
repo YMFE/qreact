@@ -28,10 +28,9 @@ export default {
     license({
       banner: `此版本要求浏览器没有createClass, createFactory, PropTypes, isValidElement,
         unmountComponentAtNode,unstable_renderSubtreeIntoContainer
-        QQ 370262116 by 司徒正美 Copyright ${JSON.stringify(new Date()).replace(
-    /T.*|"/g,
-    ""
-  )}`
+        QQ 370262116 by 司徒正美 Copyright ${JSON.stringify(
+    new Date()
+  ).replace(/T.*|"/g, "")}`
     }),
 
     replace({

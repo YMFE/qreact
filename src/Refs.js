@@ -1,11 +1,9 @@
-import { win } from "./browser";
-
 //fix 0.14对此方法的改动，之前refs里面保存的是虚拟DOM
 function getDOMNode() {
   return this;
 }
 export const pendingRefs = [];
-win.pendingRefs = pendingRefs;
+window.pendingRefs = pendingRefs;
 export var Refs = {
   mountOrder: 1,
   currentOwner: null,

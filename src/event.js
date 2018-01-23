@@ -255,7 +255,9 @@ function getLowestCommonAncestor(instA, instB) {
 }
 
 if (isTouch) {
-  eventHooks.click = eventHooks.clickcapture = noop;
+  eventHooks.click = eventHooks.clickcapture = function(dom){
+    dom.onclick= dom.onclick || noop;
+  };
 }
 
 export function createHandle(name, fn) {
@@ -269,12 +271,17 @@ export function createHandle(name, fn) {
 
 var changeHandle = createHandle("change");
 var doubleClickHandle = createHandle("doubleclick");
+var scrollHandle = createHandle("scroll");
 
 //react将text,textarea,password元素中的onChange事件当成onInput事件
 eventHooks.changecapture = eventHooks.change = function(dom) {
   if (/text|password/.test(dom.type)) {
     addEvent(document, "input", changeHandle);
   }
+};
+
+eventHooks.scrollcapture = eventHooks.scroll = function(dom) {  
+  addEvent(dom, "scroll", scrollHandle);
 };
 
 eventHooks.doubleclick = eventHooks.doubleclickcapture = function() {

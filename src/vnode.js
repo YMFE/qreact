@@ -22,7 +22,7 @@ export function Vnode(type, vtype, props, key, ref) {
   /*
       this.stateNode = null
     */
-
+    
   options.afterCreate(this);
 }
 

@@ -113,12 +113,13 @@ export function inputControll(vnode, dom, props) {
   var domType = dom.type;
   var duplexType = duplexMap[domType];
   var isUncontrolled = dom._uncontrolled;
-  if (duplexType) {
+  if (duplexType ) {
     var data = duplexData[duplexType];
     var duplexProp = data[0];
     var keys = data[1];
     var converter = data[2];
     var sideEffect = data[3];
+
     var value = converter(isUncontrolled ? dom._persistValue : props[duplexProp]);
     sideEffect(dom, value, vnode, isUncontrolled);
     if (isUncontrolled) {
@@ -203,7 +204,7 @@ function updateOptionsOne(options, n, propValue) {
     //字符串模糊匹配
     return setOptionSelected(match, true);
   }
-  if (n) {
+  if (n && noDisableds[0]) {
     //选中第一个没有变disable的元素
     setOptionSelected(noDisableds[0], true);
   }
