@@ -1,5 +1,5 @@
 /**
- * by 司徒正美 Copyright 2018-01-12
+ * by 司徒正美 Copyright 2018-01-23
  * IE9+
  */
 
@@ -968,6 +968,7 @@ function createHandle(name, fn) {
 
 var changeHandle = createHandle("change");
 var doubleClickHandle = createHandle("doubleclick");
+var scrollHandle = createHandle("scroll");
 
 //react将text,textarea,password元素中的onChange事件当成onInput事件
 eventHooks.changecapture = eventHooks.change = function (dom) {
@@ -978,6 +979,10 @@ eventHooks.changecapture = eventHooks.change = function (dom) {
 
 eventHooks.doubleclick = eventHooks.doubleclickcapture = function () {
   addEvent(document, "dblclick", doubleClickHandle);
+};
+
+eventHooks.scrollcapture = eventHooks.scroll = function (dom) {
+  addEvent(dom, "scroll", scrollHandle);
 };
 
 function SyntheticEvent(event) {

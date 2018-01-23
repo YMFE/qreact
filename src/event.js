@@ -75,7 +75,7 @@ function triggerEventFlow(paths, prop, e) {
       } catch (e) {
         setTimeout(function() {
           const errorParsed = parseError(e);
-          
+
           if (window.onerror) {
             window.onerror(...errorParsed);
           } else {
@@ -235,8 +235,8 @@ function getLowestCommonAncestor(instA, instB) {
 }
 
 if (isTouch) {
-  eventHooks.click = eventHooks.clickcapture = function(dom){
-    dom.onclick= dom.onclick = noop;
+  eventHooks.click = eventHooks.clickcapture = function(dom) {
+    dom.onclick = dom.onclick = noop;
   };
 }
 
@@ -251,6 +251,7 @@ export function createHandle(name, fn) {
 
 var changeHandle = createHandle("change");
 var doubleClickHandle = createHandle("doubleclick");
+var scrollHandle = createHandle("scroll");
 
 //react将text,textarea,password元素中的onChange事件当成onInput事件
 eventHooks.changecapture = eventHooks.change = function(dom) {
@@ -261,6 +262,10 @@ eventHooks.changecapture = eventHooks.change = function(dom) {
 
 eventHooks.doubleclick = eventHooks.doubleclickcapture = function() {
   addEvent(document, "dblclick", doubleClickHandle);
+};
+
+eventHooks.scrollcapture = eventHooks.scroll = function(dom) {
+  addEvent(dom, "scroll", scrollHandle);
 };
 
 export function SyntheticEvent(event) {
