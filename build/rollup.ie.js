@@ -27,7 +27,7 @@ export default {
     }),
 
     license({
-      banner: `IE6+，有问题请加QQ 370262116 by 司徒正美 Copyright ${JSON.stringify(
+      banner: `Maintained by YMFE Copyright ${JSON.stringify(
         new Date()
       ).replace(/T.*|"/g,"")}`
     }),

@@ -13,13 +13,6 @@ var str2 = fs.readFileSync(dir2, "utf-8");
 var text2 = str2.replace(/Object\.freeze/g, "extend").replace(/\/\/freeze_start([\s\S]+?)freeze_end/, "");
 
 fs.writeFileSync(dir2, text2, { encoding: "utf8" });
-// fs.writeFileSync( path.join(__dirname, "../../antd-test/node_modules/qreact/dist/React.js"), text2, { encoding: "utf8" });
-// fs.writeFileSync( path.join(__dirname, "../../react-study/node_modules/anujs/dist/React.js"), text2, { encoding: "utf8" });
-
-// fs.writeFileSync( path.join(__dirname, "../../antd-test/other/React.js"), text2, { encoding: "utf8" });
-
-// fs.writeFileSync( path.join(__dirname, "../../yo-demo/node_modules/anujs/dist/React.js"), text2, { encoding: "utf8" });
-// fs.writeFileSync( path.join(__dirname, "../../ani/node_modules/anujs/dist/React.js"), text2, { encoding: "utf8" });
 
 console.log("对React瘦身完毕"); // eslint-disable-line
 
@@ -33,9 +26,7 @@ console.log("对ReactIE瘦身完毕"); // eslint-disable-line
 var dir4 = path.join(__dirname, "../dist/ReactSelection.js");
 var str4 = fs.readFileSync(dir4, "utf-8");
 var text4 = str4.replace(/Object\.freeze/g, "extend").replace(/\/\/freeze_start([\s\S]+?)freeze_end/, "");
-// fs.writeFileSync(path.join(__dirname, "../../antd-test/node_modules/qreact/dist/ReactSelection.js"), text4, { encoding: "utf8" });
 
 fs.writeFileSync(dir4, text4, { encoding: "utf8" });
-// fs.writeFileSync( path.join(__dirname, "../../antd-test/node_modules/anujs/dist/ReactSelection.js"), text2, { encoding: "utf8" });
 
 console.log("对ReactSelection瘦身完毕"); // eslint-disable-line

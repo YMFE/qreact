@@ -1,5 +1,5 @@
 /**
- * 此版本带有selection by 司徒正美 Copyright 2018-01-23
+ * Maintained by YMFE Copyright 2018-01-26
  * IE9+
  */
 
@@ -411,7 +411,7 @@ function operateChildren(children, prefix, callback, parent) {
       return;
     }
   }
-  if (Object(children) === children && !children.type) {
+  if (Object(children) === children && !children.call && !children.type) {
     throw "children中存在非法的对象";
   }
   callback(children, prefix || ".", parent);
@@ -2749,7 +2749,8 @@ function render(vnode, container, callback) {
 //[Top API] ReactDOM.unstable_renderSubtreeIntoContainer
 function unstable_renderSubtreeIntoContainer(lastVnode, nextVnode, container, callback) {
   deprecatedWarn("unstable_renderSubtreeIntoContainer");
-  var parentContext = lastVnode && lastVnode.context || {};
+  var updater = lastVnode && lastVnode.updater;
+  var parentContext = updater ? updater.parentContext : {};
   return renderByAnu(nextVnode, container, callback, parentContext);
 }
 //[Top API] ReactDOM.unmountComponentAtNode
@@ -3076,7 +3077,7 @@ function diffChildren(lastChildren, nextChildren, parentVnode, parentContext, up
 Refs.diffChildren = diffChildren;
 
 var React = {
-  version: "2.0.0",
+  version: "2.0.1",
   render: render,
   hydrate: render,
   options: options,

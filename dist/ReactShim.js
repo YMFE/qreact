@@ -1,7 +1,5 @@
 /**
- * 此版本要求浏览器没有createClass, createFactory, PropTypes, isValidElement,
- * unmountComponentAtNode,unstable_renderSubtreeIntoContainer
- * QQ 370262116 by 司徒正美 Copyright 2018-01-23
+ * Maintained by YMFE Copyright 2018-01-26
  */
 
 (function (global, factory) {
@@ -451,7 +449,7 @@ function operateChildren(children, prefix, callback, parent) {
       return;
     }
   }
-  if (Object(children) === children && !children.type) {
+  if (Object(children) === children && !children.call && !children.type) {
     throw "children中存在非法的对象";
   }
   callback(children, prefix || ".", parent);
@@ -2920,7 +2918,7 @@ if (win.React && win.React.options) {
   React = win.React;
 } else {
   React = win.React = win.ReactDOM = {
-    version: "2.0.0",
+    version: "2.0.1",
     render: render,
     hydrate: render,
     Fragment: REACT_FRAGMENT_TYPE,

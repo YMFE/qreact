@@ -27,7 +27,7 @@ export default {
     }),
 
     license({
-      banner: `by 司徒正美 Copyright ${JSON.stringify(new Date()).replace(/T.*|"/g,"")}
+      banner: `Maintained by YMFE Copyright ${JSON.stringify(new Date()).replace(/T.*|"/g,"")}
       IE9+
       `
     }),

@@ -38,4 +38,3 @@ Component.prototype = {
   },
   render() {}
 };
-
