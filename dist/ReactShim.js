@@ -1,5 +1,5 @@
 /**
- * Maintained by YMFE Copyright 2018-01-26
+ * Maintained by YMFE Copyright 2018-01-30
  */
 
 (function (global, factory) {
@@ -1130,7 +1130,6 @@ function disposeVnode(vnode, updateQueue, silent) {
         topNodes.splice(i, 1);
       }
     }
-    vnode._disposed = true;
     if (vnode.superReturn) {
       var dom = vnode.superReturn.stateNode;
       delete dom.__events;
@@ -2918,7 +2917,7 @@ if (win.React && win.React.options) {
   React = win.React;
 } else {
   React = win.React = win.ReactDOM = {
-    version: "2.0.1",
+    version: "2.0.2",
     render: render,
     hydrate: render,
     Fragment: REACT_FRAGMENT_TYPE,

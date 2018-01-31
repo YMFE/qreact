@@ -14,7 +14,6 @@ export function disposeVnode(vnode, updateQueue, silent) {
         topNodes.splice(i, 1);
       }
     }
-    vnode._disposed = true;
     if(vnode.superReturn){
       var dom = vnode.superReturn.stateNode;
       delete dom.__events;
