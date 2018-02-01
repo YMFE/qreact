@@ -1,4 +1,4 @@
-import { document } from "./browser";
+import { document, modern, contains } from "./browser";
 import { isFn, noop } from "./util";
 import { flushUpdaters } from "./scheduler";
 import { Refs } from "./Refs";
@@ -34,12 +34,10 @@ export function dispatchEvent(e, type, end) {
   }
   var bubble = e.type;
   var dom = e.target;
-  if (bubble === "blur") {
-    if (Refs.nodeOperate) {
-      Refs.focusNode = dom;
-      Refs.type = bubble;
-    }
-  } else if (bubble === "focus") {
+  if ((type === "focus" || type === "blur") && e.currentTarget !== dom) {
+    return;
+  }
+  if (bubble === "focus") {
     if (dom.__inner__) {
       dom.__inner__ = false;
       return;
@@ -100,7 +98,7 @@ function collectPaths(from, end) {
         paths.push({ dom: dom, events: dom.__events });
       }
     }
-    } while ((vnode = vnode.return)); // eslint-disable-line
+  } while ((vnode = vnode.return)); // eslint-disable-line
   return paths;
 }
 
@@ -145,18 +143,20 @@ export function getBrowserName(onStr) {
   return lower;
 }
 
-eventPropHooks.click = function(e) {
-  return !e.target.disabled;
-};
-
 /* IE6-11 chrome mousewheel wheelDetla 下 -120 上 120
             firefox DOMMouseScroll detail 下3 上-3
             firefox wheel detlaY 下3 上-3
             IE9-11 wheel deltaY 下40 上-40
             chrome wheel deltaY 下100 上-100 */
 /* istanbul ignore next  */
-const fixWheelType = "onmousewheel" in document ? "mousewheel" : document.onwheel !== void 666 ? "wheel" : "DOMMouseScroll";
-const fixWheelDelta = fixWheelType === "mousewheel" ? "wheelDetla" : fixWheelType === "wheel" ? "deltaY" : "detail";
+const fixWheelType =
+  "onmousewheel" in document
+    ? "mousewheel"
+    : document.onwheel !== void 666 ? "wheel" : "DOMMouseScroll";
+const fixWheelDelta =
+  fixWheelType === "mousewheel"
+    ? "wheelDetla"
+    : fixWheelType === "wheel" ? "deltaY" : "detail";
 eventHooks.wheel = function(dom) {
   addEvent(dom, fixWheelType, function(e) {
     var delta = e[fixWheelDelta] > 0 ? -120 : 120;
@@ -168,13 +168,6 @@ eventHooks.wheel = function(dom) {
     dispatchEvent(e);
   });
 };
-
-"blur,focus".replace(/\w+/g, function(type) {
-  if (!document["__" + type]) {
-    document["__" + type] = true;
-    addGlobalEvent(type, true);
-  }
-});
 
 /**
  * 
@@ -189,17 +182,6 @@ function getRelatedTarget(e) {
     e.relatedTarget = e.type === "mouseover" ? e.fromElement : e.toElement;
   }
   return e.relatedTarget;
-}
-
-function contains(a, b) {
-  if (b) {
-    while ((b = b.parentNode)) {
-      if (b === a) {
-        return true;
-      }
-    }
-  }
-  return false;
 }
 
 String("mouseenter,mouseleave").replace(/\w+/g, function(type) {
@@ -254,14 +236,9 @@ function getLowestCommonAncestor(instA, instB) {
   return null;
 }
 
-if (isTouch) {
-  eventHooks.click = eventHooks.clickcapture = function(dom){
-    dom.onclick= dom.onclick || noop;
-  };
-}
-
+var specialHandles = {};
 export function createHandle(name, fn) {
-  return function(e) {
+  specialHandles[name] = function(e) {
     if (fn && fn(e) === false) {
       return;
     }
@@ -269,23 +246,50 @@ export function createHandle(name, fn) {
   };
 }
 
-var changeHandle = createHandle("change");
-var doubleClickHandle = createHandle("doubleclick");
-var scrollHandle = createHandle("scroll");
+createHandle("change");
+createHandle("doubleclick");
+createHandle("scroll");
+
+if (isTouch) {
+  eventHooks.click = eventHooks.clickcapture = function(dom) {
+    dom.onclick = dom.onclick || noop;
+  };
+}
+
+eventPropHooks.click = function(e) {
+  return !e.target.disabled;
+};
 
 //react将text,textarea,password元素中的onChange事件当成onInput事件
 eventHooks.changecapture = eventHooks.change = function(dom) {
   if (/text|password/.test(dom.type)) {
-    addEvent(document, "input", changeHandle);
+    addEvent(document, "input", specialHandles.change);
   }
 };
 
-eventHooks.scrollcapture = eventHooks.scroll = function(dom) {  
-  addEvent(dom, "scroll", scrollHandle);
+//这两个事件不进行全局监听
+"blur,focus".replace(/\w+/g, function(type) {
+  globalEvents[type] = true;
+  createHandle(type);
+  eventHooks[type] = function(dom, name) {
+    if (modern) {
+      addEvent(dom, name, specialHandles[name], true);
+    } else {
+      addEvent(
+        dom,
+        name === "focus" ? "focusin" : "focusout",
+        specialHandles[name]
+      );
+    }
+  };
+});
+
+eventHooks.scroll = function(dom, name) {
+  addEvent(dom, name, specialHandles[name]);
 };
 
-eventHooks.doubleclick = eventHooks.doubleclickcapture = function() {
-  addEvent(document, "dblclick", doubleClickHandle);
+eventHooks.doubleclick = function(dom, name) {
+  addEvent(document, "dblclick", specialHandles[name]);
 };
 
 export function SyntheticEvent(event) {
@@ -334,7 +338,7 @@ var eventProto = (SyntheticEvent.prototype = {
 /* istanbul ignore next  */
 //freeze_start
 Object.freeze ||
-    (Object.freeze = function(a) {
-      return a;
-    });
+  (Object.freeze = function(a) {
+    return a;
+  });
 //freeze_end

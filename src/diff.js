@@ -35,7 +35,9 @@ export function unmountComponentAtNode(container) {
     drainQueue(queue);
     emptyElement(container);
     container.__component = null;
+    return true;
   }
+  return false;
 }
 //[Top API] ReactDOM.findDOMNode
 export function findDOMNode(componentOrElement) {
@@ -185,8 +187,7 @@ function updateVnode(lastVnode, nextVnode, context, updateQueue, insertCarrier) 
   var dom = (nextVnode.stateNode = lastVnode.stateNode);
   options.beforeUpdate(nextVnode);
   if (lastVnode.vtype < 2) {
-    var insertPoint = insertCarrier.dom;
-    insertElement(nextVnode, insertPoint);
+    insertElement(nextVnode, insertCarrier.dom);
     insertCarrier.dom = dom;
     if (lastVnode.vtype === 0) {
       if (nextVnode.text !== lastVnode.text) {
@@ -242,7 +243,9 @@ function receiveComponent(lastVnode, nextVnode, parentContext, updateQueue, inse
   if (!updater._dirty) {
     updater._receiving = true;
     updater.updateQueue = updateQueue;
-    captureError(stateNode, "componentWillReceiveProps", [nextVnode.props, nextContext]);
+    if (willReceive) {
+      captureError(stateNode, "componentWillReceiveProps", [nextVnode.props, nextContext]);
+    }
     if (updater._hasError) {
       return;
     }

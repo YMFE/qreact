@@ -19,17 +19,19 @@ var fn = (DOMElement.prototype = {
 });
 String(
   "replaceChild,appendChild,removeAttributeNS,setAttributeNS,removeAttribute,setAttribute" +
-        ",getAttribute,insertBefore,removeChild,addEventListener,removeEventListener,attachEvent" +
-        ",detachEvent"
+    ",getAttribute,insertBefore,removeChild,addEventListener,removeEventListener,attachEvent" +
+    ",detachEvent"
 ).replace(/\w+/g, function(name) {
   fn[name] = function() {
-        console.log("fire " + name); // eslint-disable-line
+    console.log("fire " + name); // eslint-disable-line
   };
 });
 
 //用于后端的document
 export var fakeDoc = new DOMElement();
-fakeDoc.createElement = fakeDoc.createElementNS = fakeDoc.createDocumentFragment = function(type) {
+fakeDoc.createElement = fakeDoc.createElementNS = fakeDoc.createDocumentFragment = function(
+  type
+) {
   return new DOMElement(type);
 };
 fakeDoc.createTextNode = fakeDoc.createComment = Boolean;
@@ -80,6 +82,9 @@ export function emptyElement(node) {
   var child;
   while ((child = node.firstChild)) {
     emptyElement(child);
+    if (child === Refs.focusNode) {
+      Refs.focusNode = false;
+    }
     node.removeChild(child);
   }
 }
@@ -91,7 +96,6 @@ export function removeElement(node) {
   if (!node) {
     return;
   }
-  Refs.nodeOperate = true;
   if (node.nodeType === 1) {
     if (isStandard) {
       node.textContent = "";
@@ -105,9 +109,11 @@ export function removeElement(node) {
       recyclables["#text"].push(node);
     }
   }
+  if (node === Refs.focusNode) {
+    Refs.focusNode = false;
+  }
   fragment.appendChild(node);
   fragment.removeChild(node);
-  Refs.nodeOperate = false;
 }
 
 var versions = {
@@ -117,7 +123,9 @@ var versions = {
   "08": NaN
 };
 /* istanbul ignore next  */
-export var msie = document.documentMode || versions[typeNumber(document.all) + "" + typeNumber(win.XMLHttpRequest)];
+export var msie =
+  document.documentMode ||
+  versions[typeNumber(document.all) + "" + typeNumber(win.XMLHttpRequest)];
 
 export var modern = /NaN|undefined/.test(msie) || msie > 8;
 
@@ -170,8 +178,19 @@ export function createElement(vnode, p) {
       return document.createElementNS(ns, type);
     }
     //eslint-disable-next-line
-    } catch (e) {}
+  } catch (e) {}
   return document.createElement(type);
+}
+
+export function contains(a, b) {
+  if (b) {
+    while ((b = b.parentNode)) {
+      if (b === a) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 export function insertElement(vnode, insertPoint) {
@@ -191,13 +210,30 @@ export function insertElement(vnode, insertPoint) {
 
   var dom = vnode.stateNode,
     //如果没有插入点，则插入到当前父节点的第一个节点之前
-    after = insertPoint ? insertPoint.nextSibling: parentNode.firstChild;
+    after = insertPoint ? insertPoint.nextSibling : parentNode.firstChild;
   if (after === dom) {
     return;
   }
-  Refs.nodeOperate = true;
+  if (after === null && dom === parentNode.lastChild) {
+    return;
+  }
+  var isElement = vnode.vtype;
+
+  var prevFocus = isElement && document.activeElement;
   parentNode.insertBefore(dom, after);
-  Refs.nodeOperate = false;
+  if (
+    isElement &&
+    prevFocus !== document.activeElement &&
+    contains(document.body, prevFocus)
+  ) {
+    try {
+      Refs.focusNode = prevFocus;
+      prevFocus.__inner__ = true;
+      prevFocus.focus();
+    } catch (e) {
+      prevFocus.__inner__ = false;
+    }
+  }
 }
 
 export function getComponentNodes(children, resolve, debug) {

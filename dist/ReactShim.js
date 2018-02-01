@@ -1,5 +1,5 @@
 /**
- * Maintained by YMFE Copyright 2018-01-30
+ * Maintained by YMFE Copyright 2018-02-01
  */
 
 (function (global, factory) {
@@ -686,6 +686,9 @@ function emptyElement(node) {
   var child;
   while (child = node.firstChild) {
     emptyElement(child);
+    if (child === Refs.focusNode) {
+      Refs.focusNode = false;
+    }
     node.removeChild(child);
   }
 }
@@ -697,7 +700,6 @@ function removeElement(node) {
   if (!node) {
     return;
   }
-  Refs.nodeOperate = true;
   if (node.nodeType === 1) {
     if (isStandard) {
       node.textContent = "";
@@ -711,9 +713,11 @@ function removeElement(node) {
       recyclables["#text"].push(node);
     }
   }
+  if (node === Refs.focusNode) {
+    Refs.focusNode = false;
+  }
   fragment.appendChild(node);
   fragment.removeChild(node);
-  Refs.nodeOperate = false;
 }
 
 var versions = {
@@ -780,6 +784,17 @@ function createElement$1(vnode, p) {
   return document.createElement(type);
 }
 
+function contains(a, b) {
+  if (b) {
+    while (b = b.parentNode) {
+      if (b === a) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 function insertElement(vnode, insertPoint) {
   if (vnode._disposed) {
     return;
@@ -802,9 +817,22 @@ function insertElement(vnode, insertPoint) {
   if (after === dom) {
     return;
   }
-  Refs.nodeOperate = true;
+  if (after === null && dom === parentNode.lastChild) {
+    return;
+  }
+  var isElement = vnode.vtype;
+
+  var prevFocus = isElement && document.activeElement;
   parentNode.insertBefore(dom, after);
-  Refs.nodeOperate = false;
+  if (isElement && prevFocus !== document.activeElement && contains(document.body, prevFocus)) {
+    try {
+      Refs.focusNode = prevFocus;
+      prevFocus.__inner__ = true;
+      prevFocus.focus();
+    } catch (e) {
+      prevFocus.__inner__ = false;
+    }
+  }
 }
 
 function shallowEqual(objA, objB) {
@@ -1149,6 +1177,7 @@ function disposeVnode(vnode, updateQueue, silent) {
   }
 }
 function remove() {
+  this.vnode._disposed = true;
   delete this.vnode.stateNode;
   removeElement(this.node);
 }
@@ -1336,12 +1365,10 @@ function dispatchEvent(e, type, end) {
   }
   var bubble = e.type;
   var dom = e.target;
-  if (bubble === "blur") {
-    if (Refs.nodeOperate) {
-      Refs.focusNode = dom;
-      Refs.type = bubble;
-    }
-  } else if (bubble === "focus") {
+  if ((type === "focus" || type === "blur") && e.currentTarget !== dom) {
+    return;
+  }
+  if (bubble === "focus") {
     if (dom.__inner__) {
       dom.__inner__ = false;
       return;
@@ -1447,10 +1474,6 @@ function getBrowserName(onStr) {
   return lower;
 }
 
-eventPropHooks.click = function (e) {
-  return !e.target.disabled;
-};
-
 /* IE6-11 chrome mousewheel wheelDetla 下 -120 上 120
             firefox DOMMouseScroll detail 下3 上-3
             firefox wheel detlaY 下3 上-3
@@ -1471,13 +1494,6 @@ eventHooks.wheel = function (dom) {
   });
 };
 
-"blur,focus".replace(/\w+/g, function (type) {
-  if (!document["__" + type]) {
-    document["__" + type] = true;
-    addGlobalEvent(type, true);
-  }
-});
-
 /**
  * 
 DOM通过event对象的relatedTarget属性提供了相关元素的信息。这个属性只对于mouseover和mouseout事件才包含值；
@@ -1491,17 +1507,6 @@ function getRelatedTarget(e) {
     e.relatedTarget = e.type === "mouseover" ? e.fromElement : e.toElement;
   }
   return e.relatedTarget;
-}
-
-function contains(a, b) {
-  if (b) {
-    while (b = b.parentNode) {
-      if (b === a) {
-        return true;
-      }
-    }
-  }
-  return false;
 }
 
 String("mouseenter,mouseleave").replace(/\w+/g, function (type) {
@@ -1556,14 +1561,9 @@ function getLowestCommonAncestor(instA, instB) {
   return null;
 }
 
-if (isTouch) {
-  eventHooks.click = eventHooks.clickcapture = function (dom) {
-    dom.onclick = dom.onclick || noop;
-  };
-}
-
+var specialHandles = {};
 function createHandle(name, fn) {
-  return function (e) {
+  specialHandles[name] = function (e) {
     if (fn && fn(e) === false) {
       return;
     }
@@ -1571,23 +1571,46 @@ function createHandle(name, fn) {
   };
 }
 
-var changeHandle = createHandle("change");
-var doubleClickHandle = createHandle("doubleclick");
-var scrollHandle = createHandle("scroll");
+createHandle("change");
+createHandle("doubleclick");
+createHandle("scroll");
+
+if (isTouch) {
+  eventHooks.click = eventHooks.clickcapture = function (dom) {
+    dom.onclick = dom.onclick || noop;
+  };
+}
+
+eventPropHooks.click = function (e) {
+  return !e.target.disabled;
+};
 
 //react将text,textarea,password元素中的onChange事件当成onInput事件
 eventHooks.changecapture = eventHooks.change = function (dom) {
   if (/text|password/.test(dom.type)) {
-    addEvent(document, "input", changeHandle);
+    addEvent(document, "input", specialHandles.change);
   }
 };
 
-eventHooks.scrollcapture = eventHooks.scroll = function (dom) {
-  addEvent(dom, "scroll", scrollHandle);
+//这两个事件不进行全局监听
+"blur,focus".replace(/\w+/g, function (type) {
+  globalEvents[type] = true;
+  createHandle(type);
+  eventHooks[type] = function (dom, name) {
+    if (modern) {
+      addEvent(dom, name, specialHandles[name], true);
+    } else {
+      addEvent(dom, name === "focus" ? "focusin" : "focusout", specialHandles[name]);
+    }
+  };
+});
+
+eventHooks.scroll = function (dom, name) {
+  addEvent(dom, name, specialHandles[name]);
 };
 
-eventHooks.doubleclick = eventHooks.doubleclickcapture = function () {
-  addEvent(document, "dblclick", doubleClickHandle);
+eventHooks.doubleclick = function (dom, name) {
+  addEvent(document, "dblclick", specialHandles[name]);
 };
 
 function SyntheticEvent(event) {
@@ -2367,9 +2390,8 @@ CompositeUpdater.prototype = {
       var nodes = collectComponentNodes(this.children);
       var queue = this.insertCarrier;
       nodes.forEach(function (el) {
-        insertElement(el, queue);
+        insertElement(el, queue.dom);
         queue.dom = el.stateNode;
-        // queue.unshift(el.stateNode);
       });
     } else {
       captureError(instance, "componentWillUpdate", [props, state, context]);
@@ -2458,16 +2480,6 @@ CompositeUpdater.prototype = {
     if (!hasMounted) {
       this.isMounted = returnTrue;
     }
-    var node = Refs.focusNode;
-    if (node) {
-      try {
-        node.focus();
-        node.__inner__ = true;
-      } catch (e) {
-        //hack
-      }
-      delete Refs.focusNode;
-    }
     if (this._hydrating) {
       var hookName = hasMounted ? "componentDidUpdate" : "componentDidMount";
       captureError(instance, hookName, this._hookArgs || []);
@@ -2516,7 +2528,7 @@ CompositeUpdater.prototype = {
     captureError(instance, "componentWillUnmount", []);
     //在执行componentWillUnmount后才将关联的元素节点解绑，防止用户在钩子里调用 findDOMNode方法
     this.isMounted = returnFalse;
-    this._disposed = true;
+    vnode._disposed = this._disposed = true;
   }
 };
 function transfer(queue) {
@@ -2599,7 +2611,9 @@ function unmountComponentAtNode(container) {
     drainQueue(queue);
     emptyElement(container);
     container.__component = null;
+    return true;
   }
+  return false;
 }
 //[Top API] ReactDOM.findDOMNode
 function findDOMNode(componentOrElement) {
@@ -2750,8 +2764,7 @@ function updateVnode(lastVnode, nextVnode, context, updateQueue, insertCarrier) 
   var dom = nextVnode.stateNode = lastVnode.stateNode;
   options.beforeUpdate(nextVnode);
   if (lastVnode.vtype < 2) {
-    var insertPoint = insertCarrier.dom;
-    insertElement(nextVnode, insertPoint);
+    insertElement(nextVnode, insertCarrier.dom);
     insertCarrier.dom = dom;
     if (lastVnode.vtype === 0) {
       if (nextVnode.text !== lastVnode.text) {
@@ -2810,7 +2823,9 @@ function receiveComponent(lastVnode, nextVnode, parentContext, updateQueue, inse
   if (!updater._dirty) {
     updater._receiving = true;
     updater.updateQueue = updateQueue;
-    captureError(stateNode, "componentWillReceiveProps", [nextVnode.props, nextContext]);
+    if (willReceive) {
+      captureError(stateNode, "componentWillReceiveProps", [nextVnode.props, nextContext]);
+    }
     if (updater._hasError) {
       return;
     }
@@ -2917,7 +2932,7 @@ if (win.React && win.React.options) {
   React = win.React;
 } else {
   React = win.React = win.ReactDOM = {
-    version: "2.0.2",
+    version: "2.0.3",
     render: render,
     hydrate: render,
     Fragment: REACT_FRAGMENT_TYPE,

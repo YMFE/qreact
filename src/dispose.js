@@ -33,6 +33,7 @@ export function disposeVnode(vnode, updateQueue, silent) {
   }
 }
 function remove(){
+  this.vnode._disposed = true;
   delete this.vnode.stateNode;
   removeElement(this.node);
 }
