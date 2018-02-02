@@ -4,7 +4,6 @@
 import { Refs } from "./Refs";
 import { duplexMap } from "./browser";
 
-
 export const formElements = {
   select: 1,
   textarea: 1,
@@ -33,10 +32,10 @@ var duplexData = {
         if (dom.type === "number") {
           var valueAsNumber = parseFloat(dom.value) || 0;
           if (
-          // eslint-disable-next-line
-                        value != valueAsNumber ||
-                        // eslint-disable-next-line
-                        (value == valueAsNumber && dom.value != value)
+            // eslint-disable-next-line
+            value != valueAsNumber ||
+            // eslint-disable-next-line
+            (value == valueAsNumber && dom.value != value)
           ) {
             // Cast `value` to a string to ensure the value is set correctly. While
             // browsers typically do this as necessary, jsdom doesn't.
@@ -113,14 +112,16 @@ export function inputControll(vnode, dom, props) {
   var domType = dom.type;
   var duplexType = duplexMap[domType];
   var isUncontrolled = dom._uncontrolled;
-  if (duplexType ) {
+  if (duplexType) {
     var data = duplexData[duplexType];
     var duplexProp = data[0];
     var keys = data[1];
     var converter = data[2];
     var sideEffect = data[3];
 
-    var value = converter(isUncontrolled ? dom._persistValue : props[duplexProp]);
+    var value = converter(
+      isUncontrolled ? dom._persistValue : props[duplexProp]
+    );
     sideEffect(dom, value, vnode, isUncontrolled);
     if (isUncontrolled) {
       return;
@@ -131,7 +132,13 @@ export function inputControll(vnode, dom, props) {
     var event2 = data[6];
     if (!hasOtherControllProperty(props, keys)) {
       // eslint-disable-next-line
-            console.warn(`你为${vnode.type}[type=${domType}]元素指定了**受控属性**${duplexProp}，\n但是没有提供另外的${Object.keys(keys)}\n来操作${duplexProp}的值，框架将不允许你通过输入改变该值`);
+      console.warn(
+        `你为${
+          vnode.type
+        }[type=${domType}]元素指定了**受控属性**${duplexProp}，\n但是没有提供另外的${Object.keys(
+          keys
+        )}\n来操作${duplexProp}的值，框架将不允许你通过输入改变该值`
+      );
       dom["on" + event1] = handle;
       dom["on" + event2] = handle;
     } else {
@@ -163,7 +170,10 @@ function hasOtherControllProperty(props, keys) {
 
 function keepPersistValue(e) {
   var dom = e.target;
-  var name = e.type === "textarea" ? "innerHTML" : /check|radio/.test(dom.type) ? "checked" : "value";
+  var name =
+    e.type === "textarea"
+      ? "innerHTML"
+      : /check|radio/.test(dom.type) ? "checked" : "value";
   var v = dom._persistValue;
   var noNull = v != null;
   var noEqual = dom[name] !== v; //2.0 , 2
@@ -218,7 +228,7 @@ function updateOptionsMore(options, n, propValue) {
     }
   } catch (e) {
     /* istanbul ignore next */
-        console.warn('<select multiple="true"> 的value应该对应一个字符串数组'); // eslint-disable-line
+    console.warn('<select multiple="true"> 的value应该对应一个字符串数组'); // eslint-disable-line
   }
   for (let i = 0; i < n; i++) {
     let option = options[i];

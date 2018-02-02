@@ -1,4 +1,4 @@
-import { deprecatedWarn, returnFalse,returnTrue } from "./util";
+import { deprecatedWarn, returnFalse, returnTrue } from "./util";
 import { Refs } from "./Refs";
 /**
  *组件的基类
@@ -19,13 +19,12 @@ var fakeObject = {
   isMounted: returnFalse
 };
 
-
 Component.prototype = {
   constructor: Component, //必须重写constructor,防止别人在子类中使用Object.getPrototypeOf时找不到正确的基类
   replaceState() {
     deprecatedWarn("replaceState");
   },
-  isReactComponent:returnTrue,
+  isReactComponent: returnTrue,
   isMounted() {
     deprecatedWarn("isMounted");
     return (this.updater || fakeObject).isMounted();

@@ -131,9 +131,16 @@ var Refs = {
   }
 };
 
+var mapVtype = {
+  0: 6,
+  4: 1,
+  2: 2,
+  1: 5
+};
 function Vnode(type, vtype, props, key, ref) {
   this.type = type;
   this.vtype = vtype;
+  this.tag = mapVtype[vtype];
   if (vtype) {
     this.props = props;
     this._owner = Refs.currentOwner;
@@ -231,7 +238,7 @@ function fiberizeChildren(c, updater) {
   flattenObject = {};
   flattenPrev = null;
   flattenArray = [];
-  var vnode = updater.vnode;
+  var vnode = updater._reactInternalFiber;
   if (c !== void 666) {
     lastText = null;
     flattenIndex = 0;
@@ -435,13 +442,13 @@ function encodeEntities(text) {
 
 var rnumber = /^-?\d+(\.\d+)?$/;
 /**
-     * 为元素样子设置样式
-     * 
-     * @export
-     * @param {any} dom 
-     * @param {any} lastStyle 
-     * @param {any} nextStyle 
-     */
+ * 为元素样子设置样式
+ *
+ * @export
+ * @param {any} dom
+ * @param {any} lastStyle
+ * @param {any} nextStyle
+ */
 
 
 var cssNumber = oneObject("animationIterationCount,columnCount,order,flex,flexGrow,flexShrink,fillOpacity,fontWeight,lineHeight,opacity,orphans,widows,zIndex,zoom");
@@ -450,9 +457,9 @@ var cssMap = oneObject("float", "cssFloat");
 
 /**
  * 转换成当前浏览器可用的样式名
- * 
- * @param {any} name 
- * @returns 
+ *
+ * @param {any} name
+ * @returns
  */
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -613,7 +620,7 @@ function renderVNode(vnode, context) {
                     str += innerHTML$$1;
                 } else {
                     var fakeUpdater = {
-                        vnode: vnode
+                        _reactInternalFiber: vnode
                     };
                     var children = fiberizeChildren(props.children, fakeUpdater);
                     for (var i in children) {

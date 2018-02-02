@@ -1,4 +1,4 @@
-import { document, modern, contains } from "./browser";
+import { document, contains } from "./browser";
 import { isFn, noop } from "./util";
 import { flushUpdaters } from "./scheduler";
 import { Refs } from "./Refs";
@@ -33,17 +33,7 @@ export function dispatchEvent(e, type, end) {
     e.type = type;
   }
   var bubble = e.type;
-  var dom = e.target;
-  if ((type === "focus" || type === "blur") && e.currentTarget !== dom) {
-    return;
-  }
-  if (bubble === "focus") {
-    if (dom.__inner__) {
-      dom.__inner__ = false;
-      return;
-    }
-  }
-
+  //var dom = e.target;
   var hook = eventPropHooks[bubble];
   if (hook && false === hook(e)) {
     return;
@@ -143,34 +133,7 @@ export function getBrowserName(onStr) {
   return lower;
 }
 
-/* IE6-11 chrome mousewheel wheelDetla 下 -120 上 120
-            firefox DOMMouseScroll detail 下3 上-3
-            firefox wheel detlaY 下3 上-3
-            IE9-11 wheel deltaY 下40 上-40
-            chrome wheel deltaY 下100 上-100 */
-/* istanbul ignore next  */
-const fixWheelType =
-  "onmousewheel" in document
-    ? "mousewheel"
-    : document.onwheel !== void 666 ? "wheel" : "DOMMouseScroll";
-const fixWheelDelta =
-  fixWheelType === "mousewheel"
-    ? "wheelDetla"
-    : fixWheelType === "wheel" ? "deltaY" : "detail";
-eventHooks.wheel = function(dom) {
-  addEvent(dom, fixWheelType, function(e) {
-    var delta = e[fixWheelDelta] > 0 ? -120 : 120;
-    var deltaY = ~~dom.__wheel + delta;
-    dom.__wheel = deltaY;
-    e = new SyntheticEvent(e);
-    e.type = "wheel";
-    e.deltaY = deltaY;
-    dispatchEvent(e);
-  });
-};
-
 /**
- * 
 DOM通过event对象的relatedTarget属性提供了相关元素的信息。这个属性只对于mouseover和mouseout事件才包含值；
 对于其他事件，这个属性的值是null。IE不支持realtedTarget属性，但提供了保存着同样信息的不同属性。
 在mouseover事件触发时，IE的fromElement属性中保存了相关元素；
@@ -184,18 +147,18 @@ function getRelatedTarget(e) {
   return e.relatedTarget;
 }
 
-String("mouseenter,mouseleave").replace(/\w+/g, function(type) {
-  eventHooks[type] = function(dom, name) {
-    var mark = "__" + name;
+String("mouseenter,mouseleave").replace(/\w+/g, function(name) {
+  eventHooks[name] = function(dom, type) {
+    var mark = "__" + type;
     if (!dom[mark]) {
       dom[mark] = true;
-      var mask = name === "mouseenter" ? "mouseover" : "mouseout";
+      var mask = type === "mouseenter" ? "mouseover" : "mouseout";
       addEvent(dom, mask, function(e) {
         let t = getRelatedTarget(e);
         if (!t || (t !== dom && !contains(dom, t))) {
           var common = getLowestCommonAncestor(dom, t);
           //由于不冒泡，因此paths长度为1
-          dispatchEvent(e, name, common);
+          dispatchEvent(e, type, common);
         }
       });
     }
@@ -238,17 +201,21 @@ function getLowestCommonAncestor(instA, instB) {
 
 var specialHandles = {};
 export function createHandle(name, fn) {
-  specialHandles[name] = function(e) {
+  return (specialHandles[name] = function(e) {
     if (fn && fn(e) === false) {
       return;
     }
     dispatchEvent(e, name);
-  };
+  });
 }
 
 createHandle("change");
 createHandle("doubleclick");
 createHandle("scroll");
+createHandle("wheel");
+globalEvents.wheel = true;
+globalEvents.scroll = true;
+globalEvents.doubleclick = true;
 
 if (isTouch) {
   eventHooks.click = eventHooks.clickcapture = function(dom) {
@@ -260,28 +227,71 @@ eventPropHooks.click = function(e) {
   return !e.target.disabled;
 };
 
+const fixWheelType =
+  document.onwheel !== void 666
+    ? "wheel"
+    : "onmousewheel" in document ? "mousewheel" : "DOMMouseScroll";
+eventHooks.wheel = function(dom) {
+  addEvent(dom, fixWheelType, specialHandles.wheel);
+};
+
+eventPropHooks.wheel = function(event) {
+  event.deltaX =
+    "deltaX" in event
+      ? event.deltaX
+      : // Fallback to `wheelDeltaX` for Webkit and normalize (right is positive).
+      "wheelDeltaX" in event ? -event.wheelDeltaX : 0;
+  event.deltaY =
+    "deltaY" in event
+      ? event.deltaY
+      : // Fallback to `wheelDeltaY` for Webkit and normalize (down is positive).
+      "wheelDeltaY" in event
+        ? -event.wheelDeltaY
+        : // Fallback to `wheelDelta` for IE<9 and normalize (down is positive).
+        "wheelDelta" in event ? -event.wheelDelta : 0;
+};
+
 //react将text,textarea,password元素中的onChange事件当成onInput事件
 eventHooks.changecapture = eventHooks.change = function(dom) {
   if (/text|password/.test(dom.type)) {
     addEvent(document, "input", specialHandles.change);
   }
 };
+export var focusMap = {
+  focus: "focus",
+  blur: "blur"
+};
 
-//这两个事件不进行全局监听
-"blur,focus".replace(/\w+/g, function(type) {
-  globalEvents[type] = true;
-  createHandle(type);
-  eventHooks[type] = function(dom, name) {
-    if (modern) {
-      addEvent(dom, name, specialHandles[name], true);
+function blurFocus(e) {
+  var dom = e.target || e.srcElement;
+  var type = focusMap[e.type];
+  var isFocus = type === "focus";
+  if (isFocus && dom.__inner__) {
+    dom.__inner__ = false;
+    return;
+  }
+
+  if (!isFocus && Refs.focusNode === dom) {
+    Refs.focusNode = null;
+  }
+  do {
+    if (dom.nodeType === 1) {
+      if (dom.__events && dom.__events[type]) {
+        dispatchEvent(e, type);
+        break;
+      }
     } else {
-      addEvent(
-        dom,
-        name === "focus" ? "focusin" : "focusout",
-        specialHandles[name]
-      );
+      break;
     }
-  };
+  } while ((dom = dom.parentNode));
+}
+
+"blur,focus".replace(/\w+/g, function(type) {
+  var mark = "__" + type;
+  if (!document[mark]) {
+    globalEvents[type] = document[mark] = true;
+    addEvent(document, focusMap[type], blurFocus, true);
+  }
 });
 
 eventHooks.scroll = function(dom, name) {
@@ -311,6 +321,8 @@ export function SyntheticEvent(event) {
 
 var eventProto = (SyntheticEvent.prototype = {
   fixEvent: noop, //留给以后扩展用
+  fixHooks: noop,
+  persist: noop,
   preventDefault: function() {
     var e = this.nativeEvent || {};
     e.returnValue = this.returnValue = false;
@@ -318,7 +330,6 @@ var eventProto = (SyntheticEvent.prototype = {
       e.preventDefault();
     }
   },
-  fixHooks: noop,
   stopPropagation: function() {
     var e = this.nativeEvent || {};
     e.cancelBubble = this._stopPropagation = true;
@@ -326,7 +337,6 @@ var eventProto = (SyntheticEvent.prototype = {
       e.stopPropagation();
     }
   },
-  persist: noop,
   stopImmediatePropagation: function() {
     this.stopPropagation();
     this.stopImmediate = true;

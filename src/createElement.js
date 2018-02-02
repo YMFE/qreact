@@ -144,7 +144,7 @@ export function fiberizeChildren(c, updater) {
   flattenObject = {};
   flattenPrev = null;
   flattenArray = [];
-  let vnode = updater.vnode;
+  let vnode = updater._reactInternalFiber;
   if (c !== void 666) {
     lastText = null;
     flattenIndex = 0;
@@ -165,7 +165,12 @@ export function operateChildren(children, prefix, callback, parent) {
   if (children) {
     if (children.forEach) {
       children.forEach(function(el, i) {
-        operateChildren(el, prefix ? prefix + ":" + i : "." + i, callback, parent);
+        operateChildren(
+          el,
+          prefix ? prefix + ":" + i : "." + i,
+          callback,
+          parent
+        );
       });
       return;
     } else if ((iteratorFn = getIteractor(children))) {
@@ -173,7 +178,12 @@ export function operateChildren(children, prefix, callback, parent) {
         ii = 0,
         step;
       while (!(step = iterator.next()).done) {
-        operateChildren(step.value, prefix ? prefix + ":" + ii : "." + ii, callback, parent);
+        operateChildren(
+          step.value,
+          prefix ? prefix + ":" + ii : "." + ii,
+          callback,
+          parent
+        );
         ii++;
       }
       return;

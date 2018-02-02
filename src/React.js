@@ -1,35 +1,14 @@
-import {
-  options,
-  REACT_FRAGMENT_TYPE
-} from "./util";
-import {
-  Children
-} from "./Children";
+import { options, REACT_FRAGMENT_TYPE } from "./util";
+import { Children } from "./Children";
 import * as eventSystem from "./event";
-import {
-  PropTypes
-} from "./PropTypes";
-import {
-  Component
-} from "./Component";
-import {
-  win as window
-} from "./browser";
-import {
-  createClass
-} from "./createClass";
-import {
-  cloneElement
-} from "./cloneElement";
-import {
-  PureComponent
-} from "./PureComponent";
-import {
-  createElement
-} from "./createElement";
-import {
-  createPortal
-} from "./createPortal";
+import { PropTypes } from "./PropTypes";
+import { Component } from "./Component";
+import { win as window } from "./browser";
+import { createClass } from "./createClass";
+import { cloneElement } from "./cloneElement";
+import { PureComponent } from "./PureComponent";
+import { createElement } from "./createElement";
+import { createPortal } from "./createPortal";
 import {
   render,
   findDOMNode,

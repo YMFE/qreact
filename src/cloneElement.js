@@ -1,5 +1,5 @@
 import { createElement } from "./createElement";
-import { Refs} from "./Refs";
+import { Refs } from "./Refs";
 import { extend } from "./util";
 
 export function cloneElement(vnode, props) {
@@ -11,22 +11,21 @@ export function cloneElement(vnode, props) {
   let owner = vnode._owner,
     lastOwn = Refs.currentOwner,
     old = vnode.props,
-    configs = {  };
+    configs = {};
   if (props) {
     Object.assign(configs, old, props);
-    configs.key = props.key !== void 666 ? props.key :vnode.key;
-    if(props.ref !== void 666){
+    configs.key = props.key !== void 666 ? props.key : vnode.key;
+    if (props.ref !== void 666) {
       configs.ref = props.ref;
       owner = lastOwn;
-    }else if(vnode._hasRef){
+    } else if (vnode._hasRef) {
       configs.ref = vnode.ref;
     }
-        
-  }else{
+  } else {
     configs = old;
   }
-  for(var i in configs){
-    if(i !== "children" && configs[i] && configs[i].$$typeof){
+  for (var i in configs) {
+    if (i !== "children" && configs[i] && configs[i].$$typeof) {
       configs[i] = cloneElement(configs[i]);
     }
   }

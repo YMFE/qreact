@@ -1,13 +1,13 @@
 import { oneObject, camelize } from "./util";
 export var rnumber = /^-?\d+(\.\d+)?$/;
 /**
-     * 为元素样子设置样式
-     * 
-     * @export
-     * @param {any} dom 
-     * @param {any} lastStyle 
-     * @param {any} nextStyle 
-     */
+ * 为元素样子设置样式
+ *
+ * @export
+ * @param {any} dom
+ * @param {any} lastStyle
+ * @param {any} nextStyle
+ */
 export function patchStyle(dom, lastStyle, nextStyle) {
   if (lastStyle === nextStyle) {
     return;
@@ -27,7 +27,7 @@ export function patchStyle(dom, lastStyle, nextStyle) {
         //node.style.width = undefine 在旧式IE下会抛异常
         dom.style[name] = val; //应用样式
       } catch (e) {
-                console.log("dom.style[" + name + "] = " + val + "throw error"); // eslint-disable-line
+        console.log("dom.style[" + name + "] = " + val + "throw error"); // eslint-disable-line
       }
     }
   }
@@ -50,9 +50,9 @@ export var cssMap = oneObject("float", "cssFloat");
 
 /**
  * 转换成当前浏览器可用的样式名
- * 
- * @param {any} name 
- * @returns 
+ *
+ * @param {any} name
+ * @returns
  */
 export function cssName(name, dom) {
   if (cssMap[name]) {

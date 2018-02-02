@@ -1,6 +1,11 @@
 import { NAMESPACE, duplexMap } from "./browser";
 import { patchStyle } from "./style";
-import { addGlobalEvent, getBrowserName, isEventName, eventHooks } from "./event";
+import {
+  addGlobalEvent,
+  getBrowserName,
+  isEventName,
+  eventHooks
+} from "./event";
 import { toLowerCase, noop, typeNumber, emptyObject, options } from "./util";
 import { inputMonitor } from "./inputMonitor";
 
@@ -78,7 +83,21 @@ var specialSVGPropertyName = {
 };
 
 // 重复属性名的特征值列表
-var repeatedKey = ["et", "ep", "em", "es", "pp", "ts", "td", "to", "lr", "rr", "re", "ht", "gc"];
+var repeatedKey = [
+  "et",
+  "ep",
+  "em",
+  "es",
+  "pp",
+  "ts",
+  "td",
+  "to",
+  "lr",
+  "rr",
+  "re",
+  "ht",
+  "gc"
+];
 
 function createRepaceFn(split) {
   return function(match) {
@@ -128,7 +147,7 @@ export function diffProps(dom, lastProps, nextProps, vnode) {
   let isSVG = vnode.namespaceURI === NAMESPACE.svg;
   let tag = vnode.type;
   //eslint-disable-next-line
-    for (let name in nextProps) {
+  for (let name in nextProps) {
     let val = nextProps[name];
     if (val !== lastProps[name]) {
       let which = tag + isSVG + name;
@@ -181,7 +200,9 @@ function getPropAction(dom, name, isSVG) {
     return "booleanAttr";
   }
 
-  return name.indexOf("data-") === 0 || dom[name] === void 666 ? "attribute" : "property";
+  return name.indexOf("data-") === 0 || dom[name] === void 666
+    ? "attribute"
+    : "property";
 }
 var builtinStringProps = {
   className: 1,
@@ -200,7 +221,11 @@ function uncontrolled(dom, name, val, lastProps, vnode) {
       inputMonitor.observe(dom, name); //重写defaultXXX的setter/getter
     }
     dom._observing = false;
-    if (vnode.type === "select" && dom._setValue && !lastProps.multiple !== !vnode.props.multiple) {
+    if (
+      vnode.type === "select" &&
+      dom._setValue &&
+      !lastProps.multiple !== !vnode.props.multiple
+    ) {
       //当select的multiple发生变化，需要重置selectedIndex，让底下的selected生效
       dom.selectedIndex = dom.selectedIndex;
       dom._setValue = false;
@@ -220,8 +245,8 @@ export var actionStrategy = {
   style: function(dom, _, val, lastProps) {
     patchStyle(dom, lastProps.style || emptyObject, val || emptyObject);
   },
-  autoFocus: function(dom){
-    if(duplexMap[dom.type] < 3  || dom.contentEditable === "true"){
+  autoFocus: function(dom) {
+    if (duplexMap[dom.type] < 3 || dom.contentEditable === "true") {
       dom.focus();
     }
   },
@@ -237,7 +262,8 @@ export var actionStrategy = {
     // https://facebook.github.io/react/blog/2015/10/07/react-v0.14.html#notable-enh
     // a ncements xlinkActuate, xlinkArcrole, xlinkHref, xlinkRole, xlinkShow,
     // xlinkTitle, xlinkType eslint-disable-next-line
-    let method = typeNumber(val) < 3 && !val ? "removeAttribute" : "setAttribute";
+    let method =
+      typeNumber(val) < 3 && !val ? "removeAttribute" : "setAttribute";
     let nameRes = getSVGAttributeName(name);
     if (nameRes.ifSpecial) {
       let prefix = nameRes.name.split(":")[0];
@@ -265,7 +291,7 @@ export var actionStrategy = {
     try {
       dom.setAttribute(name, val);
     } catch (e) {
-            console.warn("setAttribute error", name, val); // eslint-disable-line
+      console.warn("setAttribute error", name, val); // eslint-disable-line
     }
   },
   property: function(dom, name, val) {

@@ -24,7 +24,7 @@ function mapWrapperCb(old, prefix) {
     cur.arr.push(el);
   }
 }
-function K (el){
+function K(el) {
   return el;
 }
 export const Children = {

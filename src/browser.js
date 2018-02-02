@@ -181,7 +181,6 @@ export function createElement(vnode, p) {
   } catch (e) {}
   return document.createElement(type);
 }
-
 export function contains(a, b) {
   if (b) {
     while ((b = b.parentNode)) {
@@ -192,7 +191,6 @@ export function contains(a, b) {
   }
   return false;
 }
-
 export function insertElement(vnode, insertPoint) {
   if (vnode._disposed) {
     return;

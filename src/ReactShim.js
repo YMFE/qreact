@@ -1,34 +1,13 @@
-import {
-  Component
-} from "./Component";
-import {
-  options,
-  REACT_FRAGMENT_TYPE
-} from "./util";
-import {
-  Children
-} from "./Children";
-import {
-  win as window
-} from "./browser";
-import {
-  createElement
-} from "./createElement";
-import {
-  cloneElement
-} from "./cloneElement";
-import {
-  PureComponent
-} from "./PureComponent";
-import {
-  createPortal
-} from "./createPortal";
+import { Component } from "./Component";
+import { options, REACT_FRAGMENT_TYPE } from "./util";
+import { Children } from "./Children";
+import { win as window } from "./browser";
+import { createElement } from "./createElement";
+import { cloneElement } from "./cloneElement";
+import { PureComponent } from "./PureComponent";
+import { createPortal } from "./createPortal";
 
-import {
-  render,
-  findDOMNode,
-  unmountComponentAtNode
-} from "./diff";
+import { render, findDOMNode, unmountComponentAtNode } from "./diff";
 
 var React;
 if (window.React && window.React.options) {

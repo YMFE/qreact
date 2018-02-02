@@ -17,7 +17,7 @@ export function shallowEqual(objA, objB) {
   for (let i = 0; i < keysA.length; i++) {
     if (
       !hasOwnProperty.call(objB, keysA[i]) ||
-            !Object.is(objA[keysA[i]], objB[keysA[i]])
+      !Object.is(objA[keysA[i]], objB[keysA[i]])
     ) {
       return false;
     }

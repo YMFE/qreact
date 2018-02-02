@@ -1,7 +1,7 @@
 import { createVnode, createElement } from "./createElement";
 import { DOMUpdater } from "./DOMUpdater";
 
-function AnuPortal(props){
+function AnuPortal(props) {
   return props.children;
 }
 

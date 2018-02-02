@@ -1,5 +1,18 @@
-import { options, innerHTML, noop, inherit, toLowerCase, emptyArray, toArray, deprecatedWarn } from "./util";
-import { createElement as createDOMElement, emptyElement, insertElement } from "./browser";
+import {
+  options,
+  innerHTML,
+  noop,
+  inherit,
+  toLowerCase,
+  emptyArray,
+  toArray,
+  deprecatedWarn
+} from "./util";
+import {
+  createElement as createDOMElement,
+  emptyElement,
+  insertElement
+} from "./browser";
 import { disposeVnode, disposeChildren, topVnodes, topNodes } from "./dispose";
 import { createVnode, fiberizeChildren, createElement } from "./createElement";
 import { CompositeUpdater, getContextByTypes } from "./CompositeUpdater";
@@ -19,7 +32,12 @@ export function render(vnode, container, callback) {
   return renderByAnu(vnode, container, callback);
 }
 //[Top API] ReactDOM.unstable_renderSubtreeIntoContainer
-export function unstable_renderSubtreeIntoContainer(lastVnode, nextVnode, container, callback) {
+export function unstable_renderSubtreeIntoContainer(
+  lastVnode,
+  nextVnode,
+  container,
+  callback
+) {
   deprecatedWarn("unstable_renderSubtreeIntoContainer");
   var updater = lastVnode && lastVnode.updater;
   var parentContext = updater ? updater.parentContext : {};
@@ -45,17 +63,17 @@ export function findDOMNode(componentOrElement) {
     //如果是null
     return null;
   }
-  if (componentOrElement.nodeType ) {
+  if (componentOrElement.nodeType) {
     //如果本身是元素节点
     return componentOrElement;
   }
   //实例必然拥有updater与render
   if (componentOrElement.render) {
-    var node = componentOrElement.updater.vnode;
-    var c = node.child;
-    if(c){
+    var vnode = componentOrElement.updater._reactInternalFiber;
+    var c = vnode.child;
+    if (c) {
       return findDOMNode(c.stateNode);
-    }else{
+    } else {
       return null;
     }
   }
@@ -73,7 +91,7 @@ fn.render = function() {
 // ReactDOM.render的内部实现 Host
 function renderByAnu(vnode, container, callback, context = {}) {
   if (!(container && container.appendChild)) {
-        throw `ReactDOM.render的第二个参数错误`; // eslint-disable-line
+    throw `ReactDOM.render的第二个参数错误`; // eslint-disable-line
   }
   //__component用来标识这个真实DOM是ReactDOM.render的容器，通过它可以取得上一次的虚拟DOM
   // 但是在IE6－8中，文本/注释节点不能通过添加自定义属性来引用虚拟DOM，这时我们额外引进topVnode,
@@ -85,13 +103,15 @@ function renderByAnu(vnode, container, callback, context = {}) {
     wrapper,
     updateQueue = [],
     insertCarrier = {};
-    //updaterQueue是用来装载updater， insertCarrier是用来装载插入DOM树的真实DOM
+  //updaterQueue是用来装载updater， insertCarrier是用来装载插入DOM树的真实DOM
   if (nodeIndex !== -1) {
     lastWrapper = topVnodes[nodeIndex];
     wrapper = lastWrapper.stateNode.updater;
     if (wrapper._hydrating) {
       //如果是在componentDidMount/Update中使用了ReactDOM.render，那么将延迟到此组件的resolve阶段执行
-      wrapper._pendingCallbacks.push(renderByAnu.bind(null, vnode, container, callback, context));
+      wrapper._pendingCallbacks.push(
+        renderByAnu.bind(null, vnode, container, callback, context)
+      );
       return lastWrapper.child.stateNode;
     }
   } else {
@@ -115,7 +135,6 @@ function renderByAnu(vnode, container, callback, context = {}) {
       ".0": nextWrapper
     };
     nextWrapper.child = vnode;
-
     genVnodes(nextWrapper, context, updateQueue, insertCarrier); // 这里会从下到上添加updater
   }
   top.updater.init(updateQueue); // 添加最顶层的updater
@@ -163,10 +182,9 @@ function mountVnode(vnode, context, updateQueue, insertCarrier) {
       updater.init(updateQueue);
     }
     insertElement(vnode, beforeDOM);
-    if(vnode.updater) {
+    if (vnode.updater) {
       vnode.updater.props();
     }
-
   } else {
     var updater = new CompositeUpdater(vnode, context);
     updater.init(updateQueue, insertCarrier);
@@ -183,7 +201,13 @@ function mountChildren(vnode, children, context, updateQueue, insertCarrier) {
   }
 }
 
-function updateVnode(lastVnode, nextVnode, context, updateQueue, insertCarrier) {
+function updateVnode(
+  lastVnode,
+  nextVnode,
+  context,
+  updateQueue,
+  insertCarrier
+) {
   var dom = (nextVnode.stateNode = lastVnode.stateNode);
   options.beforeUpdate(nextVnode);
   if (lastVnode.vtype < 2) {
@@ -198,7 +222,7 @@ function updateVnode(lastVnode, nextVnode, context, updateQueue, insertCarrier) 
         nextVnode.namespaceURI = lastVnode.namespaceURI;
       }
       let updater = (nextVnode.updater = lastVnode.updater);
-      updater.vnode = nextVnode;
+      updater._reactInternalFiber = nextVnode;
       nextVnode.lastProps = lastVnode.props;
       let lastChildren = updater.children;
       let { props } = nextVnode;
@@ -206,7 +230,14 @@ function updateVnode(lastVnode, nextVnode, context, updateQueue, insertCarrier) 
         disposeChildren(lastChildren, updateQueue);
       } else {
         var nextChildren = fiberizeChildren(props.children, updater);
-        diffChildren(lastChildren, nextChildren, nextVnode, context, updateQueue, {});
+        diffChildren(
+          lastChildren,
+          nextChildren,
+          nextVnode,
+          context,
+          updateQueue,
+          {}
+        );
       }
       updater.props();
       updater.addState("resolve");
@@ -217,7 +248,13 @@ function updateVnode(lastVnode, nextVnode, context, updateQueue, insertCarrier) 
   }
 }
 
-function receiveComponent(lastVnode, nextVnode, parentContext, updateQueue, insertCarrier) {
+function receiveComponent(
+  lastVnode,
+  nextVnode,
+  parentContext,
+  updateQueue,
+  insertCarrier
+) {
   // todo:减少数据的接收次数
   let { type, stateNode } = lastVnode,
     updater = stateNode.updater,
@@ -244,7 +281,10 @@ function receiveComponent(lastVnode, nextVnode, parentContext, updateQueue, inse
     updater._receiving = true;
     updater.updateQueue = updateQueue;
     if (willReceive) {
-      captureError(stateNode, "componentWillReceiveProps", [nextVnode.props, nextContext]);
+      captureError(stateNode, "componentWillReceiveProps", [
+        nextVnode.props,
+        nextContext
+      ]);
     }
     if (updater._hasError) {
       return;
@@ -263,7 +303,13 @@ function isSameNode(a, b) {
   }
 }
 
-function receiveVnode(lastVnode, nextVnode, context, updateQueue, insertCarrier) {
+function receiveVnode(
+  lastVnode,
+  nextVnode,
+  context,
+  updateQueue,
+  insertCarrier
+) {
   if (isSameNode(lastVnode, nextVnode)) {
     //组件虚拟DOM已经在diffChildren生成并插入DOM树
     updateVnode(lastVnode, nextVnode, context, updateQueue, insertCarrier);
@@ -272,8 +318,15 @@ function receiveVnode(lastVnode, nextVnode, context, updateQueue, insertCarrier)
     mountVnode(nextVnode, context, updateQueue, insertCarrier);
   }
 }
-
-function diffChildren(lastChildren, nextChildren, parentVnode, parentContext, updateQueue, insertCarrier) {
+// https://github.com/onmyway133/DeepDiff
+function diffChildren(
+  lastChildren,
+  nextChildren,
+  parentVnode,
+  parentContext,
+  updateQueue,
+  insertCarrier
+) {
   //这里都是走新的任务列队
   let lastChild,
     nextChild,
@@ -303,7 +356,13 @@ function diffChildren(lastChildren, nextChildren, parentVnode, parentContext, up
 
   //优化： 只添加
   if (isEmpty) {
-    mountChildren(parentVnode, nextChildren, parentContext, updateQueue, insertCarrier);
+    mountChildren(
+      parentVnode,
+      nextChildren,
+      parentContext,
+      updateQueue,
+      insertCarrier
+    );
   } else {
     var matchNodes = {},
       matchRefs = [];
@@ -335,7 +394,13 @@ function diffChildren(lastChildren, nextChildren, parentVnode, parentContext, up
       nextChild = nextChildren[i];
       lastChild = matchNodes[i];
       if (lastChild) {
-        receiveVnode(lastChild, nextChild, parentContext, updateQueue, insertCarrier);
+        receiveVnode(
+          lastChild,
+          nextChild,
+          parentContext,
+          updateQueue,
+          insertCarrier
+        );
       } else {
         mountVnode(nextChild, parentContext, updateQueue, insertCarrier);
       }

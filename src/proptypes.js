@@ -1,5 +1,4 @@
-
-var check = function () {
+var check = function() {
   return check;
 };
 check.isRequired = check;

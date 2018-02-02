@@ -1,7 +1,14 @@
 import { document, msie } from "./browser";
 import { actionStrategy } from "./diffProps";
-import { oneObject, toLowerCase, innerHTML, noop } from "./util";
-import { eventHooks, addEvent, eventPropHooks, createHandle, dispatchEvent } from "./event";
+import { oneObject, innerHTML, noop } from "./util";
+import {
+  eventHooks,
+  addEvent,
+  eventPropHooks,
+  createHandle,
+  dispatchEvent,
+  focusMap
+} from "./event";
 import { inputMonitor } from "./inputMonitor";
 
 //IE8中select.value不会在onchange事件中随用户的选中而改变其value值，也不让用户直接修改value 只能通过这个hack改变
@@ -50,7 +57,9 @@ var IEHandleFix = {
   },
   change: function(dom) {
     //IE6-8, radio, checkbox的点击事件必须在失去焦点时才触发 select则需要做更多补丁工件
-    var mask = /radio|check/.test(dom.type) ? "click" : /text|password/.test(dom.type) ? "propertychange" : "change";
+    var mask = /radio|check/.test(dom.type)
+      ? "click"
+      : /text|password/.test(dom.type) ? "propertychange" : "change";
     addEvent(dom, mask, fixIEChangeHandle);
   },
   submit: function(dom) {
@@ -75,43 +84,30 @@ if (msie < 9) {
       }
     }
   };
-  if(msie < 8){
+  if (msie < 8) {
     inputMonitor.observe = noop;
   }
-  String("focus,blur").replace(/\w+/g, function(type) {
-    eventHooks[type] = function(dom, name) {
-      var mark = "__" + name;
-      if (!dom[mark]) {
-        dom[mark] = true;
-        var mask = name === "focus" ? "focusin" : "focusout";
-        addEvent(dom, mask, function(e) {
-          //https://www.ibm.com/developerworks/cn/web/1407_zhangyao_IE11Dojo/ window
-          var tagName = e.srcElement.tagName;
-          if (!tagName) {
-            return;
-          }
-          // <body> #document
-          var tag = toLowerCase(tagName);
-          if (tag == "#document" || tag == "body") {
-            return;
-          }
-          e.target = dom; //因此focusin事件的srcElement有问题，强行修正
-          dispatchEvent(e, name, dom.parentNode);
-        });
-      }
-    };
-  });
-
+  focusMap.focus = "focusin";
+  focusMap.blur = "focusout";
+  focusMap.focusin = "focus";
+  focusMap.focusout = "blur";
   Object.assign(
     eventPropHooks,
-    oneObject("mousemove, mouseout,mouseenter, mouseleave, mouseout,mousewheel, mousewheel, whe" + "el, click", function(event) {
-      if (!("pageX" in event)) {
-        var doc = event.target.ownerDocument || document;
-        var box = doc.compatMode === "BackCompat" ? doc.body : doc.documentElement;
-        event.pageX = event.clientX + (box.scrollLeft >> 0) - (box.clientLeft >> 0);
-        event.pageY = event.clientY + (box.scrollTop >> 0) - (box.clientTop >> 0);
+    oneObject(
+      "mousemove, mouseout,mouseenter, mouseleave, mouseout,mousewheel, mousewheel, whe" +
+        "el, click",
+      function(event) {
+        if (!("pageX" in event)) {
+          var doc = event.target.ownerDocument || document;
+          var box =
+            doc.compatMode === "BackCompat" ? doc.body : doc.documentElement;
+          event.pageX =
+            event.clientX + (box.scrollLeft >> 0) - (box.clientLeft >> 0);
+          event.pageY =
+            event.clientY + (box.scrollTop >> 0) - (box.clientTop >> 0);
+        }
       }
-    })
+    )
   );
 
   Object.assign(

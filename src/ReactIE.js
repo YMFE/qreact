@@ -1,36 +1,14 @@
-import {
-  options,
-  REACT_FRAGMENT_TYPE,
-  hasOwnProperty
-} from "./util";
-import {
-  Children
-} from "./Children";
+import { options, REACT_FRAGMENT_TYPE, hasOwnProperty } from "./util";
+import { Children } from "./Children";
 import * as eventSystem from "./event";
-import {
-  PropTypes
-} from "./PropTypes";
-import {
-  Component
-} from "./Component";
-import {
-  win as window
-} from "./browser";
-import {
-  createClass
-} from "./createClass";
-import {
-  cloneElement
-} from "./cloneElement";
-import {
-  PureComponent
-} from "./PureComponent";
-import {
-  createElement
-} from "./createElement";
-import {
-  createPortal
-} from "./createPortal";
+import { PropTypes } from "./PropTypes";
+import { Component } from "./Component";
+import { win as window } from "./browser";
+import { createClass } from "./createClass";
+import { cloneElement } from "./cloneElement";
+import { PureComponent } from "./PureComponent";
+import { createElement } from "./createElement";
+import { createPortal } from "./createPortal";
 
 import {
   render,
@@ -41,11 +19,9 @@ import {
 } from "./diff";
 
 import "./compat";
-
 function needFix(fn) {
   return !/native code/.test(fn);
 }
-
 function keysPolyfill() {
   //解决IE下Object.keys的性能问题
   if (needFix(Object.keys)) {

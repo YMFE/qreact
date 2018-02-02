@@ -1,5 +1,12 @@
-import { extend, options, typeNumber, emptyObject, isFn, 
-  returnFalse, returnTrue, clearArray
+import {
+  extend,
+  options,
+  typeNumber,
+  emptyObject,
+  isFn,
+  returnFalse,
+  returnTrue,
+  clearArray
 } from "../src/util";
 import { fiberizeChildren } from "./createElement";
 import { drainQueue, enqueueUpdater } from "./scheduler";
@@ -32,14 +39,14 @@ export function CompositeUpdater(vnode, parentContext) {
   }
   this.name = type.displayName || type.name;
   this.props = props;
-  this.vnode = vnode;
+  this._reactInternalFiber = vnode;
   this.context = getContextByTypes(parentContext, type.contextTypes);
   this.parentContext = parentContext;
   this._pendingCallbacks = [];
   this._pendingStates = [];
   this._states = ["resolve"];
   this._mountOrder = Refs.mountOrder++;
-  if(vnode.superReturn){
+  if (vnode.superReturn) {
     this.isPortal = true;
   }
   // update总是保存最新的数据，如state, props, context, parentContext, parentVnode
@@ -119,7 +126,7 @@ CompositeUpdater.prototype = {
 
   isMounted: returnFalse,
   init(updateQueue, insertCarrier) {
-    let { props, context, vnode } = this;
+    let { props, context, _reactInternalFiber: vnode } = this;
     let type = vnode.type,
       isStateless = vnode.vtype === 4,
       instance,
@@ -171,8 +178,8 @@ CompositeUpdater.prototype = {
     instance.props = props;
     instance.context = context;
     instance.updater = this;
-    var queue =  this.insertCarrier =  (this.isPortal ?  {} : insertCarrier);
-      
+    var queue = (this.insertCarrier = this.isPortal ? {} : insertCarrier);
+
     this.insertPoint = queue.dom;
     this.updateQueue = updateQueue;
     if (instance.componentWillMount) {
@@ -185,18 +192,27 @@ CompositeUpdater.prototype = {
   },
 
   hydrate(updateQueue, inner) {
-    let { instance, context, props, vnode, pendingVnode } = this;
-    if(this._states[0] === "hydrate"){
+    let {
+      instance,
+      context,
+      props,
+      _reactInternalFiber: vnode,
+      pendingVnode
+    } = this;
+    if (this._states[0] === "hydrate") {
       this._states.shift(); // ReactCompositeComponentNestedState-state
     }
     let state = this.mergeStates();
     let shouldUpdate = true;
-    if (!this._forceUpdate && !captureError(instance, "shouldComponentUpdate", [props, state, context])) {
+    if (
+      !this._forceUpdate &&
+      !captureError(instance, "shouldComponentUpdate", [props, state, context])
+    ) {
       shouldUpdate = false;
       if (pendingVnode) {
-        var child = this.vnode.child;
-        this.vnode = pendingVnode;
-        this.vnode.child = child;
+        var child = this._reactInternalFiber.child;
+        this._reactInternalFiber = pendingVnode;
+        pendingVnode.child = child;
         delete this.pendingVnode;
       }
       var nodes = collectComponentNodes(this.children);
@@ -204,13 +220,14 @@ CompositeUpdater.prototype = {
       nodes.forEach(function(el) {
         insertElement(el, queue.dom);
         queue.dom = el.stateNode;
+        // queue.unshift(el.stateNode);
       });
     } else {
       captureError(instance, "componentWillUpdate", [props, state, context]);
       var { props: lastProps, state: lastState } = instance;
       this._hookArgs = [lastProps, lastState];
     }
-    if(this._hasError){
+    if (this._hasError) {
       return;
     }
     vnode.stateNode = instance;
@@ -219,7 +236,7 @@ CompositeUpdater.prototype = {
     instance.props = props;
     instance.state = state;
     instance.context = context;
-    if(!inner) {
+    if (!inner) {
       this.insertCarrier.dom = this.insertPoint;
     }
     if (shouldUpdate) {
@@ -229,7 +246,12 @@ CompositeUpdater.prototype = {
     updateQueue.push(this);
   },
   render(updateQueue) {
-    let { vnode, pendingVnode, instance, parentContext } = this,
+    let {
+        _reactInternalFiber: vnode,
+        pendingVnode,
+        instance,
+        parentContext
+      } = this,
       nextChildren = emptyObject,
       lastChildren = emptyObject,
       childContext = parentContext,
@@ -237,7 +259,7 @@ CompositeUpdater.prototype = {
       number;
 
     if (pendingVnode) {
-      vnode = this.vnode = pendingVnode;
+      vnode = this._reactInternalFiber = pendingVnode;
       delete this.pendingVnode;
     }
     this._hydrating = true;
@@ -272,19 +294,30 @@ CompositeUpdater.prototype = {
     }
     var noSupport = !support16 && errorType[number];
     if (noSupport) {
-      pushError(instance, "render", new Error("React15 fail to render " + noSupport));
+      pushError(
+        instance,
+        "render",
+        new Error("React15 fail to render " + noSupport)
+      );
     }
-    Refs.diffChildren(lastChildren, nextChildren, vnode, childContext, updateQueue, this.insertCarrier);
+    Refs.diffChildren(
+      lastChildren,
+      nextChildren,
+      vnode,
+      childContext,
+      updateQueue,
+      this.insertCarrier
+    );
   },
   // ComponentDidMount/update钩子，React Chrome DevTools的钩子， 组件ref, 及错误边界
   resolve(updateQueue) {
-    let { instance, vnode } = this;
+    let { instance, _reactInternalFiber: vnode } = this;
     let hasMounted = this.isMounted();
     if (!hasMounted) {
       this.isMounted = returnTrue;
     }
     if (this._hydrating) {
-      let hookName = hasMounted ? "componentDidUpdate" : "componentDidMount"  ;
+      let hookName = hasMounted ? "componentDidUpdate" : "componentDidMount";
       captureError(instance, hookName, this._hookArgs || []);
       //执行React Chrome DevTools的钩子
       if (hasMounted) {
@@ -310,9 +343,9 @@ CompositeUpdater.prototype = {
     }
     transfer.call(this, updateQueue);
   },
-  catch(queue){
+  catch(queue) {
     let { instance } = this;
-    // delete Refs.ignoreError; 
+    // delete Refs.ignoreError;
     this._states.length = 0;
     this.children = {};
     this._isDoctor = this._hydrating = true;
@@ -320,13 +353,12 @@ CompositeUpdater.prototype = {
     delete this.errorInfo;
     this._hydrating = false;
     transfer.call(this, queue);
-
   },
   dispose() {
-    var instance = this.instance;
+    let { _reactInternalFiber: vnode, instance } = this;
     options.beforeUnmount(instance);
     instance.setState = instance.forceUpdate = returnFalse;
-    var vnode = this.vnode;
+
     Refs.fireRef(vnode, null);
     captureError(instance, "componentWillUnmount", []);
     //在执行componentWillUnmount后才将关联的元素节点解绑，防止用户在钩子里调用 findDOMNode方法
@@ -334,7 +366,7 @@ CompositeUpdater.prototype = {
     vnode._disposed = this._disposed = true;
   }
 };
-function transfer(queue){
+function transfer(queue) {
   var cbs = this._nextCallbacks,
     cb;
   if (cbs && cbs.length) {
