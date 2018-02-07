@@ -41,20 +41,23 @@ var MANY_MERGED = {
 };
 
 function flattenHooks(key, hooks) {
-  let hookType = typeof hooks[0];
+  var hookType = typeof hooks[0];
   if (hookType === "object") {
     // Merge objects
-    hooks.unshift({});
-    return Object.assign.apply(null, hooks);
+    var ret = {};
+    for (var i = 0; i < hooks.length; i++) {
+      extend(ret, hooks[i]);
+    }
+    return ret;
   } else if (hookType === "function" && hooks.length > 1) {
     return function() {
-      let ret = {},
-        r,
+      var ret = {},
+        r = void 0,
         hasReturn = MANY_MERGED[key];
-      for (let i = 0; i < hooks.length; i++) {
-        r = hooks[i].apply(this, arguments);
+      for (var _i = 0; _i < hooks.length; _i++) {
+        r = hooks[_i].apply(this, arguments);
         if (hasReturn && r) {
-          Object.assign(ret, r);
+          extend(ret, r);
         }
       }
       if (hasReturn) {

@@ -295,7 +295,6 @@ export var actionStrategy = {
     }
   },
   property: function(dom, name, val) {
-    // if (dom[name] !== val) {
     // 尝试直接赋值，部分情况下会失败，如给 input 元素的 size 属性赋值 0 或字符串
     // 这时如果用 setAttribute 则会静默失败
     if (controlled[name]) {
@@ -312,9 +311,13 @@ export var actionStrategy = {
         dom[name] = val;
       }
     } catch (e) {
-      dom.setAttribute(name, val);
+      try {
+        // 修改type会引发多次报错
+        dom.setAttribute(name, val);
+      } catch (error) {
+        // no operation
+      }
     }
-    // }
   },
   event: function(dom, name, val, lastProps, vnode) {
     let events = dom.__events || (dom.__events = {});
@@ -324,7 +327,7 @@ export var actionStrategy = {
       delete events[refName];
     } else {
       if (!lastProps[name]) {
-        //添加全局监听事件
+        // 添加全局监听事件
         let eventName = getBrowserName(name);
         let hook = eventHooks[eventName];
         addGlobalEvent(eventName);
@@ -332,7 +335,6 @@ export var actionStrategy = {
           hook(dom, eventName);
         }
       }
-      //onClick --> click, onClickCapture --> clickcapture
       events[refName] = val;
     }
   },

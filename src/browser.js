@@ -1,6 +1,7 @@
 import { typeNumber } from "./util";
 import { Refs } from "./Refs";
-//用于后端的元素节点
+
+// 用于后端的元素节点
 export function DOMElement(type) {
   this.nodeName = type;
   this.style = {};
@@ -17,6 +18,7 @@ export var NAMESPACE = {
 var fn = (DOMElement.prototype = {
   contains: Boolean
 });
+
 String(
   "replaceChild,appendChild,removeAttributeNS,setAttributeNS,removeAttribute,setAttribute" +
     ",getAttribute,insertBefore,removeChild,addEventListener,removeEventListener,attachEvent" +
@@ -27,8 +29,9 @@ String(
   };
 });
 
-//用于后端的document
+// 用于后端的 document
 export var fakeDoc = new DOMElement();
+
 fakeDoc.createElement = fakeDoc.createElementNS = fakeDoc.createDocumentFragment = function(
   type
 ) {
@@ -39,6 +42,7 @@ fakeDoc.documentElement = new DOMElement("html");
 fakeDoc.body = new DOMElement("body");
 fakeDoc.nodeName = "#document";
 fakeDoc.textContent = "";
+
 try {
   var w = window;
   var b = !!w.alert;
@@ -51,9 +55,7 @@ try {
 
 export var inBrowser = b;
 export var win = w;
-
 export var document = w.document || fakeDoc;
-
 export var duplexMap = {
   color: 1,
   date: 1,
@@ -76,8 +78,10 @@ export var duplexMap = {
   "select-one": 3,
   "select-multiple": 3
 };
+
 var isStandard = "textContent" in document;
 var fragment = document.createDocumentFragment();
+
 export function emptyElement(node) {
   var child;
   while ((child = node.firstChild)) {
@@ -92,6 +96,7 @@ export function emptyElement(node) {
 var recyclables = {
   "#text": []
 };
+
 export function removeElement(node) {
   if (!node) {
     return;
@@ -104,7 +109,7 @@ export function removeElement(node) {
     }
     node.__events = null;
   } else if (node.nodeType === 3) {
-    //只回收文本节点
+    // 只回收文本节点
     if (recyclables["#text"].length < 100) {
       recyclables["#text"].push(node);
     }
@@ -117,12 +122,11 @@ export function removeElement(node) {
 }
 
 var versions = {
-  88: 7, //IE7-8 objectobject
-  80: 6, //IE6 objectundefined
+  88: 7, // IE7-8 object object
+  80: 6, // IE6 object undefined
   "00": NaN, // other modern browsers
   "08": NaN
 };
-/* istanbul ignore next  */
 export var msie =
   document.documentMode ||
   versions[typeNumber(document.all) + "" + typeNumber(win.XMLHttpRequest)];
@@ -134,7 +138,7 @@ export function createElement(vnode, p) {
     ns;
   switch (type) {
   case "#text":
-    //只重复利用文本节点
+    // 只重复利用文本节点
     var node = recyclables[type].pop();
     if (node) {
       node.nodeValue = vnode.text;
@@ -177,9 +181,14 @@ export function createElement(vnode, p) {
       vnode.namespaceURI = ns;
       return document.createElementNS(ns, type);
     }
-    //eslint-disable-next-line
+    // eslint-disable-next-line
   } catch (e) {}
-  return document.createElement(type);
+  var elem = document.createElement(type);
+  var inputType = vnode.props && vnode.props.type; //IE6-8下立即设置type属性
+  if (inputType) {
+    elem.type = inputType;
+  }
+  return elem;
 }
 export function contains(a, b) {
   if (b) {
@@ -195,7 +204,7 @@ export function insertElement(vnode, insertPoint) {
   if (vnode._disposed) {
     return;
   }
-  //找到可用的父节点
+  // 找到可用的父节点
   var p = vnode.return,
     parentNode;
   while (p) {
@@ -207,7 +216,7 @@ export function insertElement(vnode, insertPoint) {
   }
 
   var dom = vnode.stateNode,
-    //如果没有插入点，则插入到当前父节点的第一个节点之前
+    // 如果没有插入点，则插入到当前父节点的第一个节点之前
     after = insertPoint ? insertPoint.nextSibling : parentNode.firstChild;
   if (after === dom) {
     return;

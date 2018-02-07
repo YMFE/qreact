@@ -5,9 +5,9 @@
 }(this, (function (stream) {
 
 var hasSymbol = typeof Symbol === "function" && Symbol["for"];
+
+var hasOwnProperty = Object.prototype.hasOwnProperty;
 var REACT_ELEMENT_TYPE = hasSymbol ? Symbol["for"]("react.element") : 0xeac7;
-
-
 var REACT_FRAGMENT_TYPE = hasSymbol ? Symbol["for"]("react.fragment") : 0xeacb;
 
 
@@ -20,7 +20,14 @@ var REACT_FRAGMENT_TYPE = hasSymbol ? Symbol["for"]("react.fragment") : 0xeacb;
  * @param {any} props
  * @returns
  */
-
+function extend(obj, props) {
+  for (var i in props) {
+    if (hasOwnProperty.call(props, i)) {
+      obj[i] = props[i];
+    }
+  }
+  return obj;
+}
 
 
 var __type = Object.prototype.toString;
@@ -289,7 +296,7 @@ function getIteractor(a) {
   }
 }
 
-//用于后端的元素节点
+// 用于后端的元素节点
 function DOMElement(type) {
   this.nodeName = type;
   this.style = {};
@@ -301,14 +308,16 @@ function DOMElement(type) {
 var fn = DOMElement.prototype = {
   contains: Boolean
 };
+
 String("replaceChild,appendChild,removeAttributeNS,setAttributeNS,removeAttribute,setAttribute" + ",getAttribute,insertBefore,removeChild,addEventListener,removeEventListener,attachEvent" + ",detachEvent").replace(/\w+/g, function (name) {
   fn[name] = function () {
     console.log("fire " + name); // eslint-disable-line
   };
 });
 
-//用于后端的document
+// 用于后端的 document
 var fakeDoc = new DOMElement();
+
 fakeDoc.createElement = fakeDoc.createElementNS = fakeDoc.createDocumentFragment = function (type) {
   return new DOMElement(type);
 };
@@ -317,6 +326,7 @@ fakeDoc.documentElement = new DOMElement("html");
 fakeDoc.body = new DOMElement("body");
 fakeDoc.nodeName = "#document";
 fakeDoc.textContent = "";
+
 try {
   var w = window;
   var b = !!w.alert;
@@ -329,7 +339,6 @@ try {
 
 
 var win = w;
-
 var document = w.document || fakeDoc;
 
 
@@ -338,13 +347,13 @@ var fragment = document.createDocumentFragment();
 
 
 
+
 var versions = {
-  88: 7, //IE7-8 objectobject
-  80: 6, //IE6 objectundefined
+  88: 7, // IE7-8 object object
+  80: 6, // IE6 object undefined
   "00": NaN, // other modern browsers
   "08": NaN
 };
-/* istanbul ignore next  */
 var msie = document.documentMode || versions[typeNumber(document.all) + "" + typeNumber(win.XMLHttpRequest)];
 
 var modern = /NaN|undefined/.test(msie) || msie > 8;
@@ -358,11 +367,13 @@ var modern = /NaN|undefined/.test(msie) || msie > 8;
  */
 
 
+
+
 function getChildContext(instance, parentContext) {
   if (instance.getChildContext) {
     var context = instance.getChildContext();
     if (context) {
-      parentContext = Object.assign({}, parentContext, context);
+      parentContext = extend(extend({}, parentContext), context);
     }
   }
   return parentContext;

@@ -1,6 +1,6 @@
 import { document, msie } from "./browser";
 import { actionStrategy } from "./diffProps";
-import { oneObject, innerHTML, noop } from "./util";
+import { oneObject, innerHTML, noop, extend } from "./util";
 import {
   eventHooks,
   addEvent,
@@ -11,7 +11,7 @@ import {
 } from "./event";
 import { inputMonitor } from "./inputMonitor";
 
-//IE8中select.value不会在onchange事件中随用户的选中而改变其value值，也不让用户直接修改value 只能通过这个hack改变
+// IE8中 select.value 不会在 onchange 事件中随用户的选中而改变其 value 值，也不让用户直接修改 value 只能通过这个 hack 改变
 var noCheck = false;
 function setSelectValue(e) {
   if (e.propertyName === "value" && !noCheck) {
@@ -24,7 +24,7 @@ function syncValueByOptionValue(dom) {
     option,
     attr;
   if (idx > -1) {
-    //IE 下select.value不会改变
+    // IE 下 select.value 不会改变
     option = dom.options[idx];
     attr = option.attributes.value;
     dom.value = attr && attr.specified ? option.value : option.text;
@@ -41,9 +41,16 @@ var fixIEChangeHandle = createHandle("change", function(e) {
     noCheck = true;
     syncValueByOptionValue(dom);
     noCheck = false;
+    return true;
   }
   if (e.type === "propertychange") {
-    return e.propertyName === "value";
+    if (e.propertyName === "value") {
+      if (dom.__anuSetValue) {
+        return false;
+      }
+    } else {
+      return false;
+    }
   }
 });
 
@@ -56,7 +63,7 @@ var IEHandleFix = {
     addEvent(dom, "propertychange", fixIEInputHandle);
   },
   change: function(dom) {
-    //IE6-8, radio, checkbox的点击事件必须在失去焦点时才触发 select则需要做更多补丁工件
+    // IE6-8, radio, checkbox 的点击事件必须在失去焦点时才触发 select 则需要做更多补丁工件
     var mask = /radio|check/.test(dom.type)
       ? "click"
       : /text|password/.test(dom.type) ? "propertychange" : "change";
@@ -74,7 +81,7 @@ if (msie < 9) {
     var oldhtml = lastProps[name] && lastProps[name].__html;
     var html = val && val.__html;
     if (html !== oldhtml) {
-      //IE8-会吃掉最前面的空白
+      // IE8- 会吃掉最前面的空白
       dom.innerHTML = String.fromCharCode(0xfeff) + html;
       var textNode = dom.firstChild;
       if (textNode.data.length === 1) {
@@ -110,12 +117,58 @@ if (msie < 9) {
     )
   );
 
+  const translateToKey = {
+    "8": "Backspace",
+    "9": "Tab",
+    "12": "Clear",
+    "13": "Enter",
+    "16": "Shift",
+    "17": "Control",
+    "18": "Alt",
+    "19": "Pause",
+    "20": "CapsLock",
+    "27": "Escape",
+    "32": " ",
+    "33": "PageUp",
+    "34": "PageDown",
+    "35": "End",
+    "36": "Home",
+    "37": "ArrowLeft",
+    "38": "ArrowUp",
+    "39": "ArrowRight",
+    "40": "ArrowDown",
+    "45": "Insert",
+    "46": "Delete",
+    "112": "F1",
+    "113": "F2",
+    "114": "F3",
+    "115": "F4",
+    "116": "F5",
+    "117": "F6",
+    "118": "F7",
+    "119": "F8",
+    "120": "F9",
+    "121": "F10",
+    "122": "F11",
+    "123": "F12",
+    "144": "NumLock",
+    "145": "ScrollLock",
+    "224": "Meta"
+  };
+  extend(
+    eventPropHooks,
+    oneObject("keyup, keydown, keypress", function(event) {
+      if (!event.which && event.type.indexOf("key") === 0) {
+        event.key = translateToKey[event.keyCode];
+        event.which = event.charCode != null ? event.charCode : event.keyCode;
+      }
+    })
+  );
+
   Object.assign(
     eventPropHooks,
     oneObject("keyup, keydown, keypress", function(event) {
-      /* istanbul ignore next  */
       if (event.which == null && event.type.indexOf("key") === 0) {
-        /* istanbul ignore next  */
         event.which = event.charCode != null ? event.charCode : event.keyCode;
       }
     })

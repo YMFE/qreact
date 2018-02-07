@@ -1,5 +1,5 @@
 /**
- * Maintained by YMFE Copyright 2018-02-02
+ * Maintained by YMFE Copyright 2018-02-07
  */
 
 (function (global, factory) {
@@ -9,9 +9,9 @@
 }(this, (function () {
 
 var hasSymbol = typeof Symbol === "function" && Symbol["for"];
-var REACT_ELEMENT_TYPE = hasSymbol ? Symbol["for"]("react.element") : 0xeac7;
 var innerHTML = "dangerouslySetInnerHTML";
 var hasOwnProperty = Object.prototype.hasOwnProperty;
+var REACT_ELEMENT_TYPE = hasSymbol ? Symbol["for"]("react.element") : 0xeac7;
 var REACT_FRAGMENT_TYPE = hasSymbol ? Symbol["for"]("react.fragment") : 0xeacb;
 
 var emptyArray = [];
@@ -32,7 +32,7 @@ function deprecatedWarn(methodName) {
  */
 function extend(obj, props) {
   for (var i in props) {
-    if (props.hasOwnProperty(i)) {
+    if (hasOwnProperty.call(props, i)) {
       obj[i] = props[i];
     }
   }
@@ -483,7 +483,7 @@ function cloneElement(vnode, props) {
       old = vnode.props,
       configs = {};
   if (props) {
-    Object.assign(configs, old, props);
+    extend(extend(configs, old), props);
     configs.key = props.key !== void 666 ? props.key : vnode.key;
     if (props.ref !== void 666) {
       configs.ref = props.ref;
@@ -617,7 +617,7 @@ function escaperFn(match) {
   return escaperLookup[match];
 }
 
-//用于后端的元素节点
+// 用于后端的元素节点
 function DOMElement(type) {
   this.nodeName = type;
   this.style = {};
@@ -634,14 +634,16 @@ var NAMESPACE = {
 var fn = DOMElement.prototype = {
   contains: Boolean
 };
+
 String("replaceChild,appendChild,removeAttributeNS,setAttributeNS,removeAttribute,setAttribute" + ",getAttribute,insertBefore,removeChild,addEventListener,removeEventListener,attachEvent" + ",detachEvent").replace(/\w+/g, function (name) {
   fn[name] = function () {
     console.log("fire " + name); // eslint-disable-line
   };
 });
 
-//用于后端的document
+// 用于后端的 document
 var fakeDoc = new DOMElement();
+
 fakeDoc.createElement = fakeDoc.createElementNS = fakeDoc.createDocumentFragment = function (type) {
   return new DOMElement(type);
 };
@@ -650,6 +652,7 @@ fakeDoc.documentElement = new DOMElement("html");
 fakeDoc.body = new DOMElement("body");
 fakeDoc.nodeName = "#document";
 fakeDoc.textContent = "";
+
 try {
   var w = window;
   var b = !!w.alert;
@@ -662,9 +665,7 @@ try {
 
 
 var win = w;
-
 var document = w.document || fakeDoc;
-
 var duplexMap = {
   color: 1,
   date: 1,
@@ -687,8 +688,10 @@ var duplexMap = {
   "select-one": 3,
   "select-multiple": 3
 };
+
 var isStandard = "textContent" in document;
 var fragment = document.createDocumentFragment();
+
 function emptyElement(node) {
   var child;
   while (child = node.firstChild) {
@@ -703,6 +706,7 @@ function emptyElement(node) {
 var recyclables = {
   "#text": []
 };
+
 function removeElement(node) {
   if (!node) {
     return;
@@ -715,7 +719,7 @@ function removeElement(node) {
     }
     node.__events = null;
   } else if (node.nodeType === 3) {
-    //只回收文本节点
+    // 只回收文本节点
     if (recyclables["#text"].length < 100) {
       recyclables["#text"].push(node);
     }
@@ -728,12 +732,11 @@ function removeElement(node) {
 }
 
 var versions = {
-  88: 7, //IE7-8 objectobject
-  80: 6, //IE6 objectundefined
+  88: 7, // IE7-8 object object
+  80: 6, // IE6 object undefined
   "00": NaN, // other modern browsers
   "08": NaN
 };
-/* istanbul ignore next  */
 var msie = document.documentMode || versions[typeNumber(document.all) + "" + typeNumber(win.XMLHttpRequest)];
 
 var modern = /NaN|undefined/.test(msie) || msie > 8;
@@ -743,7 +746,7 @@ function createElement$1(vnode, p) {
       ns;
   switch (type) {
     case "#text":
-      //只重复利用文本节点
+      // 只重复利用文本节点
       var node = recyclables[type].pop();
       if (node) {
         node.nodeValue = vnode.text;
@@ -786,9 +789,14 @@ function createElement$1(vnode, p) {
       vnode.namespaceURI = ns;
       return document.createElementNS(ns, type);
     }
-    //eslint-disable-next-line
+    // eslint-disable-next-line
   } catch (e) {}
-  return document.createElement(type);
+  var elem = document.createElement(type);
+  var inputType = vnode.props && vnode.props.type; //IE6-8下立即设置type属性
+  if (inputType) {
+    elem.type = inputType;
+  }
+  return elem;
 }
 function contains(a, b) {
   if (b) {
@@ -804,7 +812,7 @@ function insertElement(vnode, insertPoint) {
   if (vnode._disposed) {
     return;
   }
-  //找到可用的父节点
+  // 找到可用的父节点
   var p = vnode.return,
       parentNode;
   while (p) {
@@ -817,7 +825,7 @@ function insertElement(vnode, insertPoint) {
 
   var dom = vnode.stateNode,
 
-  //如果没有插入点，则插入到当前父节点的第一个节点之前
+  // 如果没有插入点，则插入到当前父节点的第一个节点之前
   after = insertPoint ? insertPoint.nextSibling : parentNode.firstChild;
   if (after === dom) {
     return;
@@ -900,7 +908,9 @@ var duplexData = {
     }
 
     if (vnode.type === "input") {
+      dom.__anuSetValue = true; //抑制onpropertychange
       dom.setAttribute("value", value);
+      dom.__anuSetValue = false;
       if (dom.type === "number") {
         var valueAsNumber = parseFloat(dom.value) || 0;
         if (
@@ -917,7 +927,9 @@ var duplexData = {
       }
     }
     if (dom._persistValue !== value) {
+      dom.__anuSetValue = true; //抑制onpropertychange
       dom._persistValue = dom.value = value;
+      dom.__anuSetValue = false;
     }
   }, keepPersistValue, "change", "input"],
   2: ["checked", {
@@ -1338,9 +1350,9 @@ function drainQueue(queue) {
 }
 
 var globalEvents = {};
-var eventPropHooks = {}; //用于在事件回调里对事件对象进行
-var eventHooks = {}; //用于在元素上绑定特定的事件
-//根据onXXX得到其全小写的事件名, onClick --> click, onClickCapture --> click,
+var eventPropHooks = {}; // 用于在事件回调里对事件对象进行
+var eventHooks = {}; // 用于在元素上绑定特定的事件
+// 根据onXXX得到其全小写的事件名, onClick --> click, onClickCapture --> click,
 // onMouseMove --> mousemove
 
 var eventLowerCache = {
@@ -1362,13 +1374,12 @@ function isEventName(name) {
 var isTouch = "ontouchstart" in document;
 
 function dispatchEvent(e, type, end) {
-  //__type__ 在injectTapEventPlugin里用到
+  // __type__ 在 injectTapEventPlugin 里用到
   e = new SyntheticEvent(e);
   if (type) {
     e.type = type;
   }
   var bubble = e.type;
-  //var dom = e.target;
   var hook = eventPropHooks[bubble];
   if (hook && false === hook(e)) {
     return;
@@ -1405,7 +1416,7 @@ function collectPaths(from, end) {
     }
   }
   if (!node || node.nodeType > 1) {
-    //如果跑到document上
+    // 如果跑到document上
     return paths;
   }
   var mid = node.__events;
@@ -1469,11 +1480,11 @@ function getBrowserName(onStr) {
 }
 
 /**
-DOM通过event对象的relatedTarget属性提供了相关元素的信息。这个属性只对于mouseover和mouseout事件才包含值；
-对于其他事件，这个属性的值是null。IE不支持realtedTarget属性，但提供了保存着同样信息的不同属性。
-在mouseover事件触发时，IE的fromElement属性中保存了相关元素；
-在mouseout事件出发时，IE的toElement属性中保存着相关元素。
-但fromElement与toElement可能同时都有值
+DOM 通过 event 对象的 relatedTarget 属性提供了相关元素的信息。这个属性只对于 mouseover 和 mouseout 事件才包含值；
+对于其他事件，这个属性的值是null。IE不支持 relatedTarget 属性，但提供了保存着同样信息的不同属性。
+在 mouseover 事件触发时，IE的 fromElement 属性中保存了相关元素；
+在 mouseout 事件触发时，IE的 toElement 属性中保存着相关元素。
+但 fromElement 与 toElement 可能同时都有值
  */
 function getRelatedTarget(e) {
   if (!e.timeStamp) {
@@ -1492,7 +1503,7 @@ String("mouseenter,mouseleave").replace(/\w+/g, function (name) {
         var t = getRelatedTarget(e);
         if (!t || t !== dom && !contains(dom, t)) {
           var common = getLowestCommonAncestor(dom, t);
-          //由于不冒泡，因此paths长度为1
+          // 由于不冒泡，因此 paths 长度为 1
           dispatchEvent(e, type, common);
         }
       });
@@ -1575,7 +1586,7 @@ eventPropHooks.wheel = function (event) {
   "wheelDelta" in event ? -event.wheelDelta : 0;
 };
 
-//react将text,textarea,password元素中的onChange事件当成onInput事件
+// react 将 text,textarea,password 元素中的 onChange 事件当成 onInput 事件
 eventHooks.changecapture = eventHooks.change = function (dom) {
   if (/text|password/.test(dom.type)) {
     addEvent(document, "input", specialHandles.change);
@@ -1611,10 +1622,17 @@ function blurFocus(e) {
 }
 
 "blur,focus".replace(/\w+/g, function (type) {
-  var mark = "__" + type;
-  if (!document[mark]) {
-    globalEvents[type] = document[mark] = true;
-    addEvent(document, focusMap[type], blurFocus, true);
+  globalEvents[type] = true;
+  if (modern) {
+    var mark = "__" + type;
+    if (!document[mark]) {
+      document[mark] = true;
+      addEvent(document, type, blurFocus, true);
+    }
+  } else {
+    eventHooks[type] = function (dom, name) {
+      addEvent(dom, focusMap[name], blurFocus);
+    };
   }
 });
 
@@ -1984,7 +2002,6 @@ var actionStrategy = {
     }
   },
   property: function property(dom, name, val) {
-    // if (dom[name] !== val) {
     // 尝试直接赋值，部分情况下会失败，如给 input 元素的 size 属性赋值 0 或字符串
     // 这时如果用 setAttribute 则会静默失败
     if (controlled[name]) {
@@ -2001,9 +2018,13 @@ var actionStrategy = {
         dom[name] = val;
       }
     } catch (e) {
-      dom.setAttribute(name, val);
+      try {
+        // 修改type会引发多次报错
+        dom.setAttribute(name, val);
+      } catch (error) {
+        // no operation
+      }
     }
-    // }
   },
   event: function event(dom, name, val, lastProps, vnode) {
     var events = dom.__events || (dom.__events = {});
@@ -2013,7 +2034,7 @@ var actionStrategy = {
       delete events[refName];
     } else {
       if (!lastProps[name]) {
-        //添加全局监听事件
+        // 添加全局监听事件
         var eventName = getBrowserName(name);
         var hook = eventHooks[eventName];
         addGlobalEvent(eventName);
@@ -2021,7 +2042,6 @@ var actionStrategy = {
           hook(dom, eventName);
         }
       }
-      //onClick --> click, onClickCapture --> clickcapture
       events[refName] = val;
     }
   },
@@ -2236,9 +2256,9 @@ function CompositeUpdater(vnode, parentContext) {
     this.isPortal = true;
   }
   // update总是保存最新的数据，如state, props, context, parentContext, parentVnode
-  //  this._hydrating = true 表示组件会调用render方法及componentDidMount/Update钩子
-  //  this._nextCallbacks = [] 表示组件需要在下一周期重新渲染
-  //  this._forceUpdate = true 表示会无视shouldComponentUpdate的结果
+  // this._hydrating = true 表示组件会调用 render 方法及 componentDidMount/Update钩子
+  // this._nextCallbacks = [] 表示组件需要在下一周期重新渲染
+  // this._forceUpdate = true 表示会无视shouldComponentUpdate的结果
 }
 
 CompositeUpdater.prototype = {
@@ -2256,15 +2276,15 @@ CompositeUpdater.prototype = {
   },
   enqueueSetState: function enqueueSetState(state, cb) {
     if (state === true) {
-      //forceUpdate
+      // forceUpdate
       this._forceUpdate = true;
     } else {
-      //setState
+      // setState
       this._pendingStates.push(state);
     }
     if (this._hydrating) {
-      //组件在更新过程（_hydrating = true），其setState/forceUpdate被调用
-      //那么会延期到下一个渲染过程调用
+      // 组件在更新过程（_hydrating = true），其setState/forceUpdate被调用
+      // 那么会延期到下一个渲染过程调用
       if (!this._nextCallbacks) {
         this._nextCallbacks = [cb];
       } else {
@@ -2277,13 +2297,13 @@ CompositeUpdater.prototype = {
       }
     }
     if (document.__async) {
-      //在事件句柄中执行setState会进行合并
+      // 在事件句柄中执行 setState 会进行合并
       enqueueUpdater(this);
       return;
     }
     if (this.isMounted === returnTrue) {
       if (this._receiving) {
-        //componentWillReceiveProps中的setState/forceUpdate应该被忽略
+        // componentWillReceiveProps 中的 setState/forceUpdate 应该被忽略
         return;
       }
       this.addState("hydrate");
@@ -2298,7 +2318,7 @@ CompositeUpdater.prototype = {
     if (n === 0) {
       return state;
     }
-    var nextState = extend({}, state); //每次都返回新的state
+    var nextState = extend({}, state); // 每次都返回新的state
     for (var i = 0; i < n; i++) {
       var pending = pendings[i];
       if (pending && pending.call) {
@@ -2321,7 +2341,7 @@ CompositeUpdater.prototype = {
         isStateless = vnode.vtype === 4,
         instance = void 0,
         mixin = void 0;
-    //实例化组件
+    // 实例化组件
     try {
       var lastOwn = Refs.currentOwner;
       if (isStateless) {
@@ -2339,7 +2359,7 @@ CompositeUpdater.prototype = {
         Refs.currentOwner = instance;
       }
     } catch (e) {
-      //失败时，则创建一个假的instance
+      // 失败时，则创建一个假的 instance
       instance = {
         updater: this
       };
@@ -2349,13 +2369,13 @@ CompositeUpdater.prototype = {
     } finally {
       Refs.currentOwner = lastOwn;
     }
-    //如果是无状态组件需要再加工
+    // 如果是无状态组件需要再加工
     if (isStateless) {
       if (mixin && mixin.render) {
-        //带生命周期的
+        // 带生命周期的
         extend(instance, mixin);
       } else {
-        //不带生命周期的
+        // 不带生命周期的
         vnode.child = mixin;
         instance.__isStateless = true;
         this.mergeStates = alwaysNull;
@@ -2364,7 +2384,8 @@ CompositeUpdater.prototype = {
     }
 
     vnode.stateNode = this.instance = instance;
-    //如果没有调用constructor super，需要加上这三行
+    getDerivedStateFromProps(this, type, props, instance.state);
+    // 如果没有调用constructor super，需要加上这三行
     instance.props = props;
     instance.context = context;
     instance.updater = this;
@@ -2374,9 +2395,9 @@ CompositeUpdater.prototype = {
     this.updateQueue = updateQueue;
     if (instance.componentWillMount) {
       captureError(instance, "componentWillMount", []);
-      instance.state = this.mergeStates();
     }
-    //让顶层的元素updater进行收集
+    instance.state = this.mergeStates();
+    // 让顶层的元素updater进行收集
     this.render(updateQueue);
     updateQueue.push(this);
   },
@@ -2405,7 +2426,6 @@ CompositeUpdater.prototype = {
       nodes.forEach(function (el) {
         insertElement(el, queue.dom);
         queue.dom = el.stateNode;
-        // queue.unshift(el.stateNode);
       });
     } else {
       captureError(instance, "componentWillUpdate", [props, state, context]);
@@ -2419,7 +2439,7 @@ CompositeUpdater.prototype = {
     }
     vnode.stateNode = instance;
     delete this._forceUpdate;
-    //既然setState了，无论shouldComponentUpdate结果如何，用户传给的state对象都会作用到组件上
+    // 既然setState了，无论 shouldComponentUpdate 结果如何，用户传给的 state 对象都会作用到组件上
     instance.props = props;
     instance.state = state;
     instance.context = context;
@@ -2469,12 +2489,12 @@ CompositeUpdater.prototype = {
     }
     if (number > 2) {
       if (number > 5) {
-        //array, object
+        // array, object
         childContext = getChildContext(instance, parentContext);
       }
       nextChildren = fiberizeChildren(rendered, this);
     } else {
-      //undefinded, null, boolean
+      // undefinded, null, boolean
       this.children = nextChildren; //emptyObject
       delete this.child;
     }
@@ -2485,7 +2505,7 @@ CompositeUpdater.prototype = {
     Refs.diffChildren(lastChildren, nextChildren, vnode, childContext, updateQueue, this.insertCarrier);
   },
 
-  // ComponentDidMount/update钩子，React Chrome DevTools的钩子， 组件ref, 及错误边界
+  // ComponentDidMount/update钩子，React Chrome DevTools 的钩子， 组件 ref, 及错误边界
   resolve: function resolve(updateQueue) {
     var instance = this.instance,
         vnode = this._reactInternalFiber;
@@ -2497,7 +2517,7 @@ CompositeUpdater.prototype = {
     if (this._hydrating) {
       var hookName = hasMounted ? "componentDidUpdate" : "componentDidMount";
       captureError(instance, hookName, this._hookArgs || []);
-      //执行React Chrome DevTools的钩子
+      // 执行React Chrome DevTools的钩子
       if (hasMounted) {
         options.afterUpdate(instance);
       } else {
@@ -2510,7 +2530,7 @@ CompositeUpdater.prototype = {
     if (this._hasError) {
       return;
     } else {
-      //执行组件ref（发生错误时不执行）
+      // 执行组件ref（发生错误时不执行）
       if (vnode._hasRef) {
         Refs.fireRef(vnode, instance);
         vnode._hasRef = false;
@@ -2523,7 +2543,6 @@ CompositeUpdater.prototype = {
   },
   catch: function _catch(queue) {
     var instance = this.instance;
-    // delete Refs.ignoreError;
 
     this._states.length = 0;
     this.children = {};
@@ -2542,16 +2561,17 @@ CompositeUpdater.prototype = {
 
     Refs.fireRef(vnode, null);
     captureError(instance, "componentWillUnmount", []);
-    //在执行componentWillUnmount后才将关联的元素节点解绑，防止用户在钩子里调用 findDOMNode方法
+    // 在执行 componentWillUnmount 后才将关联的元素节点解绑，防止用户在钩子里调用 findDOMNode方法
     this.isMounted = returnFalse;
     vnode._disposed = this._disposed = true;
   }
 };
+
 function transfer(queue) {
   var cbs = this._nextCallbacks,
       cb;
   if (cbs && cbs.length) {
-    //如果在componentDidMount/Update钩子里执行了setState，那么再次渲染此组件
+    // 如果在 componentDidMount/Update 钩子里执行了 setState，那么再次渲染此组件
     do {
       cb = cbs.shift();
       if (isFn(cb)) {
@@ -2564,11 +2584,20 @@ function transfer(queue) {
   }
 }
 
+function getDerivedStateFromProps(updater, type, props, state) {
+  if (isFn(type.getDerivedStateFromProps)) {
+    var newState = type.getDerivedStateFromProps.call(null, props, state);
+    if (newState != null) {
+      updater._pendingStates.push(newState);
+    }
+  }
+}
+
 function getChildContext(instance, parentContext) {
   if (instance.getChildContext) {
     var context = instance.getChildContext();
     if (context) {
-      parentContext = Object.assign({}, parentContext, context);
+      parentContext = extend(extend({}, parentContext), context);
     }
   }
   return parentContext;
@@ -2634,14 +2663,14 @@ function unmountComponentAtNode(container) {
 //[Top API] ReactDOM.findDOMNode
 function findDOMNode(componentOrElement) {
   if (componentOrElement == null) {
-    //如果是null
+    // 如果是 null
     return null;
   }
   if (componentOrElement.nodeType) {
-    //如果本身是元素节点
+    // 如果本身是元素节点
     return componentOrElement;
   }
-  //实例必然拥有updater与render
+  // 实例必然拥有 updater 与 render
   if (componentOrElement.render) {
     var vnode = componentOrElement.updater._reactInternalFiber;
     var c = vnode.child;
@@ -2669,9 +2698,9 @@ function renderByAnu(vnode, container, callback) {
   if (!(container && container.appendChild)) {
     throw "ReactDOM.render\u7684\u7B2C\u4E8C\u4E2A\u53C2\u6570\u9519\u8BEF"; // eslint-disable-line
   }
-  //__component用来标识这个真实DOM是ReactDOM.render的容器，通过它可以取得上一次的虚拟DOM
-  // 但是在IE6－8中，文本/注释节点不能通过添加自定义属性来引用虚拟DOM，这时我们额外引进topVnode,
-  //topNode来寻找它们。
+  // __component 用来标识这个真实 DOM 是 ReactDOM.render 的容器，通过它可以取得上一次的虚拟 DOM
+  // 但是在 IE6－8 中，文本/注释节点不能通过添加自定义属性来引用虚拟 DOM，这时我们额外引进 topVnode,
+  // topNode 来寻找它们。
 
   var nodeIndex = topNodes.indexOf(container),
       lastWrapper = void 0,
@@ -2679,12 +2708,12 @@ function renderByAnu(vnode, container, callback) {
       wrapper = void 0,
       updateQueue = [],
       insertCarrier = {};
-  //updaterQueue是用来装载updater， insertCarrier是用来装载插入DOM树的真实DOM
+  // updaterQueue是用来装载updater， insertCarrier是用来装载插入DOM树的真实DOM
   if (nodeIndex !== -1) {
     lastWrapper = topVnodes[nodeIndex];
     wrapper = lastWrapper.stateNode.updater;
     if (wrapper._hydrating) {
-      //如果是在componentDidMount/Update中使用了ReactDOM.render，那么将延迟到此组件的resolve阶段执行
+      // 如果是在componentDidMount/Update中使用了ReactDOM.render，那么将延迟到此组件的resolve阶段执行
       wrapper._pendingCallbacks.push(renderByAnu.bind(null, vnode, container, callback, context));
       return lastWrapper.child.stateNode;
     }
@@ -2694,7 +2723,6 @@ function renderByAnu(vnode, container, callback) {
   }
   Refs.currentOwner = null; //防止干扰
   var nextWrapper = createElement(AnuWrapper, { child: vnode });
-  // top(contaner) > nextWrapper > vnode
   nextWrapper.isTop = true;
   topVnodes[nodeIndex] = nextWrapper;
   if (lastWrapper) {
@@ -2742,7 +2770,7 @@ function genVnodes(vnode, context, updateQueue, insertCarrier) {
   }
 }
 
-//mountVnode只是转换虚拟DOM为真实DOM，不做插入DOM树操作
+// mountVnode 只是转换虚拟 DOM 为真 实DOM，不做插入 DOM 树操作
 function mountVnode(vnode, context, updateQueue, insertCarrier) {
   options.beforeInsert(vnode);
   if (vnode.vtype === 0 || vnode.vtype === 1) {
@@ -2815,6 +2843,7 @@ function receiveComponent(lastVnode, nextVnode, parentContext, updateQueue, inse
   var type = lastVnode.type,
       stateNode = lastVnode.stateNode,
       updater = stateNode.updater,
+      nextProps = nextVnode.props,
       willReceive = lastVnode !== nextVnode,
       nextContext = void 0;
 
@@ -2824,7 +2853,7 @@ function receiveComponent(lastVnode, nextVnode, parentContext, updateQueue, inse
     nextContext = getContextByTypes(parentContext, type.contextTypes);
     willReceive = true;
   }
-  updater.props = nextVnode.props;
+  updater.props = nextProps;
   if (updater.isPortal) {
     updater.insertCarrier = {};
   } else {
@@ -2839,7 +2868,10 @@ function receiveComponent(lastVnode, nextVnode, parentContext, updateQueue, inse
     updater._receiving = true;
     updater.updateQueue = updateQueue;
     if (willReceive) {
-      captureError(stateNode, "componentWillReceiveProps", [nextVnode.props, nextContext]);
+      captureError(stateNode, "componentWillReceiveProps", [nextProps, nextContext]);
+    }
+    if (lastVnode.props !== nextProps) {
+      getDerivedStateFromProps(updater, type, nextProps, stateNode.state);
     }
     if (updater._hasError) {
       return;
@@ -2860,7 +2892,7 @@ function isSameNode(a, b) {
 
 function receiveVnode(lastVnode, nextVnode, context, updateQueue, insertCarrier) {
   if (isSameNode(lastVnode, nextVnode)) {
-    //组件虚拟DOM已经在diffChildren生成并插入DOM树
+    // 组件虚拟 DOM 已经在 diffChildren 生成并插入 DOM 树
     updateVnode(lastVnode, nextVnode, context, updateQueue, insertCarrier);
   } else {
     disposeVnode(lastVnode, updateQueue);
@@ -2869,7 +2901,7 @@ function receiveVnode(lastVnode, nextVnode, context, updateQueue, insertCarrier)
 }
 // https://github.com/onmyway133/DeepDiff
 function diffChildren(lastChildren, nextChildren, parentVnode, parentContext, updateQueue, insertCarrier) {
-  //这里都是走新的任务列队
+  // 这里都是走新的任务列队
   var lastChild = void 0,
       nextChild = void 0,
       isEmpty = true,
@@ -2881,7 +2913,7 @@ function diffChildren(lastChildren, nextChildren, parentVnode, parentContext, up
   for (var i in lastChildren) {
     isEmpty = false;
     child = lastChildren[i];
-    //向下找到其第一个元素节点子孙
+    // 向下找到其第一个元素节点子孙
     if (firstChild) {
       do {
         if (child.superReturn) {
@@ -2896,7 +2928,7 @@ function diffChildren(lastChildren, nextChildren, parentVnode, parentContext, up
     break;
   }
 
-  //优化： 只添加
+  // 优化： 只添加
   if (isEmpty) {
     mountChildren(parentVnode, nextChildren, parentContext, updateQueue, insertCarrier);
   } else {
@@ -2915,7 +2947,7 @@ function diffChildren(lastChildren, nextChildren, parentVnode, parentContext, up
       }
       disposeVnode(lastChild, updateQueue);
     }
-    //step2: 更新或新增节点
+    // step2: 更新或新增节点
     matchRefs.sort(function (a, b) {
       return a.order - b.order;
     }).forEach(function (el) {
@@ -2947,7 +2979,7 @@ if (win.React && win.React.options) {
   React = win.React;
 } else {
   React = win.React = win.ReactDOM = {
-    version: "2.0.4",
+    version: "2.0.5",
     render: render,
     hydrate: render,
     Fragment: REACT_FRAGMENT_TYPE,

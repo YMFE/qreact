@@ -50,9 +50,9 @@ export function CompositeUpdater(vnode, parentContext) {
     this.isPortal = true;
   }
   // update总是保存最新的数据，如state, props, context, parentContext, parentVnode
-  //  this._hydrating = true 表示组件会调用render方法及componentDidMount/Update钩子
-  //  this._nextCallbacks = [] 表示组件需要在下一周期重新渲染
-  //  this._forceUpdate = true 表示会无视shouldComponentUpdate的结果
+  // this._hydrating = true 表示组件会调用 render 方法及 componentDidMount/Update钩子
+  // this._nextCallbacks = [] 表示组件需要在下一周期重新渲染
+  // this._forceUpdate = true 表示会无视shouldComponentUpdate的结果
 }
 
 CompositeUpdater.prototype = {
@@ -70,15 +70,15 @@ CompositeUpdater.prototype = {
   },
   enqueueSetState(state, cb) {
     if (state === true) {
-      //forceUpdate
+      // forceUpdate
       this._forceUpdate = true;
     } else {
-      //setState
+      // setState
       this._pendingStates.push(state);
     }
     if (this._hydrating) {
-      //组件在更新过程（_hydrating = true），其setState/forceUpdate被调用
-      //那么会延期到下一个渲染过程调用
+      // 组件在更新过程（_hydrating = true），其setState/forceUpdate被调用
+      // 那么会延期到下一个渲染过程调用
       if (!this._nextCallbacks) {
         this._nextCallbacks = [cb];
       } else {
@@ -91,13 +91,13 @@ CompositeUpdater.prototype = {
       }
     }
     if (document.__async) {
-      //在事件句柄中执行setState会进行合并
+      // 在事件句柄中执行 setState 会进行合并
       enqueueUpdater(this);
       return;
     }
     if (this.isMounted === returnTrue) {
       if (this._receiving) {
-        //componentWillReceiveProps中的setState/forceUpdate应该被忽略
+        // componentWillReceiveProps 中的 setState/forceUpdate 应该被忽略
         return;
       }
       this.addState("hydrate");
@@ -112,7 +112,7 @@ CompositeUpdater.prototype = {
     if (n === 0) {
       return state;
     }
-    let nextState = extend({}, state); //每次都返回新的state
+    let nextState = extend({}, state); // 每次都返回新的state
     for (let i = 0; i < n; i++) {
       let pending = pendings[i];
       if (pending && pending.call) {
@@ -131,7 +131,7 @@ CompositeUpdater.prototype = {
       isStateless = vnode.vtype === 4,
       instance,
       mixin;
-    //实例化组件
+    // 实例化组件
     try {
       var lastOwn = Refs.currentOwner;
       if (isStateless) {
@@ -149,7 +149,7 @@ CompositeUpdater.prototype = {
         Refs.currentOwner = instance;
       }
     } catch (e) {
-      //失败时，则创建一个假的instance
+      // 失败时，则创建一个假的 instance
       instance = {
         updater: this
       };
@@ -159,13 +159,13 @@ CompositeUpdater.prototype = {
     } finally {
       Refs.currentOwner = lastOwn;
     }
-    //如果是无状态组件需要再加工
+    // 如果是无状态组件需要再加工
     if (isStateless) {
       if (mixin && mixin.render) {
-        //带生命周期的
+        // 带生命周期的
         extend(instance, mixin);
       } else {
-        //不带生命周期的
+        // 不带生命周期的
         vnode.child = mixin;
         instance.__isStateless = true;
         this.mergeStates = alwaysNull;
@@ -174,7 +174,8 @@ CompositeUpdater.prototype = {
     }
 
     vnode.stateNode = this.instance = instance;
-    //如果没有调用constructor super，需要加上这三行
+    getDerivedStateFromProps(this, type, props, instance.state);
+    // 如果没有调用constructor super，需要加上这三行
     instance.props = props;
     instance.context = context;
     instance.updater = this;
@@ -184,9 +185,9 @@ CompositeUpdater.prototype = {
     this.updateQueue = updateQueue;
     if (instance.componentWillMount) {
       captureError(instance, "componentWillMount", []);
-      instance.state = this.mergeStates();
     }
-    //让顶层的元素updater进行收集
+    instance.state = this.mergeStates();
+    // 让顶层的元素updater进行收集
     this.render(updateQueue);
     updateQueue.push(this);
   },
@@ -220,7 +221,6 @@ CompositeUpdater.prototype = {
       nodes.forEach(function(el) {
         insertElement(el, queue.dom);
         queue.dom = el.stateNode;
-        // queue.unshift(el.stateNode);
       });
     } else {
       captureError(instance, "componentWillUpdate", [props, state, context]);
@@ -232,7 +232,7 @@ CompositeUpdater.prototype = {
     }
     vnode.stateNode = instance;
     delete this._forceUpdate;
-    //既然setState了，无论shouldComponentUpdate结果如何，用户传给的state对象都会作用到组件上
+    // 既然setState了，无论 shouldComponentUpdate 结果如何，用户传给的 state 对象都会作用到组件上
     instance.props = props;
     instance.state = state;
     instance.context = context;
@@ -283,12 +283,12 @@ CompositeUpdater.prototype = {
     }
     if (number > 2) {
       if (number > 5) {
-        //array, object
+        // array, object
         childContext = getChildContext(instance, parentContext);
       }
       nextChildren = fiberizeChildren(rendered, this);
     } else {
-      //undefinded, null, boolean
+      // undefinded, null, boolean
       this.children = nextChildren; //emptyObject
       delete this.child;
     }
@@ -309,7 +309,7 @@ CompositeUpdater.prototype = {
       this.insertCarrier
     );
   },
-  // ComponentDidMount/update钩子，React Chrome DevTools的钩子， 组件ref, 及错误边界
+  // ComponentDidMount/update钩子，React Chrome DevTools 的钩子， 组件 ref, 及错误边界
   resolve(updateQueue) {
     let { instance, _reactInternalFiber: vnode } = this;
     let hasMounted = this.isMounted();
@@ -319,7 +319,7 @@ CompositeUpdater.prototype = {
     if (this._hydrating) {
       let hookName = hasMounted ? "componentDidUpdate" : "componentDidMount";
       captureError(instance, hookName, this._hookArgs || []);
-      //执行React Chrome DevTools的钩子
+      // 执行React Chrome DevTools的钩子
       if (hasMounted) {
         options.afterUpdate(instance);
       } else {
@@ -332,7 +332,7 @@ CompositeUpdater.prototype = {
     if (this._hasError) {
       return;
     } else {
-      //执行组件ref（发生错误时不执行）
+      // 执行组件ref（发生错误时不执行）
       if (vnode._hasRef) {
         Refs.fireRef(vnode, instance);
         vnode._hasRef = false;
@@ -345,7 +345,6 @@ CompositeUpdater.prototype = {
   },
   catch(queue) {
     let { instance } = this;
-    // delete Refs.ignoreError;
     this._states.length = 0;
     this.children = {};
     this._isDoctor = this._hydrating = true;
@@ -361,16 +360,17 @@ CompositeUpdater.prototype = {
 
     Refs.fireRef(vnode, null);
     captureError(instance, "componentWillUnmount", []);
-    //在执行componentWillUnmount后才将关联的元素节点解绑，防止用户在钩子里调用 findDOMNode方法
+    // 在执行 componentWillUnmount 后才将关联的元素节点解绑，防止用户在钩子里调用 findDOMNode方法
     this.isMounted = returnFalse;
     vnode._disposed = this._disposed = true;
   }
 };
+
 function transfer(queue) {
   var cbs = this._nextCallbacks,
     cb;
   if (cbs && cbs.length) {
-    //如果在componentDidMount/Update钩子里执行了setState，那么再次渲染此组件
+    // 如果在 componentDidMount/Update 钩子里执行了 setState，那么再次渲染此组件
     do {
       cb = cbs.shift();
       if (isFn(cb)) {
@@ -383,11 +383,20 @@ function transfer(queue) {
   }
 }
 
+export function getDerivedStateFromProps(updater, type, props, state) {
+  if (isFn(type.getDerivedStateFromProps)) {
+    var newState = type.getDerivedStateFromProps.call(null, props, state);
+    if (newState != null) {
+      updater._pendingStates.push(newState);
+    }
+  }
+}
+
 export function getChildContext(instance, parentContext) {
   if (instance.getChildContext) {
     let context = instance.getChildContext();
     if (context) {
-      parentContext = Object.assign({}, parentContext, context);
+      parentContext = extend(extend({}, parentContext), context);
     }
   }
   return parentContext;

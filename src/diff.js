@@ -15,7 +15,11 @@ import {
 } from "./browser";
 import { disposeVnode, disposeChildren, topVnodes, topNodes } from "./dispose";
 import { createVnode, fiberizeChildren, createElement } from "./createElement";
-import { CompositeUpdater, getContextByTypes } from "./CompositeUpdater";
+import {
+  CompositeUpdater,
+  getContextByTypes,
+  getDerivedStateFromProps
+} from "./CompositeUpdater";
 import { Component } from "./Component";
 import { DOMUpdater } from "./DOMUpdater";
 import { drainQueue } from "./scheduler";
@@ -60,14 +64,14 @@ export function unmountComponentAtNode(container) {
 //[Top API] ReactDOM.findDOMNode
 export function findDOMNode(componentOrElement) {
   if (componentOrElement == null) {
-    //如果是null
+    // 如果是 null
     return null;
   }
   if (componentOrElement.nodeType) {
-    //如果本身是元素节点
+    // 如果本身是元素节点
     return componentOrElement;
   }
-  //实例必然拥有updater与render
+  // 实例必然拥有 updater 与 render
   if (componentOrElement.render) {
     var vnode = componentOrElement.updater._reactInternalFiber;
     var c = vnode.child;
@@ -93,9 +97,9 @@ function renderByAnu(vnode, container, callback, context = {}) {
   if (!(container && container.appendChild)) {
     throw `ReactDOM.render的第二个参数错误`; // eslint-disable-line
   }
-  //__component用来标识这个真实DOM是ReactDOM.render的容器，通过它可以取得上一次的虚拟DOM
-  // 但是在IE6－8中，文本/注释节点不能通过添加自定义属性来引用虚拟DOM，这时我们额外引进topVnode,
-  //topNode来寻找它们。
+  // __component 用来标识这个真实 DOM 是 ReactDOM.render 的容器，通过它可以取得上一次的虚拟 DOM
+  // 但是在 IE6－8 中，文本/注释节点不能通过添加自定义属性来引用虚拟 DOM，这时我们额外引进 topVnode,
+  // topNode 来寻找它们。
 
   let nodeIndex = topNodes.indexOf(container),
     lastWrapper,
@@ -103,12 +107,12 @@ function renderByAnu(vnode, container, callback, context = {}) {
     wrapper,
     updateQueue = [],
     insertCarrier = {};
-  //updaterQueue是用来装载updater， insertCarrier是用来装载插入DOM树的真实DOM
+  // updaterQueue是用来装载updater， insertCarrier是用来装载插入DOM树的真实DOM
   if (nodeIndex !== -1) {
     lastWrapper = topVnodes[nodeIndex];
     wrapper = lastWrapper.stateNode.updater;
     if (wrapper._hydrating) {
-      //如果是在componentDidMount/Update中使用了ReactDOM.render，那么将延迟到此组件的resolve阶段执行
+      // 如果是在componentDidMount/Update中使用了ReactDOM.render，那么将延迟到此组件的resolve阶段执行
       wrapper._pendingCallbacks.push(
         renderByAnu.bind(null, vnode, container, callback, context)
       );
@@ -120,7 +124,6 @@ function renderByAnu(vnode, container, callback, context = {}) {
   }
   Refs.currentOwner = null; //防止干扰
   var nextWrapper = createElement(AnuWrapper, { child: vnode });
-  // top(contaner) > nextWrapper > vnode
   nextWrapper.isTop = true;
   topVnodes[nodeIndex] = nextWrapper;
   if (lastWrapper) {
@@ -168,7 +171,7 @@ function genVnodes(vnode, context, updateQueue, insertCarrier) {
   }
 }
 
-//mountVnode只是转换虚拟DOM为真实DOM，不做插入DOM树操作
+// mountVnode 只是转换虚拟 DOM 为真 实DOM，不做插入 DOM 树操作
 function mountVnode(vnode, context, updateQueue, insertCarrier) {
   options.beforeInsert(vnode);
   if (vnode.vtype === 0 || vnode.vtype === 1) {
@@ -258,6 +261,7 @@ function receiveComponent(
   // todo:减少数据的接收次数
   let { type, stateNode } = lastVnode,
     updater = stateNode.updater,
+    nextProps = nextVnode.props,
     willReceive = lastVnode !== nextVnode,
     nextContext;
   if (!type.contextTypes) {
@@ -266,7 +270,7 @@ function receiveComponent(
     nextContext = getContextByTypes(parentContext, type.contextTypes);
     willReceive = true;
   }
-  updater.props = nextVnode.props;
+  updater.props = nextProps;
   if (updater.isPortal) {
     updater.insertCarrier = {};
   } else {
@@ -282,9 +286,12 @@ function receiveComponent(
     updater.updateQueue = updateQueue;
     if (willReceive) {
       captureError(stateNode, "componentWillReceiveProps", [
-        nextVnode.props,
+        nextProps,
         nextContext
       ]);
+    }
+    if (lastVnode.props !== nextProps) {
+      getDerivedStateFromProps(updater, type, nextProps, stateNode.state);
     }
     if (updater._hasError) {
       return;
@@ -311,7 +318,7 @@ function receiveVnode(
   insertCarrier
 ) {
   if (isSameNode(lastVnode, nextVnode)) {
-    //组件虚拟DOM已经在diffChildren生成并插入DOM树
+    // 组件虚拟 DOM 已经在 diffChildren 生成并插入 DOM 树
     updateVnode(lastVnode, nextVnode, context, updateQueue, insertCarrier);
   } else {
     disposeVnode(lastVnode, updateQueue);
@@ -327,7 +334,7 @@ function diffChildren(
   updateQueue,
   insertCarrier
 ) {
-  //这里都是走新的任务列队
+  // 这里都是走新的任务列队
   let lastChild,
     nextChild,
     isEmpty = true,
@@ -339,7 +346,7 @@ function diffChildren(
   for (var i in lastChildren) {
     isEmpty = false;
     child = lastChildren[i];
-    //向下找到其第一个元素节点子孙
+    // 向下找到其第一个元素节点子孙
     if (firstChild) {
       do {
         if (child.superReturn) {
@@ -354,7 +361,7 @@ function diffChildren(
     break;
   }
 
-  //优化： 只添加
+  // 优化： 只添加
   if (isEmpty) {
     mountChildren(
       parentVnode,
@@ -379,7 +386,7 @@ function diffChildren(
       }
       disposeVnode(lastChild, updateQueue);
     }
-    //step2: 更新或新增节点
+    // step2: 更新或新增节点
     matchRefs
       .sort(function(a, b) {
         return a.order - b.order;
