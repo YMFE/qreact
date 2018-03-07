@@ -1,12 +1,12 @@
-import { document, contains, modern } from "./browser";
+import { document, modern, contains } from "./browser";
 import { isFn, noop } from "./util";
 import { flushUpdaters } from "./scheduler";
 import { Refs } from "./Refs";
 
 var globalEvents = {};
-export var eventPropHooks = {}; // 用于在事件回调里对事件对象进行
-export var eventHooks = {}; // 用于在元素上绑定特定的事件
-// 根据onXXX得到其全小写的事件名, onClick --> click, onClickCapture --> click,
+export var eventPropHooks = {}; //用于在事件回调里对事件对象进行
+export var eventHooks = {}; //用于在元素上绑定特定的事件
+//根据onXXX得到其全小写的事件名, onClick --> click, onClickCapture --> click,
 // onMouseMove --> mousemove
 
 export var eventLowerCache = {
@@ -27,12 +27,13 @@ export function isEventName(name) {
 export var isTouch = "ontouchstart" in document;
 
 export function dispatchEvent(e, type, end) {
-  // __type__ 在 injectTapEventPlugin 里用到
+  //__type__ 在injectTapEventPlugin里用到
   e = new SyntheticEvent(e);
   if (type) {
     e.type = type;
   }
   var bubble = e.type;
+  //var dom = e.target;
   var hook = eventPropHooks[bubble];
   if (hook && false === hook(e)) {
     return;
@@ -69,13 +70,16 @@ function collectPaths(from, end) {
     }
   }
   if (!node || node.nodeType > 1) {
-    // 如果跑到document上
+    //如果跑到document上
     return paths;
   }
   var mid = node.__events;
-  var vnode = mid.child || mid.vnode;
+  var vnode = mid.vnode;
+  if (vnode._isPortal) {
+    vnode = vnode.child;
+  }
   do {
-    if (vnode.vtype === 1) {
+    if (vnode.tag === 5) {
       var dom = vnode.stateNode;
       if (dom === end) {
         break;
@@ -133,11 +137,11 @@ export function getBrowserName(onStr) {
 }
 
 /**
-DOM 通过 event 对象的 relatedTarget 属性提供了相关元素的信息。这个属性只对于 mouseover 和 mouseout 事件才包含值；
-对于其他事件，这个属性的值是null。IE不支持 relatedTarget 属性，但提供了保存着同样信息的不同属性。
-在 mouseover 事件触发时，IE的 fromElement 属性中保存了相关元素；
-在 mouseout 事件触发时，IE的 toElement 属性中保存着相关元素。
-但 fromElement 与 toElement 可能同时都有值
+DOM通过event对象的relatedTarget属性提供了相关元素的信息。这个属性只对于mouseover和mouseout事件才包含值；
+对于其他事件，这个属性的值是null。IE不支持realtedTarget属性，但提供了保存着同样信息的不同属性。
+在mouseover事件触发时，IE的fromElement属性中保存了相关元素；
+在mouseout事件出发时，IE的toElement属性中保存着相关元素。
+但fromElement与toElement可能同时都有值
  */
 function getRelatedTarget(e) {
   if (!e.timeStamp) {
@@ -156,7 +160,7 @@ String("mouseenter,mouseleave").replace(/\w+/g, function(name) {
         let t = getRelatedTarget(e);
         if (!t || (t !== dom && !contains(dom, t))) {
           var common = getLowestCommonAncestor(dom, t);
-          // 由于不冒泡，因此 paths 长度为 1
+          //由于不冒泡，因此paths长度为1
           dispatchEvent(e, type, common);
         }
       });
@@ -250,9 +254,9 @@ eventPropHooks.wheel = function(event) {
         "wheelDelta" in event ? -event.wheelDelta : 0;
 };
 
-// react 将 text,textarea,password 元素中的 onChange 事件当成 onInput 事件
+//react将text,textarea,password元素中的onChange事件当成onInput事件
 eventHooks.changecapture = eventHooks.change = function(dom) {
-  if (/text|password/.test(dom.type)) {
+  if (/text|password|search/.test(dom.type)) {
     addEvent(document, "input", specialHandles.change);
   }
 };

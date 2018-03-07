@@ -18,7 +18,7 @@ function empty(dir) {
     });
   });
 }
-  
+
 function copy(dir) {
   return new Promise((resolve, reject) => {
     fs.copy(path.join(anuPath, dir), path.join(qreactPath, dir), err => {
@@ -30,15 +30,15 @@ function copy(dir) {
     });
   });
 }
-  
+
 function emptyDirs(dirs) {
   return Promise.all(dirs.map(dir => empty(dir)));
 }
-  
+
 function copyDirs(dirs) {
   return Promise.all(dirs.map(dir => copy(dir)));
 }
-  
+
 function start() {
   const emptyPromise = emptyDirs(dirs);
   emptyPromise
@@ -49,11 +49,11 @@ function start() {
     .then(() => {
       spinner.succeed("已复制 anujs 至 QReact");
     })
- 
+
     .catch(e => {
-        console.error(e); // eslint-disable-line
+      console.error(e); // eslint-disable-line
       spinner.fail("同步失败");
     });
 }
-  
+
 start();

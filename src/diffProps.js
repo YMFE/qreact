@@ -142,10 +142,10 @@ function getSVGAttributeName(name) {
   return (svgCache[orig] = name);
 }
 
-export function diffProps(dom, lastProps, nextProps, vnode) {
-  options.beforeProps(vnode);
-  let isSVG = vnode.namespaceURI === NAMESPACE.svg;
-  let tag = vnode.type;
+export function diffProps(dom, lastProps, nextProps, fiber) {
+  options.beforeProps(fiber);
+  let isSVG = fiber.namespaceURI === NAMESPACE.svg;
+  let tag = fiber.type;
   //eslint-disable-next-line
   for (let name in nextProps) {
     let val = nextProps[name];
@@ -155,7 +155,7 @@ export function diffProps(dom, lastProps, nextProps, vnode) {
       if (!action) {
         action = strategyCache[which] = getPropAction(dom, name, isSVG);
       }
-      actionStrategy[action](dom, name, val, lastProps, vnode);
+      actionStrategy[action](dom, name, val, lastProps, fiber);
     }
   }
   //如果旧属性在新属性对象不存在，那么移除DOM eslint-disable-next-line
@@ -166,7 +166,7 @@ export function diffProps(dom, lastProps, nextProps, vnode) {
       if (!action) {
         continue;
       }
-      actionStrategy[action](dom, name, false, lastProps, vnode);
+      actionStrategy[action](dom, name, false, lastProps, fiber);
     }
   }
 }
@@ -193,13 +193,17 @@ function getPropAction(dom, name, isSVG) {
   if (isEventName(name)) {
     return "event";
   }
+
   if (isSVG) {
     return "svgAttr";
+  }
+  //img.width = '100px'时,取img.width为0,必须用setAttribute
+  if (name === "width" || name === "height") {
+    return "attribute";
   }
   if (isBooleanAttr(dom, name)) {
     return "booleanAttr";
   }
-
   return name.indexOf("data-") === 0 || dom[name] === void 666
     ? "attribute"
     : "property";
@@ -214,7 +218,7 @@ var builtinStringProps = {
 };
 
 var rform = /textarea|input|select/i;
-function uncontrolled(dom, name, val, lastProps, vnode) {
+function uncontrolled(dom, name, val, lastProps, fiber) {
   if (rform.test(dom.nodeName)) {
     if (!dom._uncontrolled) {
       dom._uncontrolled = true;
@@ -222,9 +226,9 @@ function uncontrolled(dom, name, val, lastProps, vnode) {
     }
     dom._observing = false;
     if (
-      vnode.type === "select" &&
+      fiber.type === "select" &&
       dom._setValue &&
-      !lastProps.multiple !== !vnode.props.multiple
+      !lastProps.multiple !== !fiber.props.multiple
     ) {
       //当select的multiple发生变化，需要重置selectedIndex，让底下的selected生效
       dom.selectedIndex = dom.selectedIndex;
@@ -312,22 +316,22 @@ export var actionStrategy = {
       }
     } catch (e) {
       try {
-        // 修改type会引发多次报错
+        //修改type会引发多次报错
         dom.setAttribute(name, val);
-      } catch (error) {
-        // no operation
+      } catch (e) {
+        /*ignore*/
       }
     }
   },
-  event: function(dom, name, val, lastProps, vnode) {
+  event: function(dom, name, val, lastProps, fiber) {
     let events = dom.__events || (dom.__events = {});
-    events.vnode = vnode;
+    events.vnode = fiber;
     let refName = toLowerCase(name.slice(2));
     if (val === false) {
       delete events[refName];
     } else {
       if (!lastProps[name]) {
-        // 添加全局监听事件
+        //添加全局监听事件
         let eventName = getBrowserName(name);
         let hook = eventHooks[eventName];
         addGlobalEvent(eventName);
@@ -335,6 +339,7 @@ export var actionStrategy = {
           hook(dom, eventName);
         }
       }
+      //onClick --> click, onClickCapture --> clickcapture
       events[refName] = val;
     }
   },

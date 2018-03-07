@@ -11,7 +11,7 @@ import {
 } from "./event";
 import { inputMonitor } from "./inputMonitor";
 
-// IE8中 select.value 不会在 onchange 事件中随用户的选中而改变其 value 值，也不让用户直接修改 value 只能通过这个 hack 改变
+//IE8中select.value不会在onchange事件中随用户的选中而改变其value值，也不让用户直接修改value 只能通过这个hack改变
 var noCheck = false;
 function setSelectValue(e) {
   if (e.propertyName === "value" && !noCheck) {
@@ -24,7 +24,7 @@ function syncValueByOptionValue(dom) {
     option,
     attr;
   if (idx > -1) {
-    // IE 下 select.value 不会改变
+    //IE 下select.value不会改变
     option = dom.options[idx];
     attr = option.attributes.value;
     dom.value = attr && attr.specified ? option.value : option.text;
@@ -63,7 +63,7 @@ var IEHandleFix = {
     addEvent(dom, "propertychange", fixIEInputHandle);
   },
   change: function(dom) {
-    // IE6-8, radio, checkbox 的点击事件必须在失去焦点时才触发 select 则需要做更多补丁工件
+    //IE6-8, radio, checkbox的点击事件必须在失去焦点时才触发 select则需要做更多补丁工件
     var mask = /radio|check/.test(dom.type)
       ? "click"
       : /text|password/.test(dom.type) ? "propertychange" : "change";
@@ -81,7 +81,7 @@ if (msie < 9) {
     var oldhtml = lastProps[name] && lastProps[name].__html;
     var html = val && val.__html;
     if (html !== oldhtml) {
-      // IE8- 会吃掉最前面的空白
+      //IE8-会吃掉最前面的空白
       dom.innerHTML = String.fromCharCode(0xfeff) + html;
       var textNode = dom.firstChild;
       if (textNode.data.length === 1) {
@@ -98,7 +98,7 @@ if (msie < 9) {
   focusMap.blur = "focusout";
   focusMap.focusin = "focus";
   focusMap.focusout = "blur";
-  Object.assign(
+  extend(
     eventPropHooks,
     oneObject(
       "mousemove, mouseout,mouseenter, mouseleave, mouseout,mousewheel, mousewheel, whe" +
@@ -116,7 +116,6 @@ if (msie < 9) {
       }
     )
   );
-
   const translateToKey = {
     "8": "Backspace",
     "9": "Tab",
@@ -160,15 +159,7 @@ if (msie < 9) {
     oneObject("keyup, keydown, keypress", function(event) {
       if (!event.which && event.type.indexOf("key") === 0) {
         event.key = translateToKey[event.keyCode];
-        event.which = event.charCode != null ? event.charCode : event.keyCode;
-      }
-    })
-  );
-
-  Object.assign(
-    eventPropHooks,
-    oneObject("keyup, keydown, keypress", function(event) {
-      if (event.which == null && event.type.indexOf("key") === 0) {
+        /* istanbul ignore next  */
         event.which = event.charCode != null ? event.charCode : event.keyCode;
       }
     })

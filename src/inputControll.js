@@ -181,6 +181,7 @@ function keepPersistValue(e) {
   var v = dom._persistValue;
   var noNull = v != null;
   var noEqual = dom[name] !== v; //2.0 , 2
+
   if (noNull && noEqual) {
     dom[name] = v;
   }

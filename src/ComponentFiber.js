@@ -17,45 +17,34 @@ import { Refs } from "./Refs";
 function alwaysNull() {
   return null;
 }
-const support16 = true;
-const errorType = {
-  0: "undefined",
-  2: "boolean",
-  3: "number",
-  4: "string",
-  7: "array"
-};
+
 /**
- * 为了防止污染用户的实例，需要将操作组件虚拟DOM与生命周期钩子的逻辑全部抽象到这个类中
- *
- * @export
- * @param {any} instance
- * @param {any} vnode
+ * 将虚拟DOM转换为Fiber
+ * @param {vnode} vnode
+ * @param {Fiber} parentFiber
  */
-export function CompositeUpdater(vnode, parentContext) {
-  var { type, props } = vnode;
-  if (!type) {
-    throw vnode;
-  }
+export function ComponentFiber(vnode, parentFiber) {
+  extend(this, vnode);
+  var type = vnode.type;
   this.name = type.displayName || type.name;
-  this.props = props;
+  this.return = parentFiber;
+  this.context = getMaskedContext(
+    getContextProvider(parentFiber),
+    type.contextTypes
+  );
   this._reactInternalFiber = vnode;
-  this.context = getContextByTypes(parentContext, type.contextTypes);
-  this.parentContext = parentContext;
   this._pendingCallbacks = [];
   this._pendingStates = [];
   this._states = ["resolve"];
   this._mountOrder = Refs.mountOrder++;
-  if (vnode.superReturn) {
-    this.isPortal = true;
-  }
-  // update总是保存最新的数据，如state, props, context, parentContext, parentVnode
-  // this._hydrating = true 表示组件会调用 render 方法及 componentDidMount/Update钩子
-  // this._nextCallbacks = [] 表示组件需要在下一周期重新渲染
-  // this._forceUpdate = true 表示会无视shouldComponentUpdate的结果
+
+  //  fiber总是保存最新的数据，如state, props, context
+  //  this._hydrating = true 表示组件会调用render方法及componentDidMount/Update钩子
+  //  this._nextCallbacks = [] 表示组件需要在下一周期重新渲染
+  //  this._forceUpdate = true 表示会无视shouldComponentUpdate的结果
 }
 
-CompositeUpdater.prototype = {
+ComponentFiber.prototype = {
   addState: function(state) {
     var states = this._states;
     if (states[states.length - 1] !== state) {
@@ -70,15 +59,15 @@ CompositeUpdater.prototype = {
   },
   enqueueSetState(state, cb) {
     if (state === true) {
-      // forceUpdate
+      //forceUpdate
       this._forceUpdate = true;
     } else {
-      // setState
+      //setState
       this._pendingStates.push(state);
     }
     if (this._hydrating) {
-      // 组件在更新过程（_hydrating = true），其setState/forceUpdate被调用
-      // 那么会延期到下一个渲染过程调用
+      //组件在更新过程（_hydrating = true），其setState/forceUpdate被调用
+      //那么会延期到下一个渲染过程调用
       if (!this._nextCallbacks) {
         this._nextCallbacks = [cb];
       } else {
@@ -91,13 +80,13 @@ CompositeUpdater.prototype = {
       }
     }
     if (document.__async) {
-      // 在事件句柄中执行 setState 会进行合并
+      //在事件句柄中执行setState会进行合并
       enqueueUpdater(this);
       return;
     }
-    if (this.isMounted === returnTrue) {
+    if (this._isMounted === returnTrue) {
       if (this._receiving) {
-        // componentWillReceiveProps 中的 setState/forceUpdate 应该被忽略
+        //componentWillReceiveProps中的setState/forceUpdate应该被忽略
         return;
       }
       this.addState("hydrate");
@@ -105,14 +94,14 @@ CompositeUpdater.prototype = {
     }
   },
   mergeStates() {
-    let instance = this.instance,
+    let instance = this.stateNode,
       pendings = this._pendingStates,
       n = pendings.length,
       state = instance.state;
     if (n === 0) {
       return state;
     }
-    let nextState = extend({}, state); // 每次都返回新的state
+    let nextState = extend({}, state); //每次都返回新的state
     for (let i = 0; i < n; i++) {
       let pending = pendings[i];
       if (pending && pending.call) {
@@ -124,14 +113,13 @@ CompositeUpdater.prototype = {
     return nextState;
   },
 
-  isMounted: returnFalse,
-  init(updateQueue, insertCarrier) {
-    let { props, context, _reactInternalFiber: vnode } = this;
-    let type = vnode.type,
-      isStateless = vnode.vtype === 4,
+  _isMounted: returnFalse,
+  init(updateQueue, mountCarrier) {
+    let { props, context, type, tag } = this,
+      isStateless = tag === 1,
       instance,
       mixin;
-    // 实例化组件
+    //实例化组件
     try {
       var lastOwn = Refs.currentOwner;
       if (isStateless) {
@@ -149,57 +137,51 @@ CompositeUpdater.prototype = {
         Refs.currentOwner = instance;
       }
     } catch (e) {
-      // 失败时，则创建一个假的 instance
+      //失败时，则创建一个假的instance
       instance = {
         updater: this
       };
-      vnode.stateNode = instance;
-      this.instance = instance;
+      //  vnode.stateNode = instance;
+      this.stateNode = instance;
       return pushError(instance, "constructor", e);
     } finally {
       Refs.currentOwner = lastOwn;
     }
-    // 如果是无状态组件需要再加工
+    //如果是无状态组件需要再加工
     if (isStateless) {
       if (mixin && mixin.render) {
-        // 带生命周期的
+        //带生命周期的
         extend(instance, mixin);
       } else {
-        // 不带生命周期的
-        vnode.child = mixin;
-        instance.__isStateless = true;
+        //不带生命周期的
+        this.child = mixin;
+        this._isStateless = true;
         this.mergeStates = alwaysNull;
-        this.willReceive = false;
+        this._willReceive = false;
       }
     }
 
-    vnode.stateNode = this.instance = instance;
+    this.stateNode = instance;
     getDerivedStateFromProps(this, type, props, instance.state);
-    // 如果没有调用constructor super，需要加上这三行
+    //如果没有调用constructor super，需要加上这三行
     instance.props = props;
     instance.context = context;
     instance.updater = this;
-    var queue = (this.insertCarrier = this.isPortal ? {} : insertCarrier);
-
-    this.insertPoint = queue.dom;
-    this.updateQueue = updateQueue;
+    var carrier = this._return ? {} : mountCarrier;
+    this._mountCarrier = carrier;
+    this._mountPoint = carrier.dom || null;
+    //this._updateQueue = updateQueue;
     if (instance.componentWillMount) {
       captureError(instance, "componentWillMount", []);
     }
     instance.state = this.mergeStates();
-    // 让顶层的元素updater进行收集
+    //让顶层的元素updater进行收集
     this.render(updateQueue);
     updateQueue.push(this);
   },
 
   hydrate(updateQueue, inner) {
-    let {
-      instance,
-      context,
-      props,
-      _reactInternalFiber: vnode,
-      pendingVnode
-    } = this;
+    let { stateNode: instance, context, props } = this;
     if (this._states[0] === "hydrate") {
       this._states.shift(); // ReactCompositeComponentNestedState-state
     }
@@ -210,35 +192,33 @@ CompositeUpdater.prototype = {
       !captureError(instance, "shouldComponentUpdate", [props, state, context])
     ) {
       shouldUpdate = false;
-      if (pendingVnode) {
-        var child = this._reactInternalFiber.child;
-        this._reactInternalFiber = pendingVnode;
-        pendingVnode.child = child;
-        delete this.pendingVnode;
-      }
-      var nodes = collectComponentNodes(this.children);
-      var queue = this.insertCarrier;
+
+      var nodes = collectComponentNodes(this._children);
+      var carrier = this._mountCarrier;
+      carrier.dom = this._mountPoint;
       nodes.forEach(function(el) {
-        insertElement(el, queue.dom);
-        queue.dom = el.stateNode;
+        insertElement(el, carrier.dom);
+        carrier.dom = el.stateNode;
       });
     } else {
       captureError(instance, "componentWillUpdate", [props, state, context]);
       var { props: lastProps, state: lastState } = instance;
       this._hookArgs = [lastProps, lastState];
     }
+
     if (this._hasError) {
       return;
     }
-    vnode.stateNode = instance;
+
     delete this._forceUpdate;
-    // 既然setState了，无论 shouldComponentUpdate 结果如何，用户传给的 state 对象都会作用到组件上
+    //既然setState了，无论shouldComponentUpdate结果如何，用户传给的state对象都会作用到组件上
     instance.props = props;
     instance.state = state;
     instance.context = context;
     if (!inner) {
-      this.insertCarrier.dom = this.insertPoint;
+      this._mountCarrier.dom = this._mountPoint;
     }
+
     if (shouldUpdate) {
       this.render(updateQueue);
     }
@@ -246,27 +226,24 @@ CompositeUpdater.prototype = {
     updateQueue.push(this);
   },
   render(updateQueue) {
-    let {
-        _reactInternalFiber: vnode,
-        pendingVnode,
-        instance,
-        parentContext
-      } = this,
-      nextChildren = emptyObject,
-      lastChildren = emptyObject,
-      childContext = parentContext,
+    let { stateNode: instance } = this,
+      children = emptyObject,
+      fibers = this._children || emptyObject,
       rendered,
       number;
 
-    if (pendingVnode) {
-      vnode = this._reactInternalFiber = pendingVnode;
-      delete this.pendingVnode;
-    }
     this._hydrating = true;
+    //给下方使用的context
 
-    if (this.willReceive === false) {
-      rendered = vnode.child;
-      delete this.willReceive;
+    if (instance.getChildContext) {
+      var c = getContextProvider(this.return);
+      c = getUnmaskedContext(instance, c);
+      this._unmaskedContext = c;
+    }
+
+    if (this._willReceive === false) {
+      rendered = this.child; //原来是vnode.child
+      delete this._willReceive;
     } else {
       let lastOwn = Refs.currentOwner;
       Refs.currentOwner = instance;
@@ -277,49 +254,26 @@ CompositeUpdater.prototype = {
       Refs.currentOwner = lastOwn;
     }
     number = typeNumber(rendered);
-    var hasMounted = this.isMounted();
-    if (hasMounted) {
-      lastChildren = this.children;
-    }
     if (number > 2) {
-      if (number > 5) {
-        // array, object
-        childContext = getChildContext(instance, parentContext);
-      }
-      nextChildren = fiberizeChildren(rendered, this);
+      children = fiberizeChildren(rendered, this);
     } else {
-      // undefinded, null, boolean
-      this.children = nextChildren; //emptyObject
+      //undefinded, null, boolean
+      this._children = children; //emptyObject
       delete this.child;
     }
-    var noSupport = !support16 && errorType[number];
-    if (noSupport) {
-      pushError(
-        instance,
-        "render",
-        new Error("React15 fail to render " + noSupport)
-      );
-    }
-    Refs.diffChildren(
-      lastChildren,
-      nextChildren,
-      vnode,
-      childContext,
-      updateQueue,
-      this.insertCarrier
-    );
+    Refs.diffChildren(fibers, children, this, updateQueue, this._mountCarrier);
   },
-  // ComponentDidMount/update钩子，React Chrome DevTools 的钩子， 组件 ref, 及错误边界
+  // ComponentDidMount/update钩子，React Chrome DevTools的钩子， 组件ref, 及错误边界
   resolve(updateQueue) {
-    let { instance, _reactInternalFiber: vnode } = this;
-    let hasMounted = this.isMounted();
+    let { stateNode: instance, _reactInternalFiber: vnode } = this;
+    let hasMounted = this._isMounted();
     if (!hasMounted) {
-      this.isMounted = returnTrue;
+      this._isMounted = returnTrue;
     }
     if (this._hydrating) {
       let hookName = hasMounted ? "componentDidUpdate" : "componentDidMount";
       captureError(instance, hookName, this._hookArgs || []);
-      // 执行React Chrome DevTools的钩子
+      //执行React Chrome DevTools的钩子
       if (hasMounted) {
         options.afterUpdate(instance);
       } else {
@@ -332,9 +286,9 @@ CompositeUpdater.prototype = {
     if (this._hasError) {
       return;
     } else {
-      // 执行组件ref（发生错误时不执行）
+      //执行组件ref（发生错误时不执行）
       if (vnode._hasRef) {
-        Refs.fireRef(vnode, instance);
+        Refs.fireRef(this, instance, vnode);
         vnode._hasRef = false;
       }
       clearArray(this._pendingCallbacks).forEach(function(fn) {
@@ -344,9 +298,10 @@ CompositeUpdater.prototype = {
     transfer.call(this, updateQueue);
   },
   catch(queue) {
-    let { instance } = this;
+    let { stateNode: instance } = this;
+    // delete Refs.ignoreError;
     this._states.length = 0;
-    this.children = {};
+    this._children = {};
     this._isDoctor = this._hydrating = true;
     instance.componentDidCatch.apply(instance, this.errorInfo);
     delete this.errorInfo;
@@ -354,23 +309,22 @@ CompositeUpdater.prototype = {
     transfer.call(this, queue);
   },
   dispose() {
-    let { _reactInternalFiber: vnode, instance } = this;
+    let { stateNode: instance } = this;
     options.beforeUnmount(instance);
     instance.setState = instance.forceUpdate = returnFalse;
 
-    Refs.fireRef(vnode, null);
+    Refs.fireRef(this, null, this._reactInternalFiber);
     captureError(instance, "componentWillUnmount", []);
-    // 在执行 componentWillUnmount 后才将关联的元素节点解绑，防止用户在钩子里调用 findDOMNode方法
-    this.isMounted = returnFalse;
-    vnode._disposed = this._disposed = true;
+    //在执行componentWillUnmount后才将关联的元素节点解绑，防止用户在钩子里调用 findDOMNode方法
+    this._isMounted = returnFalse;
+    this._disposed = true;
   }
 };
-
 function transfer(queue) {
   var cbs = this._nextCallbacks,
     cb;
   if (cbs && cbs.length) {
-    // 如果在 componentDidMount/Update 钩子里执行了 setState，那么再次渲染此组件
+    //如果在componentDidMount/Update钩子里执行了setState，那么再次渲染此组件
     do {
       cb = cbs.shift();
       if (isFn(cb)) {
@@ -382,27 +336,16 @@ function transfer(queue) {
     queue.push(this);
   }
 }
-
 export function getDerivedStateFromProps(updater, type, props, state) {
   if (isFn(type.getDerivedStateFromProps)) {
-    var newState = type.getDerivedStateFromProps.call(null, props, state);
-    if (newState != null) {
-      updater._pendingStates.push(newState);
+    state = type.getDerivedStateFromProps.call(null, props, state);
+    if (state != null) {
+      updater._pendingStates.push(state);
     }
   }
 }
 
-export function getChildContext(instance, parentContext) {
-  if (instance.getChildContext) {
-    let context = instance.getChildContext();
-    if (context) {
-      parentContext = extend(extend({}, parentContext), context);
-    }
-  }
-  return parentContext;
-}
-
-export function getContextByTypes(curContext, contextTypes) {
+export function getMaskedContext(curContext, contextTypes) {
   let context = {};
   if (!contextTypes || !curContext) {
     return context;
@@ -415,23 +358,41 @@ export function getContextByTypes(curContext, contextTypes) {
   return context;
 }
 
+export function getUnmaskedContext(instance, parentContext) {
+  let context = instance.getChildContext();
+  if (context) {
+    parentContext = extend(extend({}, parentContext), context);
+  }
+  return parentContext;
+}
+export function getContextProvider(fiber) {
+  do {
+    var c = fiber._unmaskedContext;
+    if (c) {
+      return c;
+    }
+  } while ((fiber = fiber.return));
+}
+
+//收集fiber
 export function collectComponentNodes(children) {
   var ret = [];
   for (var i in children) {
     var child = children[i];
-    var inner = child.stateNode;
+    var instance = child.stateNode;
     if (child._disposed) {
       continue;
     }
-    if (child.vtype < 2) {
+    if (child.tag > 4) {
       ret.push(child);
     } else {
-      var updater = inner.updater;
+      var fiber = instance.updater;
       if (child.child) {
-        var args = collectComponentNodes(updater.children);
+        var args = collectComponentNodes(fiber._children);
         ret.push.apply(ret, args);
       }
     }
   }
   return ret;
 }
+//明天测试ref,与tests

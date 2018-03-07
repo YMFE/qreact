@@ -6,17 +6,19 @@ export default {
   format: "umd",
   exports: "default",
   dest: "./dist/ReactDOMServer.js",
-  plugins: [babel({
-    babelrc: false,
-    presets: [
-      [
-        "env",
-        {
-          modules: false
-        }
+  plugins: [
+    babel({
+      babelrc: false,
+      presets: [
+        [
+          "env",
+          {
+            modules: false
+          }
+        ]
       ]
-    ]
-  })],
+    })
+  ],
   moduleName: "ReactDOMServer",
   useStrict: false
 };

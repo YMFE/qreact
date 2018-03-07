@@ -2,12 +2,18 @@ export var __push = Array.prototype.push;
 export var hasSymbol = typeof Symbol === "function" && Symbol["for"];
 export var innerHTML = "dangerouslySetInnerHTML";
 export var hasOwnProperty = Object.prototype.hasOwnProperty;
-export var REACT_ELEMENT_TYPE = hasSymbol
+export const REACT_ELEMENT_TYPE = hasSymbol
   ? Symbol["for"]("react.element")
   : 0xeac7;
-export var REACT_FRAGMENT_TYPE = hasSymbol
+export const REACT_FRAGMENT_TYPE = hasSymbol
   ? Symbol["for"]("react.fragment")
   : 0xeacb;
+export const REACT_PROVIDER_TYPE = hasSymbol
+  ? Symbol.for("react.provider")
+  : 0xeacd;
+export const REACT_CONTEXT_TYPE = hasSymbol
+  ? Symbol.for("react.context")
+  : 0xeace;
 
 export var emptyArray = [];
 export var emptyObject = {};
@@ -18,6 +24,7 @@ export function deprecatedWarn(methodName) {
     deprecatedWarn[methodName] = 1;
   }
 }
+
 /**
  * 复制一个对象的属性到另一个对象
  *

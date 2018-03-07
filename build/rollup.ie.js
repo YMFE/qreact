@@ -11,7 +11,6 @@ export default {
   exports: "default",
   dest: "./dist/ReactIE.js",
   plugins: [
-
     babel({
       //  plugins: ['external-helpers'],
       // externalHelpers: true,
@@ -27,9 +26,9 @@ export default {
     }),
 
     license({
-      banner: `Maintained by YMFE Copyright ${JSON.stringify(
+      banner: `IE6+，有问题请加QQ 370262116 by 司徒正美 Copyright ${JSON.stringify(
         new Date()
-      ).replace(/T.*|"/g,"")}`
+      ).replace(/T.*|"/g, "")}`
     }),
 
     replace({
@@ -38,7 +37,6 @@ export default {
           test: "VERSION",
           replace: json.version
         }
-        
       ]
     }),
     filesize()

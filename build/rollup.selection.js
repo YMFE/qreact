@@ -10,7 +10,6 @@ export default {
   exports: "default",
   dest: "./dist/ReactSelection.js",
   plugins: [
-  
     babel({
       //  plugins: ['external-helpers'],
       // externalHelpers: true,
@@ -26,7 +25,9 @@ export default {
     }),
 
     license({
-      banner: `Maintained by YMFE Copyright ${JSON.stringify(new Date()).replace(/T.*|"/g,"")}
+      banner: `此版本带有selection by 司徒正美 Copyright ${JSON.stringify(
+        new Date()
+      ).replace(/T.*|"/g, "")}
       IE9+
       `
     }),
@@ -35,7 +36,7 @@ export default {
       // ... do replace before commonjs
       patterns: [
         {
-          test: "VERSION", 
+          test: "VERSION",
           // string or function to replaced with
           replace: json.version
         }
