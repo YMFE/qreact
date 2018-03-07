@@ -12,7 +12,7 @@
 
 * QReact 实现了官方 `react/lib` 下的许多子模块，它们的实现也非常简洁，从而整体减少 bundle 的大小。如果没有实现它们，许多第三方库就会直接引用官方提供的 `react/lib` 子模块，但由于迷你 React 们的内部实现与官方不一样，因此即便引用，也会运行出错。其次，RN 也用到它们，，这也为 QReact 支持三端合一的 QRN-WEB 做技术支撑。
 
-* QReact 包含了 `react` 及 `react-dom` 的全部功能，同时有着更小的体积（`minified: 34KB gzipped : 13.3KB`），作为对比， `react@16.2.0` + `react-dom@16.2.0` 的体积则大了很多（`minified: 5.1KB + 88.7KB = 93.8KB gzipped: 2.2KB + 28.3KB = 30.5KB`）。
+* QReact 包含了 `react` 及 `react-dom` 的全部功能，同时有着更小的体积，QReact@2.1.0 的体积为（`minified: 33.8KB gzipped : 12.9KB`），作为对比， `react@16.2.0` + `react-dom@16.2.0` 的体积则大了很多（`minified: 5.1KB + 88.7KB = 93.8KB gzipped: 2.2KB + 28.3KB = 30.5KB`）。
 
 * QReact 支持 IE6 - IE8，详细信息请[参见使用](https://qreact.ymfe.org/usage.html)中的“在 IE 6 - IE 8 及以下使用”。
 
@@ -28,7 +28,7 @@
 
 ## 鸣谢
 
-QReact 基于开源项目 [developit preact@7.1.0](https://github.com/developit/preact/tree/7.1.0/) [developit preact-compat@3.14.1](https://github.com/developit/preact-compat/tree/3.14.1/) 及 [Facebook React](https://github.com/facebook/react/)。
+QReact 基于开源项目 [developit preact](https://github.com/developit/preact/) [developit preact-compat](https://github.com/developit/preact-compat/) 及 [Facebook React](https://github.com/facebook/react/)。
 
 QReact 在开发过程，从 Preact, react-lite 的源码受到许多启迪，特此鸣谢。
 
