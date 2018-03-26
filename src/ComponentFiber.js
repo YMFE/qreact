@@ -7,16 +7,12 @@ import {
   returnFalse,
   returnTrue,
   clearArray
-} from "../src/util";
+} from "./util";
 import { fiberizeChildren } from "./createElement";
 import { drainQueue, enqueueUpdater } from "./scheduler";
 import { pushError, captureError } from "./ErrorBoundary";
 import { insertElement, document } from "./browser";
 import { Refs } from "./Refs";
-
-function alwaysNull() {
-  return null;
-}
 
 /**
  * 将虚拟DOM转换为Fiber
@@ -25,7 +21,7 @@ function alwaysNull() {
  */
 export function ComponentFiber(vnode, parentFiber) {
   extend(this, vnode);
-  var type = vnode.type;
+  let type = vnode.type;
   this.name = type.displayName || type.name;
   this.return = parentFiber;
   this.context = getMaskedContext(
@@ -46,13 +42,13 @@ export function ComponentFiber(vnode, parentFiber) {
 
 ComponentFiber.prototype = {
   addState: function(state) {
-    var states = this._states;
+    let states = this._states;
     if (states[states.length - 1] !== state) {
       states.push(state);
     }
   },
   transition(updateQueue) {
-    var state = this._states.shift();
+    let state = this._states.shift();
     if (state) {
       this[state](updateQueue);
     }
@@ -117,60 +113,73 @@ ComponentFiber.prototype = {
   init(updateQueue, mountCarrier) {
     let { props, context, type, tag } = this,
       isStateless = tag === 1,
+      lastOwn = Refs.currentOwner,
       instance,
-      mixin;
-    //实例化组件
+      lifeCycleHook;
     try {
-      var lastOwn = Refs.currentOwner;
       if (isStateless) {
         instance = {
           refs: {},
           __proto__: type.prototype,
-          render: function() {
-            return type(this.props, this.context);
+          __init__: true,
+          props,
+          context,
+          render: function f() {
+            let a = type(this.props, this.context);
+            if (a && a.render) {
+              //返回一带render方法的纯对象，说明这是带lifycycle hook的无狀态组件
+              //需要对象里的hook复制到instance中
+              lifeCycleHook = a;
+              return this.__init__ ? null : a.render.call(this);
+            } //这是一个经典的无狀态组件
+            return a;
           }
         };
         Refs.currentOwner = instance;
-        mixin = type(props, context);
+        if (type.isRef) {
+          instance.render = function() {
+            delete this.updater._reactInternalFiber._hasRef;
+            return type(this.props, this.updater.ref);
+          };
+        } else {
+          this.child = instance.render();
+          if (lifeCycleHook) {
+            for (let i in lifeCycleHook) {
+              if (i !== "render") {
+                instance[i] = lifeCycleHook[i];
+              }
+            }
+            lifeCycleHook = false;
+          } else {
+            this._willReceive = false;
+            this._isStateless = true;
+          }
+          delete instance.__init__;
+        }
       } else {
+        //有狀态组件
         instance = new type(props, context);
-        Refs.currentOwner = instance;
       }
     } catch (e) {
-      //失败时，则创建一个假的instance
       instance = {
+        //出错就纯造一个类实例结构
         updater: this
       };
-      //  vnode.stateNode = instance;
       this.stateNode = instance;
       return pushError(instance, "constructor", e);
     } finally {
       Refs.currentOwner = lastOwn;
     }
-    //如果是无状态组件需要再加工
-    if (isStateless) {
-      if (mixin && mixin.render) {
-        //带生命周期的
-        extend(instance, mixin);
-      } else {
-        //不带生命周期的
-        this.child = mixin;
-        this._isStateless = true;
-        this.mergeStates = alwaysNull;
-        this._willReceive = false;
-      }
-    }
-
     this.stateNode = instance;
     getDerivedStateFromProps(this, type, props, instance.state);
+
     //如果没有调用constructor super，需要加上这三行
     instance.props = props;
     instance.context = context;
     instance.updater = this;
-    var carrier = this._return ? {} : mountCarrier;
+    let carrier = this._return ? {} : mountCarrier;
     this._mountCarrier = carrier;
     this._mountPoint = carrier.dom || null;
-    //this._updateQueue = updateQueue;
     if (instance.componentWillMount) {
       captureError(instance, "componentWillMount", []);
     }
@@ -193,8 +202,8 @@ ComponentFiber.prototype = {
     ) {
       shouldUpdate = false;
 
-      var nodes = collectComponentNodes(this._children);
-      var carrier = this._mountCarrier;
+      let nodes = collectComponentNodes(this._children);
+      let carrier = this._mountCarrier;
       carrier.dom = this._mountPoint;
       nodes.forEach(function(el) {
         insertElement(el, carrier.dom);
@@ -202,7 +211,7 @@ ComponentFiber.prototype = {
       });
     } else {
       captureError(instance, "componentWillUpdate", [props, state, context]);
-      var { props: lastProps, state: lastState } = instance;
+      let { props: lastProps, state: lastState } = instance;
       this._hookArgs = [lastProps, lastState];
     }
 
@@ -236,14 +245,20 @@ ComponentFiber.prototype = {
     //给下方使用的context
 
     if (instance.getChildContext) {
-      var c = getContextProvider(this.return);
+      let c = getContextProvider(this.return);
       c = getUnmaskedContext(instance, c);
       this._unmaskedContext = c;
     }
-
     if (this._willReceive === false) {
-      rendered = this.child; //原来是vnode.child
-      delete this._willReceive;
+      let a = this.child;
+      if (a && a.sibling) {
+        rendered = [];
+        for (; a; a = a.sibling) {
+          rendered.push(a);
+        }
+      } else {
+        rendered = a;
+      }
     } else {
       let lastOwn = Refs.currentOwner;
       Refs.currentOwner = instance;
@@ -299,7 +314,6 @@ ComponentFiber.prototype = {
   },
   catch(queue) {
     let { stateNode: instance } = this;
-    // delete Refs.ignoreError;
     this._states.length = 0;
     this._children = {};
     this._isDoctor = this._hydrating = true;
@@ -321,7 +335,7 @@ ComponentFiber.prototype = {
   }
 };
 function transfer(queue) {
-  var cbs = this._nextCallbacks,
+  let cbs = this._nextCallbacks,
     cb;
   if (cbs && cbs.length) {
     //如果在componentDidMount/Update钩子里执行了setState，那么再次渲染此组件
@@ -367,7 +381,7 @@ export function getUnmaskedContext(instance, parentContext) {
 }
 export function getContextProvider(fiber) {
   do {
-    var c = fiber._unmaskedContext;
+    let c = fiber._unmaskedContext;
     if (c) {
       return c;
     }
@@ -376,19 +390,19 @@ export function getContextProvider(fiber) {
 
 //收集fiber
 export function collectComponentNodes(children) {
-  var ret = [];
-  for (var i in children) {
-    var child = children[i];
-    var instance = child.stateNode;
+  let ret = [];
+  for (let i in children) {
+    let child = children[i];
+    let instance = child.stateNode;
     if (child._disposed) {
       continue;
     }
     if (child.tag > 4) {
       ret.push(child);
     } else {
-      var fiber = instance.updater;
+      let fiber = instance.updater;
       if (child.child) {
-        var args = collectComponentNodes(fiber._children);
+        let args = collectComponentNodes(fiber._children);
         ret.push.apply(ret, args);
       }
     }

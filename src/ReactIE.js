@@ -1,15 +1,17 @@
-import { options, REACT_FRAGMENT_TYPE, hasOwnProperty } from "./util";
+import { options, Fragment, hasOwnProperty } from "./util";
 import { Children } from "./Children";
 import * as eventSystem from "./event";
 import { PropTypes } from "./PropTypes";
 import { Component } from "./Component";
 import { win as window } from "./browser";
-import { createClass } from "./createClass";
 import { cloneElement } from "./cloneElement";
 import { PureComponent } from "./PureComponent";
-import { createElement } from "./createElement";
+
+import { createRef, forwardRef } from "./createRef";
+import { createClass } from "./createClass"; //deprecated
 import { createPortal } from "./createPortal";
 import { createContext } from "./createContext";
+import { createElement } from "./createElement";
 
 import {
   render,
@@ -27,8 +29,8 @@ function keysPolyfill() {
   //解决IE下Object.keys的性能问题
   if (needFix(Object.keys)) {
     Object.keys = function keys(obj) {
-      var a = [];
-      for (var k in obj) {
+      let a = [];
+      for (let k in obj) {
         if (hasOwnProperty.call(obj, k)) {
           a.push(k);
         }
@@ -41,7 +43,7 @@ keysPolyfill();
 setTimeout(keysPolyfill, 0);
 setTimeout(keysPolyfill, 100);
 
-var React;
+let React;
 if (window.React && window.React.options) {
   React = window.React;
 } else {
@@ -49,13 +51,15 @@ if (window.React && window.React.options) {
     version: "VERSION",
     render,
     hydrate: render,
-    Fragment: REACT_FRAGMENT_TYPE,
+    Fragment,
     options,
     PropTypes,
     Children,
     Component,
     eventSystem,
     findDOMNode,
+    createRef,
+    forwardRef,
     createClass,
     createPortal,
     createContext,
@@ -68,7 +72,7 @@ if (window.React && window.React.options) {
 
     createFactory(type) {
       console.warn("createFactory is deprecated"); // eslint-disable-line
-      var factory = createElement.bind(null, type);
+      let factory = createElement.bind(null, type);
       factory.type = type;
       return factory;
     }

@@ -1,15 +1,18 @@
-import { options, REACT_FRAGMENT_TYPE } from "./util";
+import { options, Fragment } from "./util";
 import { Children } from "./Children";
 import * as eventSystem from "./event";
 import { PropTypes } from "./PropTypes";
 import { Component } from "./Component";
 import { win as window } from "./browser";
-import { createClass } from "./createClass";
 import { cloneElement } from "./cloneElement";
 import { PureComponent } from "./PureComponent";
-import { createElement } from "./createElement";
-import { createContext } from "./createContext";
+
+import { createRef, forwardRef } from "./createRef";
+import { createClass } from "./createClass"; //deprecated
 import { createPortal } from "./createPortal";
+import { createContext } from "./createContext";
+import { createElement } from "./createElement";
+
 import {
   render,
   findDOMNode,
@@ -18,7 +21,7 @@ import {
   unstable_renderSubtreeIntoContainer
 } from "./diff";
 
-var React;
+let React;
 if (window.React && window.React.options) {
   React = window.React; //解决引入多个
 } else {
@@ -27,7 +30,7 @@ if (window.React && window.React.options) {
     render,
     hydrate: render,
     options,
-    Fragment: REACT_FRAGMENT_TYPE,
+    Fragment,
     PropTypes,
     Children,
     createPortal,
@@ -35,6 +38,8 @@ if (window.React && window.React.options) {
     Component,
     eventSystem,
     findDOMNode,
+    createRef,
+    forwardRef,
     createClass,
     createElement,
     cloneElement,
@@ -44,7 +49,7 @@ if (window.React && window.React.options) {
     unstable_renderSubtreeIntoContainer,
     createFactory(type) {
       console.warn("createFactory is deprecated"); // eslint-disable-line
-      var factory = createElement.bind(null, type);
+      let factory = createElement.bind(null, type);
       factory.type = type;
       return factory;
     }

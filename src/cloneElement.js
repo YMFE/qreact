@@ -4,7 +4,7 @@ import { extend } from "./util";
 
 export function cloneElement(vnode, props) {
   if (!vnode.tag === 6) {
-    var clone = extend({}, vnode);
+    let clone = extend({}, vnode);
     delete clone._disposed;
     return clone;
   }

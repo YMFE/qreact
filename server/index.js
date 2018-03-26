@@ -10,150 +10,150 @@ import { Readable } from "stream";
 function renderVNode(vnode, context) {
   var { tag, type, props } = vnode;
   switch (type) {
-  case "#text":
-    return encodeEntities(vnode.text);
-  case "#comment":
-    return "<!--" + vnode.text + "-->";
-  default:
-    var innerHTML = props && props.dangerouslySetInnerHTML;
-    innerHTML = innerHTML && innerHTML.__html;
-    if (tag === 5) {
-      //如果是元素节点
-      if (type === "option") {
-        //向上找到select元素
-        for (var p = vnode.return; p && p.type !== "select"; p = p.return) {
-          // no operation
-        }
-        if (p && p.valuesSet) {
-          var curValue = getOptionValue(vnode);
-          if (p.valuesSet["&" + curValue]) {
-            props = Object.assign({ selected: "" }, props); //添加一个selected属性
+    case "#text":
+      return encodeEntities(vnode.text);
+    case "#comment":
+      return "<!--" + vnode.text + "-->";
+    default:
+      var innerHTML = props && props.dangerouslySetInnerHTML;
+      innerHTML = innerHTML && innerHTML.__html;
+      if (tag === 5) {
+        //如果是元素节点
+        if (type === "option") {
+          //向上找到select元素
+          for (var p = vnode.return; p && p.type !== "select"; p = p.return) {
+            // no operation
+          }
+          if (p && p.valuesSet) {
+            var curValue = getOptionValue(vnode);
+            if (p.valuesSet["&" + curValue]) {
+              props = Object.assign({ selected: "" }, props); //添加一个selected属性
+            }
+          }
+        } else if (type === "select") {
+          var selectValue = vnode.props.value || vnode.props.defaultValue;
+          if (selectValue != null) {
+            var values = [].concat(selectValue),
+              valuesSet = {};
+            values.forEach(function(el) {
+              valuesSet["&" + el] = true;
+            });
+            vnode.valuesSet = valuesSet;
           }
         }
-      } else if (type === "select") {
-        var selectValue = vnode.props.value || vnode.props.defaultValue;
-        if (selectValue != null) {
-          var values = [].concat(selectValue),
-            valuesSet = {};
-          values.forEach(function(el) {
-            valuesSet["&" + el] = true;
-          });
-          vnode.valuesSet = valuesSet;
-        }
-      }
 
-      var str = "<" + type + stringifyAttributes(props, type);
-      if (voidTags[type]) {
-        return str + "/>\n";
-      }
-      str += ">";
-      if (innerHTML) {
-        str += innerHTML;
-      } else {
-        var fakeUpdater = {
-          _reactInternalFiber: vnode
-        };
-        var children = fiberizeChildren(props.children, fakeUpdater);
-        for (var i in children) {
-          var child = children[i];
-          child.return = vnode;
-          str += renderVNode(child, context);
+        var str = "<" + type + stringifyAttributes(props, type);
+        if (voidTags[type]) {
+          return str + "/>\n";
         }
-        vnode.updater = fakeUpdater;
+        str += ">";
+        if (innerHTML) {
+          str += innerHTML;
+        } else {
+          var fakeUpdater = {
+            _reactInternalFiber: vnode
+          };
+          var children = fiberizeChildren(props.children, fakeUpdater);
+          for (var i in children) {
+            var child = children[i];
+            child.return = vnode;
+            str += renderVNode(child, context);
+          }
+          vnode.updater = fakeUpdater;
+        }
+        return str + "</" + type + ">\n";
+      } else if (tag < 3) {
+        var data = {
+          context
+        };
+        vnode = toVnode(vnode, data);
+        context = data.context;
+        return renderVNode(vnode, context);
+      } else if (Array.isArray(vnode)) {
+        var multiChild = "";
+        vnode.forEach(function(el) {
+          multiChild += renderVNode(el, context);
+        });
+        return multiChild;
+      } else {
+        throw "数据不合法";
       }
-      return str + "</" + type + ">\n";
-    } else if (tag < 3) {
-      var data = {
-        context
-      };
-      vnode = toVnode(vnode, data);
-      context = data.context;
-      return renderVNode(vnode, context);
-    } else if (Array.isArray(vnode)) {
-      var multiChild = "";
-      vnode.forEach(function(el) {
-        multiChild += renderVNode(el, context);
-      });
-      return multiChild;
-    } else {
-      throw "数据不合法";
-    }
   }
 }
 
 function* renderVNodeGen(vnode, context) {
   var { tag, type, props } = vnode;
   switch (type) {
-  case "#text":
-    yield encodeEntities(vnode.text);
-    break;
-  case "#comment":
-    yield "<!--" + vnode.text + "-->";
-    break;
-  default:
-    var innerHTML = props && props.dangerouslySetInnerHTML;
-    innerHTML = innerHTML && innerHTML.__html;
-    if (tag === 5) {
-      //如果是元素节点
-      if (type === "option") {
-        //向上找到select元素
-        for (var p = vnode.return; p && p.type !== "select"; p = p.return) {
-          // no operation
-        }
-        if (p && p.valuesSet) {
-          var curValue = getOptionValue(vnode);
-          if (p.valuesSet["&" + curValue]) {
-            props = Object.assign({ selected: "" }, props); //添加一个selected属性
+    case "#text":
+      yield encodeEntities(vnode.text);
+      break;
+    case "#comment":
+      yield "<!--" + vnode.text + "-->";
+      break;
+    default:
+      var innerHTML = props && props.dangerouslySetInnerHTML;
+      innerHTML = innerHTML && innerHTML.__html;
+      if (tag === 5) {
+        //如果是元素节点
+        if (type === "option") {
+          //向上找到select元素
+          for (var p = vnode.return; p && p.type !== "select"; p = p.return) {
+            // no operation
+          }
+          if (p && p.valuesSet) {
+            var curValue = getOptionValue(vnode);
+            if (p.valuesSet["&" + curValue]) {
+              props = Object.assign({ selected: "" }, props); //添加一个selected属性
+            }
+          }
+        } else if (type === "select") {
+          var selectValue = vnode.props.value || vnode.props.defaultValue;
+          if (selectValue != null) {
+            var values = [].concat(selectValue),
+              valuesSet = {};
+            values.forEach(function(el) {
+              valuesSet["&" + el] = true;
+            });
+            vnode.valuesSet = valuesSet;
           }
         }
-      } else if (type === "select") {
-        var selectValue = vnode.props.value || vnode.props.defaultValue;
-        if (selectValue != null) {
-          var values = [].concat(selectValue),
-            valuesSet = {};
-          values.forEach(function(el) {
-            valuesSet["&" + el] = true;
-          });
-          vnode.valuesSet = valuesSet;
-        }
-      }
 
-      var str = "<" + type + stringifyAttributes(props, type);
-      if (voidTags[type]) {
-        yield str + "/>\n";
-      }
-      str += ">";
-      if (innerHTML) {
-        str += innerHTML;
-      } else {
-        var fakeUpdater = {
-          vnode
-        };
-        var children = fiberizeChildren(props.children, fakeUpdater);
-        for (var i in children) {
-          var child = children[i];
-          child.return = vnode;
-          str += renderVNode(child, context);
+        var str = "<" + type + stringifyAttributes(props, type);
+        if (voidTags[type]) {
+          yield str + "/>\n";
         }
-        vnode.updater = fakeUpdater;
+        str += ">";
+        if (innerHTML) {
+          str += innerHTML;
+        } else {
+          var fakeUpdater = {
+            vnode
+          };
+          var children = fiberizeChildren(props.children, fakeUpdater);
+          for (var i in children) {
+            var child = children[i];
+            child.return = vnode;
+            str += renderVNode(child, context);
+          }
+          vnode.updater = fakeUpdater;
+        }
+        yield str + "</" + type + ">\n";
+      } else if (tag < 3) {
+        var data = {
+          context
+        };
+        vnode = toVnode(vnode, data);
+        context = data.context;
+        yield renderVNode(vnode, context);
+      } else if (Array.isArray(vnode)) {
+        var multiChild = "";
+        vnode.forEach(function(el) {
+          multiChild += renderVNode(el, context);
+        });
+        yield multiChild;
+      } else {
+        throw "数据不合法";
       }
-      yield str + "</" + type + ">\n";
-    } else if (tag < 3) {
-      var data = {
-        context
-      };
-      vnode = toVnode(vnode, data);
-      context = data.context;
-      yield renderVNode(vnode, context);
-    } else if (Array.isArray(vnode)) {
-      var multiChild = "";
-      vnode.forEach(function(el) {
-        multiChild += renderVNode(el, context);
-      });
-      yield multiChild;
-    } else {
-      throw "数据不合法";
-    }
   }
 }
 

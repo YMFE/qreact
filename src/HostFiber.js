@@ -21,20 +21,20 @@ export function HostFiber(vnode, parentFiber) {
 
 HostFiber.prototype = {
   addState: function(state) {
-    var states = this._states;
+    let states = this._states;
     if (states[states.length - 1] !== state) {
       states.push(state);
     }
   },
   transition(updateQueue) {
-    var state = this._states.shift();
+    let state = this._states.shift();
     if (state) {
       this[state](updateQueue);
     }
   },
   init(updateQueue, mountCarrier, initChildren) {
-    var dom = (this.stateNode = createElement(this, this.return));
-    var beforeDOM = mountCarrier.dom;
+    let dom = (this.stateNode = createElement(this, this.return));
+    let beforeDOM = mountCarrier.dom;
     mountCarrier.dom = dom;
     if (this.tag === 5) {
       initChildren(this);
@@ -47,7 +47,7 @@ HostFiber.prototype = {
   },
   _isMounted: returnFalse,
   attr() {
-    var { type, props, lastProps, stateNode: dom } = this;
+    let { type, props, lastProps, stateNode: dom } = this;
     diffProps(dom, lastProps || emptyObject, props, this);
     if (formElements[type]) {
       inputControll(this, dom, props);

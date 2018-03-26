@@ -1,22 +1,22 @@
-import { operateChildren } from "./createElement";
+import { operateChildren, isIterable } from "./createElement";
 import { cloneElement } from "./cloneElement";
 import { extend } from "./util";
 
-var mapStack = [];
+let mapStack = [];
 function mapWrapperCb(old, prefix) {
   if (old === void 0 || old === false || old === true) {
     old = null;
   }
-  var cur = mapStack[0];
-  var el = cur.callback.call(cur.context, old, cur.index);
-  var index = cur.index;
+  let cur = mapStack[0];
+  let el = cur.callback.call(cur.context, old, cur.index);
+  let index = cur.index;
   cur.index++;
   if (cur.isEach || el == null) {
     return;
   }
   if (el.tag < 6) {
     //如果返回的el等于old,还需要使用原来的key, _prefix
-    var key = computeKey(old, el, prefix, index);
+    let key = computeKey(old, el, prefix, index);
     cur.arr.push(cloneElement(el, { key: key }));
   } else if (el.type) {
     cur.arr.push(extend({}, el));
@@ -39,10 +39,15 @@ export const Children = {
     if (children == null) {
       return 0;
     }
-    var index = 0;
-    operateChildren(children, "", function() {
-      index++;
-    });
+    let index = 0;
+    Children.map(
+      children,
+      function() {
+        index++;
+      },
+      null,
+      true
+    );
     return index;
   },
   map(children, callback, context, isEach) {
@@ -56,8 +61,8 @@ export const Children = {
       isEach,
       arr: []
     });
-    operateChildren(children, "", mapWrapperCb);
-    var top = mapStack.shift();
+    operateChildren(children, "", mapWrapperCb, isIterable(children), true);
+    let top = mapStack.shift();
     return top.arr;
   },
   forEach(children, callback, context) {
@@ -70,36 +75,16 @@ export const Children = {
     return Children.map(children, K);
   }
 };
-var rthimNumer = /\d+\$/;
+
 function computeKey(old, el, prefix, index) {
-  let curKey = el && el.key != null ? escapeKey(el.key) : null;
-  let oldKey = old && old.key != null ? escapeKey(old.key) : null;
-  let key;
-  if (oldKey && curKey) {
-    key = prefix + "$" + oldKey;
-    if (oldKey !== curKey) {
-      key = curKey + "/" + key;
-    }
-  } else {
-    key = curKey || oldKey;
-    if (key) {
-      key = prefix + "$" + key;
-    } else {
-      key = prefix === "." ? prefix + index : prefix;
-    }
+  let curKey = el && el.key != null ? el.key : null;
+  let oldKey = old && old.key != null ? old.key : null;
+  let dot = "." + prefix;
+  if (oldKey && curKey && oldKey !== curKey) {
+    return curKey + "/" + dot;
   }
-  return key.replace(rthimNumer, "$");
-}
-
-function escapeKey(key) {
-  return String(key).replace(/[=:]/g, escaperFn);
-}
-
-var escaperLookup = {
-  "=": "=0",
-  ":": "=2"
-};
-
-function escaperFn(match) {
-  return escaperLookup[match];
+  if (prefix) {
+    return dot;
+  }
+  return curKey ? "." + curKey : "." + index;
 }

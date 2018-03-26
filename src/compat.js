@@ -12,7 +12,7 @@ import {
 import { inputMonitor } from "./inputMonitor";
 
 //IE8中select.value不会在onchange事件中随用户的选中而改变其value值，也不让用户直接修改value 只能通过这个hack改变
-var noCheck = false;
+let noCheck = false;
 function setSelectValue(e) {
   if (e.propertyName === "value" && !noCheck) {
     syncValueByOptionValue(e.srcElement);
@@ -31,8 +31,8 @@ function syncValueByOptionValue(dom) {
   }
 }
 
-var fixIEChangeHandle = createHandle("change", function(e) {
-  var dom = e.srcElement;
+let fixIEChangeHandle = createHandle("change", function(e) {
+  let dom = e.srcElement;
   if (dom.type === "select-one") {
     if (!dom.__bindFixValueFn) {
       addEvent(dom, "propertychange", setSelectValue);
@@ -54,17 +54,17 @@ var fixIEChangeHandle = createHandle("change", function(e) {
   }
 });
 
-var fixIEInputHandle = createHandle("input", function(e) {
+let fixIEInputHandle = createHandle("input", function(e) {
   return e.propertyName === "value";
 });
 
-var IEHandleFix = {
+let IEHandleFix = {
   input: function(dom) {
     addEvent(dom, "propertychange", fixIEInputHandle);
   },
   change: function(dom) {
     //IE6-8, radio, checkbox的点击事件必须在失去焦点时才触发 select则需要做更多补丁工件
-    var mask = /radio|check/.test(dom.type)
+    let mask = /radio|check/.test(dom.type)
       ? "click"
       : /text|password/.test(dom.type) ? "propertychange" : "change";
     addEvent(dom, mask, fixIEChangeHandle);
@@ -78,12 +78,12 @@ var IEHandleFix = {
 
 if (msie < 9) {
   actionStrategy[innerHTML] = function(dom, name, val, lastProps) {
-    var oldhtml = lastProps[name] && lastProps[name].__html;
-    var html = val && val.__html;
+    let oldhtml = lastProps[name] && lastProps[name].__html;
+    let html = val && val.__html;
     if (html !== oldhtml) {
       //IE8-会吃掉最前面的空白
       dom.innerHTML = String.fromCharCode(0xfeff) + html;
-      var textNode = dom.firstChild;
+      let textNode = dom.firstChild;
       if (textNode.data.length === 1) {
         dom.removeChild(textNode);
       } else {
@@ -105,8 +105,8 @@ if (msie < 9) {
         "el, click",
       function(event) {
         if (!("pageX" in event)) {
-          var doc = event.target.ownerDocument || document;
-          var box =
+          let doc = event.target.ownerDocument || document;
+          let box =
             doc.compatMode === "BackCompat" ? doc.body : doc.documentElement;
           event.pageX =
             event.clientX + (box.scrollLeft >> 0) - (box.clientLeft >> 0);

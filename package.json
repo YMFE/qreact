@@ -1,10 +1,10 @@
 {
   "name": "qreact",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "a mini React-like framework",
   "main": "dist/React.js",
   "scripts": {
-    "build": "rollup -c build/rollup.js && rollup -c build/rollup.ie.js && rollup -c build/rollup.selection.js && rollup -c build/rollup.shim.js && rollup -c build/rollup.ssr.js && node build/shim.script.js && prettier-eslint --write \"dist\/*.js\" && npm run uglify",
+    "build": "rollup -c build/rollup.js && rollup -c build/rollup.ie.js && rollup -c build/rollup.selection.js && rollup -c build/rollup.shim.js && rollup -c build/rollup.ssr.js && node build/shim.script.js && prettier-eslint --write \"dist/*.js\" && npm run uglify",
     "test": "node node_modules/karma-event-driver-ext",
     "devtools": "rollup -c build/rollup.tools.js",
     "precommit-msg": "echo 'Linting code...' && exit 0",
@@ -110,6 +110,7 @@
     "babel-plugin-transform-class-properties": "^6.24.1",
     "fs-extra": "^5.0.0",
     "pre-commit": "^1.2.2",
-    "prettier-eslint-cli": "^4.7.1"
+    "prettier-eslint-cli": "^4.7.1",
+    "rollup-plugin-cleanup": "^2.0.0"
   }
 }

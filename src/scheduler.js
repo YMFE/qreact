@@ -10,7 +10,7 @@ function mountSorter(u1, u2) {
 }
 export function flushUpdaters() {
   if (dirtyComponents.length) {
-    var currentQueue = clearArray(dirtyComponents).sort(mountSorter);
+    let currentQueue = clearArray(dirtyComponents).sort(mountSorter);
     currentQueue.forEach(function(el) {
       delete el._dirty;
     });
@@ -25,7 +25,7 @@ export function enqueueUpdater(updater) {
     dirtyComponents.push(updater);
   }
 }
-var placehoder = {
+let placehoder = {
   transition: noop
 };
 export function drainQueue(queue) {
@@ -36,66 +36,65 @@ export function drainQueue(queue) {
     if (fiber._disposed) {
       continue;
     }
-    var hook = Refs.errorHook;
+    let hook = Refs.errorHook;
     if (hook) {
       //如果存在医生节点
-      var doctors = Refs.doctors,
+      let doctors = Refs.doctors,
         doctor = doctors[0],
         gotoCreateRejectQueue,
         addDoctor,
         silent; //2时添加disposed，1直接变成disposed
       switch (hook) {
-      case "componentDidMount":
-      case "componentDidUpdate":
-      case "componentWillUnmount":
-        //render之后出错，拖动最后才构建错误列队
-        gotoCreateRejectQueue = queue.length === 0;
-        silent = 2;
-        break;
-      case "render": //render出错，说明还没有执行render
-      case "constructor":
-      case "componentWillMount":
-      case "componentWillUpdate":
-      case "componentWillReceiveProps":
-        //render之前出错，会立即构建错误列队，然后加上医生节点之上的列队
-        gotoCreateRejectQueue = true;
-        queue = queue.filter(function(el) {
-          return el._mountOrder < doctor._mountOrder;
-        });
-        silent = 1;
-        addDoctor = true;
-        break;
+        case "componentDidMount":
+        case "componentDidUpdate":
+        case "componentWillUnmount":
+          //render之后出错，拖动最后才构建错误列队
+          gotoCreateRejectQueue = queue.length === 0;
+          silent = 1;
+          break;
+        case "render": //render出错，说明还没有执行render
+        case "constructor":
+        case "componentWillMount":
+        case "componentWillUpdate":
+        case "componentWillReceiveProps":
+          //render之前出错，会立即构建错误列队，然后加上医生节点之上的列队
+          gotoCreateRejectQueue = true;
+          queue = queue.filter(function(el) {
+            return el._mountOrder < doctor._mountOrder;
+          });
+          silent = 1;
+          addDoctor = true;
+          break;
       }
       if (gotoCreateRejectQueue) {
         delete Refs.error;
         delete Refs.doctors;
         delete Refs.errorHook;
-        var rejectedQueue = [];
+        let unwindQueue = [];
         // 收集要销毁的组件（要求必须resolved）
         // 错误列队的钩子如果发生错误，如果还没有到达医生节点，它的出错会被忽略掉，
-        // 详见CompositeUpdater#catch()与ErrorBoundary#captureError()中的Refs.ignoreError开关
+        // 详见CompositeUpdater#catch()
         doctors.forEach(function(doctor) {
-          disposeChildren(doctor._children, rejectedQueue, silent);
+          disposeChildren(doctor._children, unwindQueue, silent);
           doctor._children = {};
         });
-        // rejectedQueue = Array.from(new Set(rejectedQueue));
         doctors.forEach(function(doctor) {
           if (addDoctor) {
-            rejectedQueue.push(doctor);
+            unwindQueue.push(doctor);
             fiber = placehoder;
           }
           doctor.addState("catch");
-          rejectedQueue.push(doctor);
+          unwindQueue.push(doctor);
         });
 
-        queue = rejectedQueue.concat(queue);
+        queue = unwindQueue.concat(queue);
       }
     }
     fiber.transition(queue);
   }
 
   options.afterPatch();
-  var error = Refs.error;
+  let error = Refs.error;
   if (error) {
     delete Refs.error;
     throw error;

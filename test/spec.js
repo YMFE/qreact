@@ -23,7 +23,9 @@ require("./modules/ReactDOMInput-test.jsx");
 
 require("./modules/ReactDOMFragment-test.jsx");
 
-require("./modules/lifecycle.spec.jsx");
+require("./modules/ReactChildren-test.jsx");
+
+require("./modules/ReactComponentHook.jsx");
 
 require("./modules/diffProps.spec.jsx");
 
@@ -33,18 +35,15 @@ require("./modules/node.spec.jsx");
 
 require("./modules/ref.spec.jsx");
 
-//require("./modules/redux.spec.jsx");
+require("./modules/redux.spec.jsx");
 
 require("./modules/ReactTestUtils-test.jsx");
-
-require("./modules/ReactChildren-test.jsx");
 
 require("./modules/ReactComponent-test.jsx");
 
 require("./modules/ReactMultiChild-test.jsx");
 
 require("./modules/refs-test.jsx");
-require("./modules/refs-destruction-test.jsx");
 
 require("./modules/ReactUpdates-test.jsx");
 
@@ -82,3 +81,7 @@ require("./modules/createPortal.spec.jsx");
 require("./modules/event.spec.jsx");
 
 require("./modules/ReactDOM-test.jsx");
+
+require("./modules/ReactNewContext-test.jsx");
+
+require("./modules/createRef-test.jsx");

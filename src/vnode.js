@@ -29,7 +29,7 @@ export function Vnode(type, tag, props, key, ref) {
     }
 
     let refType = typeNumber(ref);
-    if (refType === 3 || refType === 4 || refType === 5) {
+    if (refType === 3 || refType === 4 || refType === 5 || refType === 8) {
       //number, string, function
       this._hasRef = true;
       this.ref = ref;

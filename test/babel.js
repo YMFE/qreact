@@ -7359,14 +7359,14 @@
                       var F = function F(a, b, c) {
                         if (this instanceof C) {
                           switch (arguments.length) {
-                          case 0:
-                            return new C();
+                            case 0:
+                              return new C();
 
-                          case 1:
-                            return new C(a);
+                            case 1:
+                              return new C(a);
 
-                          case 2:
-                            return new C(a, b);
+                            case 2:
+                              return new C(a, b);
                           }
 
                           return new C(a, b, c);
@@ -13231,58 +13231,58 @@
               var ch = this.input.charCodeAt(this.state.pos);
 
               switch (ch) {
-              case 32: // space
+                case 32: // space
 
-              case 160:
-                // non-breaking space
-                ++this.state.pos;
-                break;
-
-              case 13:
-                // '\r' carriage return
-                if (this.input.charCodeAt(this.state.pos + 1) === 10) {
+                case 160:
+                  // non-breaking space
                   ++this.state.pos;
-                }
+                  break;
 
-              case 10: // '\n' line feed
+                case 13:
+                  // '\r' carriage return
+                  if (this.input.charCodeAt(this.state.pos + 1) === 10) {
+                    ++this.state.pos;
+                  }
 
-              case 8232: // line separator
+                case 10: // '\n' line feed
 
-              case 8233:
-                // paragraph separator
-                ++this.state.pos;
-                ++this.state.curLine;
-                this.state.lineStart = this.state.pos;
-                break;
+                case 8232: // line separator
 
-              case 47:
-                // '/'
-                switch (this.input.charCodeAt(this.state.pos + 1)) {
-                case 42:
-                  // '*'
-                  this.skipBlockComment();
+                case 8233:
+                  // paragraph separator
+                  ++this.state.pos;
+                  ++this.state.curLine;
+                  this.state.lineStart = this.state.pos;
                   break;
 
                 case 47:
-                  this.skipLineComment(2);
+                  // '/'
+                  switch (this.input.charCodeAt(this.state.pos + 1)) {
+                    case 42:
+                      // '*'
+                      this.skipBlockComment();
+                      break;
+
+                    case 47:
+                      this.skipLineComment(2);
+                      break;
+
+                    default:
+                      break loop;
+                  }
+
                   break;
 
                 default:
-                  break loop;
-                }
-
-                break;
-
-              default:
-                if (
-                  (ch > 8 && ch < 14) ||
+                  if (
+                    (ch > 8 && ch < 14) ||
                     (ch >= 5760 &&
                       nonASCIIwhitespace.test(String.fromCharCode(ch)))
-                ) {
-                  ++this.state.pos;
-                } else {
-                  break loop;
-                }
+                  ) {
+                    ++this.state.pos;
+                  } else {
+                    break loop;
+                  }
               }
             }
           }; // Called at the end of every token. Sets `end`, `val`, and
@@ -13508,166 +13508,166 @@
             code
           ) {
             switch (code) {
-            case 35:
-              // '#'
-              if (
-                (this.hasPlugin("classPrivateProperties") ||
+              case 35:
+                // '#'
+                if (
+                  (this.hasPlugin("classPrivateProperties") ||
                     this.hasPlugin("classPrivateMethods")) &&
                   this.state.classLevel > 0
-              ) {
-                ++this.state.pos;
-                return this.finishToken(types.hash);
-              } else {
-                this.raise(
-                  this.state.pos,
-                  "Unexpected character '".concat(
-                    codePointToString(code),
-                    "'"
-                  )
-                );
-              }
+                ) {
+                  ++this.state.pos;
+                  return this.finishToken(types.hash);
+                } else {
+                  this.raise(
+                    this.state.pos,
+                    "Unexpected character '".concat(
+                      codePointToString(code),
+                      "'"
+                    )
+                  );
+                }
 
               // The interpretation of a dot depends on whether it is followed
               // by a digit or another two dots.
 
-            case 46:
-              // '.'
-              return this.readToken_dot();
+              case 46:
+                // '.'
+                return this.readToken_dot();
               // Punctuation tokens.
 
-            case 40:
-              ++this.state.pos;
-              return this.finishToken(types.parenL);
+              case 40:
+                ++this.state.pos;
+                return this.finishToken(types.parenL);
 
-            case 41:
-              ++this.state.pos;
-              return this.finishToken(types.parenR);
+              case 41:
+                ++this.state.pos;
+                return this.finishToken(types.parenR);
 
-            case 59:
-              ++this.state.pos;
-              return this.finishToken(types.semi);
+              case 59:
+                ++this.state.pos;
+                return this.finishToken(types.semi);
 
-            case 44:
-              ++this.state.pos;
-              return this.finishToken(types.comma);
+              case 44:
+                ++this.state.pos;
+                return this.finishToken(types.comma);
 
-            case 91:
-              ++this.state.pos;
-              return this.finishToken(types.bracketL);
+              case 91:
+                ++this.state.pos;
+                return this.finishToken(types.bracketL);
 
-            case 93:
-              ++this.state.pos;
-              return this.finishToken(types.bracketR);
+              case 93:
+                ++this.state.pos;
+                return this.finishToken(types.bracketR);
 
-            case 123:
-              if (
-                this.hasPlugin("flow") &&
+              case 123:
+                if (
+                  this.hasPlugin("flow") &&
                   this.input.charCodeAt(this.state.pos + 1) === 124
-              ) {
-                return this.finishOp(types.braceBarL, 2);
-              } else {
+                ) {
+                  return this.finishOp(types.braceBarL, 2);
+                } else {
+                  ++this.state.pos;
+                  return this.finishToken(types.braceL);
+                }
+
+              case 125:
                 ++this.state.pos;
-                return this.finishToken(types.braceL);
-              }
+                return this.finishToken(types.braceR);
 
-            case 125:
-              ++this.state.pos;
-              return this.finishToken(types.braceR);
-
-            case 58:
-              if (
-                this.hasPlugin("functionBind") &&
+              case 58:
+                if (
+                  this.hasPlugin("functionBind") &&
                   this.input.charCodeAt(this.state.pos + 1) === 58
-              ) {
-                return this.finishOp(types.doubleColon, 2);
-              } else {
+                ) {
+                  return this.finishOp(types.doubleColon, 2);
+                } else {
+                  ++this.state.pos;
+                  return this.finishToken(types.colon);
+                }
+
+              case 63:
+                return this.readToken_question();
+
+              case 64:
                 ++this.state.pos;
-                return this.finishToken(types.colon);
+                return this.finishToken(types.at);
+
+              case 96:
+                // '`'
+                ++this.state.pos;
+                return this.finishToken(types.backQuote);
+
+              case 48: {
+                // '0'
+                var next = this.input.charCodeAt(this.state.pos + 1);
+                if (next === 120 || next === 88)
+                  return this.readRadixNumber(16); // '0x', '0X' - hex number
+
+                if (next === 111 || next === 79) return this.readRadixNumber(8); // '0o', '0O' - octal number
+
+                if (next === 98 || next === 66) return this.readRadixNumber(2); // '0b', '0B' - binary number
               }
+              // Anything else beginning with a digit is an integer, octal
+              // number, or float.
 
-            case 63:
-              return this.readToken_question();
-
-            case 64:
-              ++this.state.pos;
-              return this.finishToken(types.at);
-
-            case 96:
-              // '`'
-              ++this.state.pos;
-              return this.finishToken(types.backQuote);
-
-            case 48: {
-              // '0'
-              var next = this.input.charCodeAt(this.state.pos + 1);
-              if (next === 120 || next === 88)
-                return this.readRadixNumber(16); // '0x', '0X' - hex number
-
-              if (next === 111 || next === 79) return this.readRadixNumber(8); // '0o', '0O' - octal number
-
-              if (next === 98 || next === 66) return this.readRadixNumber(2); // '0b', '0B' - binary number
-            }
-            // Anything else beginning with a digit is an integer, octal
-            // number, or float.
-
-            case 49:
-            case 50:
-            case 51:
-            case 52:
-            case 53:
-            case 54:
-            case 55:
-            case 56:
-            case 57:
-              // 1-9
-              return this.readNumber(false);
+              case 49:
+              case 50:
+              case 51:
+              case 52:
+              case 53:
+              case 54:
+              case 55:
+              case 56:
+              case 57:
+                // 1-9
+                return this.readNumber(false);
               // Quotes produce strings.
 
-            case 34:
-            case 39:
-              // '"', "'"
-              return this.readString(code);
+              case 34:
+              case 39:
+                // '"', "'"
+                return this.readString(code);
               // Operators are parsed inline in tiny state machines. '=' (61) is
               // often referred to. `finishOp` simply skips the amount of
               // characters it is given as second argument, and returns a token
               // of the type given by its first argument.
 
-            case 47:
-              // '/'
-              return this.readToken_slash();
+              case 47:
+                // '/'
+                return this.readToken_slash();
 
-            case 37:
-            case 42:
-              // '%*'
-              return this.readToken_mult_modulo(code);
+              case 37:
+              case 42:
+                // '%*'
+                return this.readToken_mult_modulo(code);
 
-            case 124:
-            case 38:
-              // '|&'
-              return this.readToken_pipe_amp(code);
+              case 124:
+              case 38:
+                // '|&'
+                return this.readToken_pipe_amp(code);
 
-            case 94:
-              // '^'
-              return this.readToken_caret();
+              case 94:
+                // '^'
+                return this.readToken_caret();
 
-            case 43:
-            case 45:
-              // '+-'
-              return this.readToken_plus_min(code);
+              case 43:
+              case 45:
+                // '+-'
+                return this.readToken_plus_min(code);
 
-            case 60:
-            case 62:
-              // '<>'
-              return this.readToken_lt_gt(code);
+              case 60:
+              case 62:
+                // '<>'
+                return this.readToken_lt_gt(code);
 
-            case 61:
-            case 33:
-              // '=!'
-              return this.readToken_eq_excl(code);
+              case 61:
+              case 33:
+                // '=!'
+                return this.readToken_eq_excl(code);
 
-            case 126:
-              // '~'
-              return this.finishOp(types.tilde, 1);
+              case 126:
+                // '~'
+                return this.finishOp(types.tilde, 1);
             }
 
             this.raise(
@@ -14015,17 +14015,17 @@
                 ++this.state.pos;
 
                 switch (ch) {
-                case 13:
-                  if (this.input.charCodeAt(this.state.pos) === 10)
-                    ++this.state.pos;
+                  case 13:
+                    if (this.input.charCodeAt(this.state.pos) === 10)
+                      ++this.state.pos;
 
-                case 10:
-                  out += "\n";
-                  break;
+                  case 10:
+                    out += "\n";
+                    break;
 
-                default:
-                  out += String.fromCharCode(ch);
-                  break;
+                  default:
+                    out += String.fromCharCode(ch);
+                    break;
                 }
 
                 ++this.state.curLine;
@@ -14045,87 +14045,87 @@
             ++this.state.pos;
 
             switch (ch) {
-            case 110:
-              return "\n";
+              case 110:
+                return "\n";
               // 'n' -> '\n'
 
-            case 114:
-              return "\r";
+              case 114:
+                return "\r";
               // 'r' -> '\r'
 
-            case 120: {
-              // 'x'
-              var code = this.readHexChar(2, throwOnInvalid);
-              return code === null ? null : String.fromCharCode(code);
-            }
-
-            case 117: {
-              // 'u'
-              var _code = this.readCodePoint(throwOnInvalid);
-
-              return _code === null ? null : codePointToString(_code);
-            }
-
-            case 116:
-              return "\t";
-              // 't' -> '\t'
-
-            case 98:
-              return "\b";
-              // 'b' -> '\b'
-
-            case 118:
-              return "\x0B";
-              // 'v' -> '\u000b'
-
-            case 102:
-              return "\f";
-              // 'f' -> '\f'
-
-            case 13:
-              if (this.input.charCodeAt(this.state.pos) === 10)
-                ++this.state.pos;
-              // '\r\n'
-
-            case 10:
-              // ' \n'
-              this.state.lineStart = this.state.pos;
-              ++this.state.curLine;
-              return "";
-
-            default:
-              if (ch >= 48 && ch <= 55) {
-                var codePos = this.state.pos - 1; // $FlowFixMe
-
-                var octalStr = this.input
-                  .substr(this.state.pos - 1, 3)
-                  .match(/^[0-7]+/)[0];
-                var octal = parseInt(octalStr, 8);
-
-                if (octal > 255) {
-                  octalStr = octalStr.slice(0, -1);
-                  octal = parseInt(octalStr, 8);
-                }
-
-                if (octal > 0) {
-                  if (inTemplate) {
-                    this.state.invalidTemplateEscapePosition = codePos;
-                    return null;
-                  } else if (this.state.strict) {
-                    this.raise(codePos, "Octal literal in strict mode");
-                  } else if (!this.state.containsOctal) {
-                    // These properties are only used to throw an error for an octal which occurs
-                    // in a directive which occurs prior to a "use strict" directive.
-                    this.state.containsOctal = true;
-                    this.state.octalPosition = codePos;
-                  }
-                }
-
-                this.state.pos += octalStr.length - 1;
-                return String.fromCharCode(octal);
+              case 120: {
+                // 'x'
+                var code = this.readHexChar(2, throwOnInvalid);
+                return code === null ? null : String.fromCharCode(code);
               }
 
-              return String.fromCharCode(ch);
+              case 117: {
+                // 'u'
+                var _code = this.readCodePoint(throwOnInvalid);
+
+                return _code === null ? null : codePointToString(_code);
+              }
+
+              case 116:
+                return "\t";
+              // 't' -> '\t'
+
+              case 98:
+                return "\b";
+              // 'b' -> '\b'
+
+              case 118:
+                return "\x0B";
+              // 'v' -> '\u000b'
+
+              case 102:
+                return "\f";
+              // 'f' -> '\f'
+
+              case 13:
+                if (this.input.charCodeAt(this.state.pos) === 10)
+                  ++this.state.pos;
+              // '\r\n'
+
+              case 10:
+                // ' \n'
+                this.state.lineStart = this.state.pos;
+                ++this.state.curLine;
+                return "";
+
+              default:
+                if (ch >= 48 && ch <= 55) {
+                  var codePos = this.state.pos - 1; // $FlowFixMe
+
+                  var octalStr = this.input
+                    .substr(this.state.pos - 1, 3)
+                    .match(/^[0-7]+/)[0];
+                  var octal = parseInt(octalStr, 8);
+
+                  if (octal > 255) {
+                    octalStr = octalStr.slice(0, -1);
+                    octal = parseInt(octalStr, 8);
+                  }
+
+                  if (octal > 0) {
+                    if (inTemplate) {
+                      this.state.invalidTemplateEscapePosition = codePos;
+                      return null;
+                    } else if (this.state.strict) {
+                      this.raise(codePos, "Octal literal in strict mode");
+                    } else if (!this.state.containsOctal) {
+                      // These properties are only used to throw an error for an octal which occurs
+                      // in a directive which occurs prior to a "use strict" directive.
+                      this.state.containsOctal = true;
+                      this.state.octalPosition = codePos;
+                    }
+                  }
+
+                  this.state.pos += octalStr.length - 1;
+                  return String.fromCharCode(octal);
+                }
+
+                return String.fromCharCode(ch);
             }
           }; // Used to read character escape sequences ('\x', '\u').
 
@@ -14524,94 +14524,94 @@
           ) {
             if (node) {
               switch (node.type) {
-              case "Identifier":
-              case "ObjectPattern":
-              case "ArrayPattern":
-              case "AssignmentPattern":
-                break;
+                case "Identifier":
+                case "ObjectPattern":
+                case "ArrayPattern":
+                case "AssignmentPattern":
+                  break;
 
-              case "ObjectExpression":
-                node.type = "ObjectPattern";
+                case "ObjectExpression":
+                  node.type = "ObjectPattern";
 
-                for (
-                  var _iterator = node.properties.entries(),
-                    _isArray = Array.isArray(_iterator),
-                    _i = 0,
-                    _iterator = _isArray
-                      ? _iterator
-                      : _iterator[Symbol.iterator]();
-                  ;
+                  for (
+                    var _iterator = node.properties.entries(),
+                      _isArray = Array.isArray(_iterator),
+                      _i = 0,
+                      _iterator = _isArray
+                        ? _iterator
+                        : _iterator[Symbol.iterator]();
+                    ;
 
-                ) {
-                  var _ref2;
+                  ) {
+                    var _ref2;
 
-                  if (_isArray) {
-                    if (_i >= _iterator.length) break;
-                    _ref2 = _iterator[_i++];
-                  } else {
-                    _i = _iterator.next();
-                    if (_i.done) break;
-                    _ref2 = _i.value;
+                    if (_isArray) {
+                      if (_i >= _iterator.length) break;
+                      _ref2 = _iterator[_i++];
+                    } else {
+                      _i = _iterator.next();
+                      if (_i.done) break;
+                      _ref2 = _i.value;
+                    }
+
+                    var _ref3 = _ref2;
+                    var _index = _ref3[0];
+                    var _prop = _ref3[1];
+                    this.toAssignableObjectExpressionProp(
+                      _prop,
+                      isBinding,
+                      _index === node.properties.length - 1
+                    );
                   }
 
-                  var _ref3 = _ref2;
-                  var _index = _ref3[0];
-                  var _prop = _ref3[1];
-                  this.toAssignableObjectExpressionProp(
-                    _prop,
+                  break;
+
+                case "ObjectProperty":
+                  this.toAssignable(node.value, isBinding, contextDescription);
+                  break;
+
+                case "SpreadElement": {
+                  this.checkToRestConversion(node);
+                  node.type = "RestElement";
+                  var arg = node.argument;
+                  this.toAssignable(arg, isBinding, contextDescription);
+                  break;
+                }
+
+                case "ArrayExpression":
+                  node.type = "ArrayPattern";
+                  this.toAssignableList(
+                    node.elements,
                     isBinding,
-                    _index === node.properties.length - 1
+                    contextDescription
                   );
-                }
+                  break;
 
-                break;
+                case "AssignmentExpression":
+                  if (node.operator === "=") {
+                    node.type = "AssignmentPattern";
+                    delete node.operator;
+                  } else {
+                    this.raise(
+                      node.left.end,
+                      "Only '=' operator can be used for specifying default value."
+                    );
+                  }
 
-              case "ObjectProperty":
-                this.toAssignable(node.value, isBinding, contextDescription);
-                break;
+                  break;
 
-              case "SpreadElement": {
-                this.checkToRestConversion(node);
-                node.type = "RestElement";
-                var arg = node.argument;
-                this.toAssignable(arg, isBinding, contextDescription);
-                break;
-              }
+                case "MemberExpression":
+                  if (!isBinding) break;
 
-              case "ArrayExpression":
-                node.type = "ArrayPattern";
-                this.toAssignableList(
-                  node.elements,
-                  isBinding,
-                  contextDescription
-                );
-                break;
-
-              case "AssignmentExpression":
-                if (node.operator === "=") {
-                  node.type = "AssignmentPattern";
-                  delete node.operator;
-                } else {
-                  this.raise(
-                    node.left.end,
-                    "Only '=' operator can be used for specifying default value."
-                  );
-                }
-
-                break;
-
-              case "MemberExpression":
-                if (!isBinding) break;
-
-              default: {
-                var message =
+                default: {
+                  var message =
                     "Invalid left-hand side" +
                     (contextDescription
                       ? " in " + contextDescription
                       : /* istanbul ignore next */
                       "expression");
-                this.raise(node.start, message);
-              }
+                  this.raise(node.start, message);
+                }
               }
             }
 
@@ -14724,22 +14724,22 @@
 
           LValParser.prototype.parseBindingAtom = function parseBindingAtom() {
             switch (this.state.type) {
-            case types._yield:
-            case types.name:
-              return this.parseBindingIdentifier();
+              case types._yield:
+              case types.name:
+                return this.parseBindingIdentifier();
 
-            case types.bracketL: {
-              var node = this.startNode();
-              this.next();
-              node.elements = this.parseBindingList(types.bracketR, true);
-              return this.finishNode(node, "ArrayPattern");
-            }
+              case types.bracketL: {
+                var node = this.startNode();
+                this.next();
+                node.elements = this.parseBindingList(types.bracketR, true);
+                return this.finishNode(node, "ArrayPattern");
+              }
 
-            case types.braceL:
-              return this.parseObj(true);
+              case types.braceL:
+                return this.parseObj(true);
 
-            default:
-              throw this.unexpected();
+              default:
+                throw this.unexpected();
             }
           };
 
@@ -14834,128 +14834,128 @@
             contextDescription
           ) {
             switch (expr.type) {
-            case "Identifier":
-              this.checkReservedWord(expr.name, expr.start, false, true);
+              case "Identifier":
+                this.checkReservedWord(expr.name, expr.start, false, true);
 
-              if (checkClashes) {
-                // we need to prefix this with an underscore for the cases where we have a key of
-                // `__proto__`. there's a bug in old V8 where the following wouldn't work:
-                //
-                //   > var obj = Object.create(null);
-                //   undefined
-                //   > obj.__proto__
-                //   null
-                //   > obj.__proto__ = true;
-                //   true
-                //   > obj.__proto__
-                //   null
-                var _key = "_".concat(expr.name);
+                if (checkClashes) {
+                  // we need to prefix this with an underscore for the cases where we have a key of
+                  // `__proto__`. there's a bug in old V8 where the following wouldn't work:
+                  //
+                  //   > var obj = Object.create(null);
+                  //   undefined
+                  //   > obj.__proto__
+                  //   null
+                  //   > obj.__proto__ = true;
+                  //   true
+                  //   > obj.__proto__
+                  //   null
+                  var _key = "_".concat(expr.name);
 
-                if (checkClashes[_key]) {
-                  this.raise(
-                    expr.start,
-                    "Argument name clash in strict mode"
-                  );
-                } else {
-                  checkClashes[_key] = true;
-                }
-              }
-
-              break;
-
-            case "MemberExpression":
-              if (isBinding)
-                this.raise(expr.start, "Binding member expression");
-              break;
-
-            case "ObjectPattern":
-              for (
-                var _iterator2 = expr.properties,
-                  _isArray2 = Array.isArray(_iterator2),
-                  _i2 = 0,
-                  _iterator2 = _isArray2
-                    ? _iterator2
-                    : _iterator2[Symbol.iterator]();
-                ;
-
-              ) {
-                var _ref4;
-
-                if (_isArray2) {
-                  if (_i2 >= _iterator2.length) break;
-                  _ref4 = _iterator2[_i2++];
-                } else {
-                  _i2 = _iterator2.next();
-                  if (_i2.done) break;
-                  _ref4 = _i2.value;
+                  if (checkClashes[_key]) {
+                    this.raise(
+                      expr.start,
+                      "Argument name clash in strict mode"
+                    );
+                  } else {
+                    checkClashes[_key] = true;
+                  }
                 }
 
-                var _prop2 = _ref4;
-                if (_prop2.type === "ObjectProperty") _prop2 = _prop2.value;
-                this.checkLVal(
-                  _prop2,
-                  isBinding,
-                  checkClashes,
-                  "object destructuring pattern"
-                );
-              }
+                break;
 
-              break;
+              case "MemberExpression":
+                if (isBinding)
+                  this.raise(expr.start, "Binding member expression");
+                break;
 
-            case "ArrayPattern":
-              for (
-                var _iterator3 = expr.elements,
-                  _isArray3 = Array.isArray(_iterator3),
-                  _i3 = 0,
-                  _iterator3 = _isArray3
-                    ? _iterator3
-                    : _iterator3[Symbol.iterator]();
-                ;
+              case "ObjectPattern":
+                for (
+                  var _iterator2 = expr.properties,
+                    _isArray2 = Array.isArray(_iterator2),
+                    _i2 = 0,
+                    _iterator2 = _isArray2
+                      ? _iterator2
+                      : _iterator2[Symbol.iterator]();
+                  ;
 
-              ) {
-                var _ref5;
+                ) {
+                  var _ref4;
 
-                if (_isArray3) {
-                  if (_i3 >= _iterator3.length) break;
-                  _ref5 = _iterator3[_i3++];
-                } else {
-                  _i3 = _iterator3.next();
-                  if (_i3.done) break;
-                  _ref5 = _i3.value;
-                }
+                  if (_isArray2) {
+                    if (_i2 >= _iterator2.length) break;
+                    _ref4 = _iterator2[_i2++];
+                  } else {
+                    _i2 = _iterator2.next();
+                    if (_i2.done) break;
+                    _ref4 = _i2.value;
+                  }
 
-                var _elem = _ref5;
-                if (_elem)
+                  var _prop2 = _ref4;
+                  if (_prop2.type === "ObjectProperty") _prop2 = _prop2.value;
                   this.checkLVal(
-                    _elem,
+                    _prop2,
                     isBinding,
                     checkClashes,
-                    "array destructuring pattern"
+                    "object destructuring pattern"
                   );
-              }
+                }
 
-              break;
+                break;
 
-            case "AssignmentPattern":
-              this.checkLVal(
-                expr.left,
-                isBinding,
-                checkClashes,
-                "assignment pattern"
-              );
-              break;
+              case "ArrayPattern":
+                for (
+                  var _iterator3 = expr.elements,
+                    _isArray3 = Array.isArray(_iterator3),
+                    _i3 = 0,
+                    _iterator3 = _isArray3
+                      ? _iterator3
+                      : _iterator3[Symbol.iterator]();
+                  ;
 
-            case "RestElement":
-              this.checkLVal(
-                expr.argument,
-                isBinding,
-                checkClashes,
-                "rest element"
-              );
-              break;
+                ) {
+                  var _ref5;
 
-            default: {
-              var message =
+                  if (_isArray3) {
+                    if (_i3 >= _iterator3.length) break;
+                    _ref5 = _iterator3[_i3++];
+                  } else {
+                    _i3 = _iterator3.next();
+                    if (_i3.done) break;
+                    _ref5 = _i3.value;
+                  }
+
+                  var _elem = _ref5;
+                  if (_elem)
+                    this.checkLVal(
+                      _elem,
+                      isBinding,
+                      checkClashes,
+                      "array destructuring pattern"
+                    );
+                }
+
+                break;
+
+              case "AssignmentPattern":
+                this.checkLVal(
+                  expr.left,
+                  isBinding,
+                  checkClashes,
+                  "assignment pattern"
+                );
+                break;
+
+              case "RestElement":
+                this.checkLVal(
+                  expr.argument,
+                  isBinding,
+                  checkClashes,
+                  "rest element"
+                );
+                break;
+
+              default: {
+                var message =
                   (isBinding
                     ? /* istanbul ignore next */
                     "Binding invalid"
@@ -14965,8 +14965,8 @@
                     ? " in " + contextDescription
                     : /* istanbul ignore next */
                     "expression");
-              this.raise(expr.start, message);
-            }
+                this.raise(expr.start, message);
+              }
             }
           };
 
@@ -15669,199 +15669,199 @@
             var node = void 0;
 
             switch (this.state.type) {
-            case types._super:
-              if (
-                !this.state.inMethod &&
+              case types._super:
+                if (
+                  !this.state.inMethod &&
                   !this.state.inClassProperty &&
                   !this.options.allowSuperOutsideMethod
-              ) {
-                this.raise(
-                  this.state.start,
-                  "'super' outside of function or class"
-                );
-              }
+                ) {
+                  this.raise(
+                    this.state.start,
+                    "'super' outside of function or class"
+                  );
+                }
 
-              node = this.startNode();
-              this.next();
+                node = this.startNode();
+                this.next();
 
-              if (
-                !this.match(types.parenL) &&
+                if (
+                  !this.match(types.parenL) &&
                   !this.match(types.bracketL) &&
                   !this.match(types.dot)
-              ) {
-                this.unexpected();
-              }
+                ) {
+                  this.unexpected();
+                }
 
-              if (
-                this.match(types.parenL) &&
+                if (
+                  this.match(types.parenL) &&
                   this.state.inMethod !== "constructor" &&
                   !this.options.allowSuperOutsideMethod
-              ) {
-                this.raise(
-                  node.start,
-                  "super() is only valid inside a class constructor. Make sure the method name is spelled exactly as 'constructor'."
-                );
-              }
-
-              return this.finishNode(node, "Super");
-
-            case types._import:
-              if (this.lookahead().type === types.dot) {
-                return this.parseImportMetaProperty();
-              }
-
-              this.expectPlugin("dynamicImport");
-              node = this.startNode();
-              this.next();
-
-              if (!this.match(types.parenL)) {
-                this.unexpected(null, types.parenL);
-              }
-
-              return this.finishNode(node, "Import");
-
-            case types._this:
-              node = this.startNode();
-              this.next();
-              return this.finishNode(node, "ThisExpression");
-
-            case types._yield:
-              if (this.state.inGenerator) this.unexpected();
-
-            case types.name: {
-              node = this.startNode();
-              var allowAwait =
-                  this.state.value === "await" && this.state.inAsync;
-              var allowYield = this.shouldAllowYieldIdentifier();
-              var id = this.parseIdentifier(allowAwait || allowYield);
-
-              if (id.name === "await") {
-                if (this.state.inAsync || this.inModule) {
-                  return this.parseAwait(node);
+                ) {
+                  this.raise(
+                    node.start,
+                    "super() is only valid inside a class constructor. Make sure the method name is spelled exactly as 'constructor'."
+                  );
                 }
-              } else if (
-                id.name === "async" &&
+
+                return this.finishNode(node, "Super");
+
+              case types._import:
+                if (this.lookahead().type === types.dot) {
+                  return this.parseImportMetaProperty();
+                }
+
+                this.expectPlugin("dynamicImport");
+                node = this.startNode();
+                this.next();
+
+                if (!this.match(types.parenL)) {
+                  this.unexpected(null, types.parenL);
+                }
+
+                return this.finishNode(node, "Import");
+
+              case types._this:
+                node = this.startNode();
+                this.next();
+                return this.finishNode(node, "ThisExpression");
+
+              case types._yield:
+                if (this.state.inGenerator) this.unexpected();
+
+              case types.name: {
+                node = this.startNode();
+                var allowAwait =
+                  this.state.value === "await" && this.state.inAsync;
+                var allowYield = this.shouldAllowYieldIdentifier();
+                var id = this.parseIdentifier(allowAwait || allowYield);
+
+                if (id.name === "await") {
+                  if (this.state.inAsync || this.inModule) {
+                    return this.parseAwait(node);
+                  }
+                } else if (
+                  id.name === "async" &&
                   this.match(types._function) &&
                   !this.canInsertSemicolon()
-              ) {
-                this.next();
-                return this.parseFunction(node, false, false, true);
-              } else if (
-                canBeArrow &&
+                ) {
+                  this.next();
+                  return this.parseFunction(node, false, false, true);
+                } else if (
+                  canBeArrow &&
                   id.name === "async" &&
                   this.match(types.name)
-              ) {
-                var params = [this.parseIdentifier()];
-                this.expect(types.arrow); // let foo = bar => {};
+                ) {
+                  var params = [this.parseIdentifier()];
+                  this.expect(types.arrow); // let foo = bar => {};
 
-                return this.parseArrowExpression(node, params, true);
-              }
+                  return this.parseArrowExpression(node, params, true);
+                }
 
-              if (
-                canBeArrow &&
+                if (
+                  canBeArrow &&
                   !this.canInsertSemicolon() &&
                   this.eat(types.arrow)
-              ) {
-                return this.parseArrowExpression(node, [id]);
+                ) {
+                  return this.parseArrowExpression(node, [id]);
+                }
+
+                return id;
               }
 
-              return id;
-            }
+              case types._do: {
+                this.expectPlugin("doExpressions");
 
-            case types._do: {
-              this.expectPlugin("doExpressions");
+                var _node13 = this.startNode();
 
-              var _node13 = this.startNode();
+                this.next();
+                var oldInFunction = this.state.inFunction;
+                var oldLabels = this.state.labels;
+                this.state.labels = [];
+                this.state.inFunction = false;
+                _node13.body = this.parseBlock(false);
+                this.state.inFunction = oldInFunction;
+                this.state.labels = oldLabels;
+                return this.finishNode(_node13, "DoExpression");
+              }
 
-              this.next();
-              var oldInFunction = this.state.inFunction;
-              var oldLabels = this.state.labels;
-              this.state.labels = [];
-              this.state.inFunction = false;
-              _node13.body = this.parseBlock(false);
-              this.state.inFunction = oldInFunction;
-              this.state.labels = oldLabels;
-              return this.finishNode(_node13, "DoExpression");
-            }
+              case types.regexp: {
+                var value = this.state.value;
+                node = this.parseLiteral(value.value, "RegExpLiteral");
+                node.pattern = value.pattern;
+                node.flags = value.flags;
+                return node;
+              }
 
-            case types.regexp: {
-              var value = this.state.value;
-              node = this.parseLiteral(value.value, "RegExpLiteral");
-              node.pattern = value.pattern;
-              node.flags = value.flags;
-              return node;
-            }
+              case types.num:
+                return this.parseLiteral(this.state.value, "NumericLiteral");
 
-            case types.num:
-              return this.parseLiteral(this.state.value, "NumericLiteral");
+              case types.bigint:
+                return this.parseLiteral(this.state.value, "BigIntLiteral");
 
-            case types.bigint:
-              return this.parseLiteral(this.state.value, "BigIntLiteral");
+              case types.string:
+                return this.parseLiteral(this.state.value, "StringLiteral");
 
-            case types.string:
-              return this.parseLiteral(this.state.value, "StringLiteral");
+              case types._null:
+                node = this.startNode();
+                this.next();
+                return this.finishNode(node, "NullLiteral");
 
-            case types._null:
-              node = this.startNode();
-              this.next();
-              return this.finishNode(node, "NullLiteral");
+              case types._true:
+              case types._false:
+                return this.parseBooleanLiteral();
 
-            case types._true:
-            case types._false:
-              return this.parseBooleanLiteral();
+              case types.parenL:
+                return this.parseParenAndDistinguishExpression(canBeArrow);
 
-            case types.parenL:
-              return this.parseParenAndDistinguishExpression(canBeArrow);
-
-            case types.bracketL:
-              node = this.startNode();
-              this.next();
-              node.elements = this.parseExprList(
-                types.bracketR,
-                true,
-                refShorthandDefaultPos
-              );
-              this.toReferencedList(node.elements);
-              return this.finishNode(node, "ArrayExpression");
-
-            case types.braceL:
-              return this.parseObj(false, refShorthandDefaultPos);
-
-            case types._function:
-              return this.parseFunctionExpression();
-
-            case types.at:
-              this.parseDecorators();
-
-            case types._class:
-              node = this.startNode();
-              this.takeDecorators(node);
-              return this.parseClass(node, false);
-
-            case types._new:
-              return this.parseNew();
-
-            case types.backQuote:
-              return this.parseTemplate(false);
-
-            case types.doubleColon: {
-              node = this.startNode();
-              this.next();
-              node.object = null;
-              var callee = (node.callee = this.parseNoCallExpr());
-
-              if (callee.type === "MemberExpression") {
-                return this.finishNode(node, "BindExpression");
-              } else {
-                throw this.raise(
-                  callee.start,
-                  "Binding should be performed on object property."
+              case types.bracketL:
+                node = this.startNode();
+                this.next();
+                node.elements = this.parseExprList(
+                  types.bracketR,
+                  true,
+                  refShorthandDefaultPos
                 );
-              }
-            }
+                this.toReferencedList(node.elements);
+                return this.finishNode(node, "ArrayExpression");
 
-            default:
-              throw this.unexpected();
+              case types.braceL:
+                return this.parseObj(false, refShorthandDefaultPos);
+
+              case types._function:
+                return this.parseFunctionExpression();
+
+              case types.at:
+                this.parseDecorators();
+
+              case types._class:
+                node = this.startNode();
+                this.takeDecorators(node);
+                return this.parseClass(node, false);
+
+              case types._new:
+                return this.parseNew();
+
+              case types.backQuote:
+                return this.parseTemplate(false);
+
+              case types.doubleColon: {
+                node = this.startNode();
+                this.next();
+                node.object = null;
+                var callee = (node.callee = this.parseNoCallExpr());
+
+                if (callee.type === "MemberExpression") {
+                  return this.finishNode(node, "BindExpression");
+                } else {
+                  throw this.raise(
+                    callee.start,
+                    "Binding should be performed on object property."
+                  );
+                }
+              }
+
+              default:
+                throw this.unexpected();
             }
           };
 
@@ -16992,117 +16992,117 @@
             // complexity.
 
             switch (starttype) {
-            case types._break:
-            case types._continue:
-              // $FlowFixMe
-              return this.parseBreakContinueStatement(
-                node,
-                starttype.keyword
-              );
+              case types._break:
+              case types._continue:
+                // $FlowFixMe
+                return this.parseBreakContinueStatement(
+                  node,
+                  starttype.keyword
+                );
 
-            case types._debugger:
-              return this.parseDebuggerStatement(node);
+              case types._debugger:
+                return this.parseDebuggerStatement(node);
 
-            case types._do:
-              return this.parseDoStatement(node);
+              case types._do:
+                return this.parseDoStatement(node);
 
-            case types._for:
-              return this.parseForStatement(node);
+              case types._for:
+                return this.parseForStatement(node);
 
-            case types._function:
-              if (this.lookahead().type === types.dot) break;
-              if (!declaration) this.unexpected();
-              return this.parseFunctionStatement(node);
+              case types._function:
+                if (this.lookahead().type === types.dot) break;
+                if (!declaration) this.unexpected();
+                return this.parseFunctionStatement(node);
 
-            case types._class:
-              if (!declaration) this.unexpected();
-              return this.parseClass(node, true);
+              case types._class:
+                if (!declaration) this.unexpected();
+                return this.parseClass(node, true);
 
-            case types._if:
-              return this.parseIfStatement(node);
+              case types._if:
+                return this.parseIfStatement(node);
 
-            case types._return:
-              return this.parseReturnStatement(node);
+              case types._return:
+                return this.parseReturnStatement(node);
 
-            case types._switch:
-              return this.parseSwitchStatement(node);
+              case types._switch:
+                return this.parseSwitchStatement(node);
 
-            case types._throw:
-              return this.parseThrowStatement(node);
+              case types._throw:
+                return this.parseThrowStatement(node);
 
-            case types._try:
-              return this.parseTryStatement(node);
+              case types._try:
+                return this.parseTryStatement(node);
 
-            case types._let:
-            case types._const:
-              if (!declaration) this.unexpected();
+              case types._let:
+              case types._const:
+                if (!declaration) this.unexpected();
               // NOTE: falls through to _var
 
-            case types._var:
-              return this.parseVarStatement(node, starttype);
+              case types._var:
+                return this.parseVarStatement(node, starttype);
 
-            case types._while:
-              return this.parseWhileStatement(node);
+              case types._while:
+                return this.parseWhileStatement(node);
 
-            case types._with:
-              return this.parseWithStatement(node);
+              case types._with:
+                return this.parseWithStatement(node);
 
-            case types.braceL:
-              return this.parseBlock();
+              case types.braceL:
+                return this.parseBlock();
 
-            case types.semi:
-              return this.parseEmptyStatement(node);
+              case types.semi:
+                return this.parseEmptyStatement(node);
 
-            case types._export:
-            case types._import:
-              if (
-                (this.hasPlugin("dynamicImport") &&
+              case types._export:
+              case types._import:
+                if (
+                  (this.hasPlugin("dynamicImport") &&
                     this.lookahead().type === types.parenL) ||
                   (this.hasPlugin("importMeta") &&
                     this.lookahead().type === types.dot)
-              )
-                break;
+                )
+                  break;
 
-              if (!this.options.allowImportExportEverywhere) {
-                if (!topLevel) {
-                  this.raise(
-                    this.state.start,
-                    "'import' and 'export' may only appear at the top level"
-                  );
+                if (!this.options.allowImportExportEverywhere) {
+                  if (!topLevel) {
+                    this.raise(
+                      this.state.start,
+                      "'import' and 'export' may only appear at the top level"
+                    );
+                  }
+
+                  if (!this.inModule) {
+                    this.raise(
+                      this.state.start,
+                      "'import' and 'export' may appear only with 'sourceType: \"module\"'"
+                    );
+                  }
                 }
 
-                if (!this.inModule) {
-                  this.raise(
-                    this.state.start,
-                    "'import' and 'export' may appear only with 'sourceType: \"module\"'"
-                  );
-                }
-              }
-
-              this.next();
-
-              if (starttype == types._import) {
-                return this.parseImport(node);
-              } else {
-                return this.parseExport(node);
-              }
-
-            case types.name:
-              if (this.state.value === "async") {
-                // peek ahead and see if next token is a function
-                var state = this.state.clone();
                 this.next();
 
-                if (
-                  this.match(types._function) &&
-                    !this.canInsertSemicolon()
-                ) {
-                  this.expect(types._function);
-                  return this.parseFunction(node, true, false, true);
+                if (starttype == types._import) {
+                  return this.parseImport(node);
                 } else {
-                  this.state = state;
+                  return this.parseExport(node);
                 }
-              }
+
+              case types.name:
+                if (this.state.value === "async") {
+                  // peek ahead and see if next token is a function
+                  var state = this.state.clone();
+                  this.next();
+
+                  if (
+                    this.match(types._function) &&
+                    !this.canInsertSemicolon()
+                  ) {
+                    this.expect(types._function);
+                    return this.parseFunction(node, true, false, true);
+                  } else {
+                    this.state = state;
+                  }
+                }
             } // If the statement does not start with a statement keyword or a
             // brace, it's an ExpressionStatement or LabeledStatement. We
             // simply start parsing an expression, and afterwards, if the
@@ -19051,25 +19051,25 @@
               var _this2 = this;
 
               switch (expr.type) {
-              case "ObjectPattern":
-                expr.properties.forEach(function(prop) {
-                  _this2.checkLVal(
-                    prop.type === "Property" ? prop.value : prop,
+                case "ObjectPattern":
+                  expr.properties.forEach(function(prop) {
+                    _this2.checkLVal(
+                      prop.type === "Property" ? prop.value : prop,
+                      isBinding,
+                      checkClashes,
+                      "object destructuring pattern"
+                    );
+                  });
+                  break;
+
+                default:
+                  _superClass.prototype.checkLVal.call(
+                    this,
+                    expr,
                     isBinding,
                     checkClashes,
-                    "object destructuring pattern"
+                    contextDescription
                   );
-                });
-                break;
-
-              default:
-                _superClass.prototype.checkLVal.call(
-                  this,
-                  expr,
-                  isBinding,
-                  checkClashes,
-                  contextDescription
-                );
               }
             };
 
@@ -19209,27 +19209,27 @@
               refShorthandDefaultPos
             ) {
               switch (this.state.type) {
-              case types.regexp:
-                return this.estreeParseRegExpLiteral(this.state.value);
+                case types.regexp:
+                  return this.estreeParseRegExpLiteral(this.state.value);
 
-              case types.num:
-              case types.string:
-                return this.estreeParseLiteral(this.state.value);
+                case types.num:
+                case types.string:
+                  return this.estreeParseLiteral(this.state.value);
 
-              case types._null:
-                return this.estreeParseLiteral(null);
+                case types._null:
+                  return this.estreeParseLiteral(null);
 
-              case types._true:
-                return this.estreeParseLiteral(true);
+                case types._true:
+                  return this.estreeParseLiteral(true);
 
-              case types._false:
-                return this.estreeParseLiteral(false);
+                case types._false:
+                  return this.estreeParseLiteral(false);
 
-              default:
-                return _superClass.prototype.parseExprAtom.call(
-                  this,
-                  refShorthandDefaultPos
-                );
+                default:
+                  return _superClass.prototype.parseExprAtom.call(
+                    this,
+                    refShorthandDefaultPos
+                  );
               }
             };
 
@@ -20300,30 +20300,30 @@
               id
             ) {
               switch (id.name) {
-              case "any":
-                return this.finishNode(node, "AnyTypeAnnotation");
+                case "any":
+                  return this.finishNode(node, "AnyTypeAnnotation");
 
-              case "void":
-                return this.finishNode(node, "VoidTypeAnnotation");
+                case "void":
+                  return this.finishNode(node, "VoidTypeAnnotation");
 
-              case "bool":
-              case "boolean":
-                return this.finishNode(node, "BooleanTypeAnnotation");
+                case "bool":
+                case "boolean":
+                  return this.finishNode(node, "BooleanTypeAnnotation");
 
-              case "mixed":
-                return this.finishNode(node, "MixedTypeAnnotation");
+                case "mixed":
+                  return this.finishNode(node, "MixedTypeAnnotation");
 
-              case "empty":
-                return this.finishNode(node, "EmptyTypeAnnotation");
+                case "empty":
+                  return this.finishNode(node, "EmptyTypeAnnotation");
 
-              case "number":
-                return this.finishNode(node, "NumberTypeAnnotation");
+                case "number":
+                  return this.finishNode(node, "NumberTypeAnnotation");
 
-              case "string":
-                return this.finishNode(node, "StringTypeAnnotation");
+                case "string":
+                  return this.finishNode(node, "StringTypeAnnotation");
 
-              default:
-                return this.flowParseGenericType(startPos, startLoc, id);
+                default:
+                  return this.flowParseGenericType(startPos, startLoc, id);
               }
             }; // The parsing of types roughly parallels the parsing of expressions, and
             // primary types are kind of like primary expressions...they're the
@@ -20339,143 +20339,143 @@
               var oldNoAnonFunctionType = this.state.noAnonFunctionType;
 
               switch (this.state.type) {
-              case types.name:
-                return this.flowIdentToTypeAnnotation(
-                  startPos,
-                  startLoc,
-                  node,
-                  this.parseIdentifier()
-                );
+                case types.name:
+                  return this.flowIdentToTypeAnnotation(
+                    startPos,
+                    startLoc,
+                    node,
+                    this.parseIdentifier()
+                  );
 
-              case types.braceL:
-                return this.flowParseObjectType(false, false, true);
+                case types.braceL:
+                  return this.flowParseObjectType(false, false, true);
 
-              case types.braceBarL:
-                return this.flowParseObjectType(false, true, true);
+                case types.braceBarL:
+                  return this.flowParseObjectType(false, true, true);
 
-              case types.bracketL:
-                return this.flowParseTupleType();
+                case types.bracketL:
+                  return this.flowParseTupleType();
 
-              case types.relational:
-                if (this.state.value === "<") {
-                  node.typeParameters = this.flowParseTypeParameterDeclaration();
-                  this.expect(types.parenL);
-                  tmp = this.flowParseFunctionTypeParams();
-                  node.params = tmp.params;
-                  node.rest = tmp.rest;
-                  this.expect(types.parenR);
-                  this.expect(types.arrow);
-                  node.returnType = this.flowParseType();
-                  return this.finishNode(node, "FunctionTypeAnnotation");
-                }
-
-                break;
-
-              case types.parenL:
-                this.next(); // Check to see if this is actually a grouped type
-
-                if (
-                  !this.match(types.parenR) &&
-                    !this.match(types.ellipsis)
-                ) {
-                  if (this.match(types.name)) {
-                    var token = this.lookahead().type;
-                    isGroupedType =
-                        token !== types.question && token !== types.colon;
-                  } else {
-                    isGroupedType = true;
+                case types.relational:
+                  if (this.state.value === "<") {
+                    node.typeParameters = this.flowParseTypeParameterDeclaration();
+                    this.expect(types.parenL);
+                    tmp = this.flowParseFunctionTypeParams();
+                    node.params = tmp.params;
+                    node.rest = tmp.rest;
+                    this.expect(types.parenR);
+                    this.expect(types.arrow);
+                    node.returnType = this.flowParseType();
+                    return this.finishNode(node, "FunctionTypeAnnotation");
                   }
-                }
 
-                if (isGroupedType) {
-                  this.state.noAnonFunctionType = false;
-                  type = this.flowParseType();
-                  this.state.noAnonFunctionType = oldNoAnonFunctionType; // A `,` or a `) =>` means this is an anonymous function type
+                  break;
+
+                case types.parenL:
+                  this.next(); // Check to see if this is actually a grouped type
 
                   if (
-                    this.state.noAnonFunctionType ||
+                    !this.match(types.parenR) &&
+                    !this.match(types.ellipsis)
+                  ) {
+                    if (this.match(types.name)) {
+                      var token = this.lookahead().type;
+                      isGroupedType =
+                        token !== types.question && token !== types.colon;
+                    } else {
+                      isGroupedType = true;
+                    }
+                  }
+
+                  if (isGroupedType) {
+                    this.state.noAnonFunctionType = false;
+                    type = this.flowParseType();
+                    this.state.noAnonFunctionType = oldNoAnonFunctionType; // A `,` or a `) =>` means this is an anonymous function type
+
+                    if (
+                      this.state.noAnonFunctionType ||
                       !(
                         this.match(types.comma) ||
                         (this.match(types.parenR) &&
                           this.lookahead().type === types.arrow)
                       )
-                  ) {
-                    this.expect(types.parenR);
-                    return type;
-                  } else {
-                    // Eat a comma if there is one
-                    this.eat(types.comma);
+                    ) {
+                      this.expect(types.parenR);
+                      return type;
+                    } else {
+                      // Eat a comma if there is one
+                      this.eat(types.comma);
+                    }
                   }
-                }
 
-                if (type) {
-                  tmp = this.flowParseFunctionTypeParams([
-                    this.reinterpretTypeAsFunctionTypeParam(type)
-                  ]);
-                } else {
-                  tmp = this.flowParseFunctionTypeParams();
-                }
+                  if (type) {
+                    tmp = this.flowParseFunctionTypeParams([
+                      this.reinterpretTypeAsFunctionTypeParam(type)
+                    ]);
+                  } else {
+                    tmp = this.flowParseFunctionTypeParams();
+                  }
 
-                node.params = tmp.params;
-                node.rest = tmp.rest;
-                this.expect(types.parenR);
-                this.expect(types.arrow);
-                node.returnType = this.flowParseType();
-                node.typeParameters = null;
-                return this.finishNode(node, "FunctionTypeAnnotation");
+                  node.params = tmp.params;
+                  node.rest = tmp.rest;
+                  this.expect(types.parenR);
+                  this.expect(types.arrow);
+                  node.returnType = this.flowParseType();
+                  node.typeParameters = null;
+                  return this.finishNode(node, "FunctionTypeAnnotation");
 
-              case types.string:
-                return this.parseLiteral(
-                  this.state.value,
-                  "StringLiteralTypeAnnotation"
-                );
-
-              case types._true:
-              case types._false:
-                node.value = this.match(types._true);
-                this.next();
-                return this.finishNode(node, "BooleanLiteralTypeAnnotation");
-
-              case types.plusMin:
-                if (this.state.value === "-") {
-                  this.next();
-                  if (!this.match(types.num))
-                    this.unexpected(
-                      null,
-                      "Unexpected token, expected number"
-                    );
+                case types.string:
                   return this.parseLiteral(
-                    -this.state.value,
-                    "NumberLiteralTypeAnnotation",
-                    node.start,
-                    node.loc.start
+                    this.state.value,
+                    "StringLiteralTypeAnnotation"
                   );
-                }
 
-                this.unexpected();
+                case types._true:
+                case types._false:
+                  node.value = this.match(types._true);
+                  this.next();
+                  return this.finishNode(node, "BooleanLiteralTypeAnnotation");
 
-              case types.num:
-                return this.parseLiteral(
-                  this.state.value,
-                  "NumberLiteralTypeAnnotation"
-                );
+                case types.plusMin:
+                  if (this.state.value === "-") {
+                    this.next();
+                    if (!this.match(types.num))
+                      this.unexpected(
+                        null,
+                        "Unexpected token, expected number"
+                      );
+                    return this.parseLiteral(
+                      -this.state.value,
+                      "NumberLiteralTypeAnnotation",
+                      node.start,
+                      node.loc.start
+                    );
+                  }
 
-              case types._null:
-                this.next();
-                return this.finishNode(node, "NullLiteralTypeAnnotation");
+                  this.unexpected();
 
-              case types._this:
-                this.next();
-                return this.finishNode(node, "ThisTypeAnnotation");
+                case types.num:
+                  return this.parseLiteral(
+                    this.state.value,
+                    "NumberLiteralTypeAnnotation"
+                  );
 
-              case types.star:
-                this.next();
-                return this.finishNode(node, "ExistsTypeAnnotation");
+                case types._null:
+                  this.next();
+                  return this.finishNode(node, "NullLiteralTypeAnnotation");
 
-              default:
-                if (this.state.type.keyword === "typeof") {
-                  return this.flowParseTypeofType();
-                }
+                case types._this:
+                  this.next();
+                  return this.finishNode(node, "ThisTypeAnnotation");
+
+                case types.star:
+                  this.next();
+                  return this.finishNode(node, "ExistsTypeAnnotation");
+
+                default:
+                  if (this.state.type.keyword === "typeof") {
+                    return this.flowParseTypeofType();
+                  }
               }
 
               throw this.unexpected();
@@ -22119,37 +22119,37 @@
                 var ch = this.input.charCodeAt(this.state.pos);
 
                 switch (ch) {
-                case 60: // "<"
+                  case 60: // "<"
 
-                case 123:
-                  // "{"
-                  if (this.state.pos === this.state.start) {
-                    if (ch === 60 && this.state.exprAllowed) {
-                      ++this.state.pos;
-                      return this.finishToken(types.jsxTagStart);
+                  case 123:
+                    // "{"
+                    if (this.state.pos === this.state.start) {
+                      if (ch === 60 && this.state.exprAllowed) {
+                        ++this.state.pos;
+                        return this.finishToken(types.jsxTagStart);
+                      }
+
+                      return this.getTokenFromCode(ch);
                     }
 
-                    return this.getTokenFromCode(ch);
-                  }
-
-                  out += this.input.slice(chunkStart, this.state.pos);
-                  return this.finishToken(types.jsxText, out);
-
-                case 38:
-                  // "&"
-                  out += this.input.slice(chunkStart, this.state.pos);
-                  out += this.jsxReadEntity();
-                  chunkStart = this.state.pos;
-                  break;
-
-                default:
-                  if (isNewLine(ch)) {
                     out += this.input.slice(chunkStart, this.state.pos);
-                    out += this.jsxReadNewLine(true);
+                    return this.finishToken(types.jsxText, out);
+
+                  case 38:
+                    // "&"
+                    out += this.input.slice(chunkStart, this.state.pos);
+                    out += this.jsxReadEntity();
                     chunkStart = this.state.pos;
-                  } else {
-                    ++this.state.pos;
-                  }
+                    break;
+
+                  default:
+                    if (isNewLine(ch)) {
+                      out += this.input.slice(chunkStart, this.state.pos);
+                      out += this.jsxReadNewLine(true);
+                      chunkStart = this.state.pos;
+                    } else {
+                      ++this.state.pos;
+                    }
                 }
               }
             };
@@ -22307,27 +22307,27 @@
               var node = void 0;
 
               switch (this.state.type) {
-              case types.braceL:
-                node = this.jsxParseExpressionContainer();
+                case types.braceL:
+                  node = this.jsxParseExpressionContainer();
 
-                if (node.expression.type === "JSXEmptyExpression") {
+                  if (node.expression.type === "JSXEmptyExpression") {
+                    throw this.raise(
+                      node.start,
+                      "JSX attributes must only be assigned a non-empty expression"
+                    );
+                  } else {
+                    return node;
+                  }
+
+                case types.jsxTagStart:
+                case types.string:
+                  return this.parseExprAtom();
+
+                default:
                   throw this.raise(
-                    node.start,
-                    "JSX attributes must only be assigned a non-empty expression"
+                    this.state.start,
+                    "JSX value should be either an expression or a quoted JSX text"
                   );
-                } else {
-                  return node;
-                }
-
-              case types.jsxTagStart:
-              case types.string:
-                return this.parseExprAtom();
-
-              default:
-                throw this.raise(
-                  this.state.start,
-                  "JSX value should be either an expression or a quoted JSX text"
-                );
               }
             }; // JSXEmptyExpression is unique type since it doesn't actually parse anything,
             // and so it should start at the end of last read token (left brace) and finish
@@ -22429,38 +22429,38 @@
               if (!openingElement.selfClosing) {
                 contents: for (;;) {
                   switch (this.state.type) {
-                  case types.jsxTagStart:
-                    startPos = this.state.start;
-                    startLoc = this.state.startLoc;
-                    this.next();
+                    case types.jsxTagStart:
+                      startPos = this.state.start;
+                      startLoc = this.state.startLoc;
+                      this.next();
 
-                    if (this.eat(types.slash)) {
-                      closingElement = this.jsxParseClosingElementAt(
-                        startPos,
-                        startLoc
-                      );
-                      break contents;
-                    }
+                      if (this.eat(types.slash)) {
+                        closingElement = this.jsxParseClosingElementAt(
+                          startPos,
+                          startLoc
+                        );
+                        break contents;
+                      }
 
-                    children.push(this.jsxParseElementAt(startPos, startLoc));
-                    break;
+                      children.push(this.jsxParseElementAt(startPos, startLoc));
+                      break;
 
-                  case types.jsxText:
-                    children.push(this.parseExprAtom());
-                    break;
+                    case types.jsxText:
+                      children.push(this.parseExprAtom());
+                      break;
 
-                  case types.braceL:
-                    if (this.lookahead().type === types.ellipsis) {
-                      children.push(this.jsxParseSpreadChild());
-                    } else {
-                      children.push(this.jsxParseExpressionContainer());
-                    }
+                    case types.braceL:
+                      if (this.lookahead().type === types.ellipsis) {
+                        children.push(this.jsxParseSpreadChild());
+                      } else {
+                        children.push(this.jsxParseExpressionContainer());
+                      }
 
-                    break;
+                      break;
                     // istanbul ignore next - should never happen
 
-                  default:
-                    throw this.unexpected();
+                    default:
+                      throw this.unexpected();
                   }
                 }
 
@@ -22600,32 +22600,32 @@
 
         function keywordTypeFromName(value) {
           switch (value) {
-          case "any":
-            return "TSAnyKeyword";
+            case "any":
+              return "TSAnyKeyword";
 
-          case "boolean":
-            return "TSBooleanKeyword";
+            case "boolean":
+              return "TSBooleanKeyword";
 
-          case "never":
-            return "TSNeverKeyword";
+            case "never":
+              return "TSNeverKeyword";
 
-          case "number":
-            return "TSNumberKeyword";
+            case "number":
+              return "TSNumberKeyword";
 
-          case "object":
-            return "TSObjectKeyword";
+            case "object":
+              return "TSObjectKeyword";
 
-          case "string":
-            return "TSStringKeyword";
+            case "string":
+              return "TSStringKeyword";
 
-          case "symbol":
-            return "TSSymbolKeyword";
+            case "symbol":
+              return "TSSymbolKeyword";
 
-          case "undefined":
-            return "TSUndefinedKeyword";
+            case "undefined":
+              return "TSUndefinedKeyword";
 
-          default:
-            return undefined;
+            default:
+              return undefined;
           }
         }
 
@@ -22682,18 +22682,18 @@
               kind
             ) {
               switch (kind) {
-              case "EnumMembers":
-              case "TypeMembers":
-                return this.match(types.braceR);
+                case "EnumMembers":
+                case "TypeMembers":
+                  return this.match(types.braceR);
 
-              case "HeritageClauseElement":
-                return this.match(types.braceL);
+                case "HeritageClauseElement":
+                  return this.match(types.braceL);
 
-              case "TupleElementTypes":
-                return this.match(types.bracketR);
+                case "TupleElementTypes":
+                  return this.match(types.bracketR);
 
-              case "TypeParametersOrArguments":
-                return this.isRelational(">");
+                case "TypeParametersOrArguments":
+                  return this.isRelational(">");
               }
 
               throw new Error("Unreachable");
@@ -23168,24 +23168,24 @@
 
               node.literal = (function() {
                 switch (_this3.state.type) {
-                case types.num:
-                  return _this3.parseLiteral(
-                    _this3.state.value,
-                    "NumericLiteral"
-                  );
+                  case types.num:
+                    return _this3.parseLiteral(
+                      _this3.state.value,
+                      "NumericLiteral"
+                    );
 
-                case types.string:
-                  return _this3.parseLiteral(
-                    _this3.state.value,
-                    "StringLiteral"
-                  );
+                  case types.string:
+                    return _this3.parseLiteral(
+                      _this3.state.value,
+                      "StringLiteral"
+                    );
 
-                case types._true:
-                case types._false:
-                  return _this3.parseBooleanLiteral();
+                  case types._true:
+                  case types._false:
+                    return _this3.parseBooleanLiteral();
 
-                default:
-                  throw _this3.unexpected();
+                  default:
+                    throw _this3.unexpected();
                 }
               })();
 
@@ -23194,80 +23194,80 @@
 
             _class.prototype.tsParseNonArrayType = function tsParseNonArrayType() {
               switch (this.state.type) {
-              case types.name:
-              case types._void:
-              case types._null: {
-                var type = this.match(types._void)
-                  ? "TSVoidKeyword"
-                  : this.match(types._null)
-                    ? "TSNullKeyword"
-                    : keywordTypeFromName(this.state.value);
+                case types.name:
+                case types._void:
+                case types._null: {
+                  var type = this.match(types._void)
+                    ? "TSVoidKeyword"
+                    : this.match(types._null)
+                      ? "TSNullKeyword"
+                      : keywordTypeFromName(this.state.value);
 
-                if (
-                  type !== undefined &&
+                  if (
+                    type !== undefined &&
                     this.lookahead().type !== types.dot
-                ) {
-                  var node = this.startNode();
-                  this.next();
-                  return this.finishNode(node, type);
-                }
-
-                return this.tsParseTypeReference();
-              }
-
-              case types.string:
-              case types.num:
-              case types._true:
-              case types._false:
-                return this.tsParseLiteralTypeNode();
-
-              case types.plusMin:
-                if (this.state.value === "-") {
-                  var _node = this.startNode();
-
-                  this.next();
-
-                  if (!this.match(types.num)) {
-                    throw this.unexpected();
+                  ) {
+                    var node = this.startNode();
+                    this.next();
+                    return this.finishNode(node, type);
                   }
 
-                  _node.literal = this.parseLiteral(
-                    -this.state.value,
-                    "NumericLiteral",
-                    _node.start,
-                    _node.loc.start
-                  );
-                  return this.finishNode(_node, "TSLiteralType");
+                  return this.tsParseTypeReference();
                 }
 
-                break;
+                case types.string:
+                case types.num:
+                case types._true:
+                case types._false:
+                  return this.tsParseLiteralTypeNode();
 
-              case types._this: {
-                var thisKeyword = this.tsParseThisTypeNode();
+                case types.plusMin:
+                  if (this.state.value === "-") {
+                    var _node = this.startNode();
 
-                if (
-                  this.isContextual("is") &&
+                    this.next();
+
+                    if (!this.match(types.num)) {
+                      throw this.unexpected();
+                    }
+
+                    _node.literal = this.parseLiteral(
+                      -this.state.value,
+                      "NumericLiteral",
+                      _node.start,
+                      _node.loc.start
+                    );
+                    return this.finishNode(_node, "TSLiteralType");
+                  }
+
+                  break;
+
+                case types._this: {
+                  var thisKeyword = this.tsParseThisTypeNode();
+
+                  if (
+                    this.isContextual("is") &&
                     !this.hasPrecedingLineBreak()
-                ) {
-                  return this.tsParseThisTypePredicate(thisKeyword);
-                } else {
-                  return thisKeyword;
+                  ) {
+                    return this.tsParseThisTypePredicate(thisKeyword);
+                  } else {
+                    return thisKeyword;
+                  }
                 }
-              }
 
-              case types._typeof:
-                return this.tsParseTypeQuery();
+                case types._typeof:
+                  return this.tsParseTypeQuery();
 
-              case types.braceL:
-                return this.tsLookAhead(this.tsIsStartOfMappedType.bind(this))
-                  ? this.tsParseMappedType()
-                  : this.tsParseTypeLiteral();
+                case types.braceL:
+                  return this.tsLookAhead(this.tsIsStartOfMappedType.bind(this))
+                    ? this.tsParseMappedType()
+                    : this.tsParseTypeLiteral();
 
-              case types.bracketL:
-                return this.tsParseTupleType();
+                case types.bracketL:
+                  return this.tsParseTupleType();
 
-              case types.parenL:
-                return this.tsParseParenthesizedType();
+                case types.parenL:
+                  return this.tsParseParenthesizedType();
               }
 
               throw this.unexpected();
@@ -23778,58 +23778,58 @@
               nany
             ) {
               switch (this.state.type) {
-              case types._function:
-                this.next();
-                return this.parseFunction(
-                  nany,
-                  /* isStatement */
-                  true
-                );
-
-              case types._class:
-                return this.parseClass(
-                  nany,
-                  /* isStatement */
-                  true,
-                  /* optionalId */
-                  false
-                );
-
-              case types._const:
-                if (
-                  this.match(types._const) &&
-                    this.lookaheadIsContextual("enum")
-                ) {
-                  // `const enum = 0;` not allowed because "enum" is a strict mode reserved word.
-                  this.expect(types._const);
-                  this.expectContextual("enum");
-                  return this.tsParseEnumDeclaration(
+                case types._function:
+                  this.next();
+                  return this.parseFunction(
                     nany,
-                    /* isConst */
+                    /* isStatement */
                     true
                   );
-                }
+
+                case types._class:
+                  return this.parseClass(
+                    nany,
+                    /* isStatement */
+                    true,
+                    /* optionalId */
+                    false
+                  );
+
+                case types._const:
+                  if (
+                    this.match(types._const) &&
+                    this.lookaheadIsContextual("enum")
+                  ) {
+                    // `const enum = 0;` not allowed because "enum" is a strict mode reserved word.
+                    this.expect(types._const);
+                    this.expectContextual("enum");
+                    return this.tsParseEnumDeclaration(
+                      nany,
+                      /* isConst */
+                      true
+                    );
+                  }
 
                 // falls through
 
-              case types._var:
-              case types._let:
-                return this.parseVarStatement(nany, this.state.type);
+                case types._var:
+                case types._let:
+                  return this.parseVarStatement(nany, this.state.type);
 
-              case types.name: {
-                var value = this.state.value;
+                case types.name: {
+                  var value = this.state.value;
 
-                if (value === "global") {
-                  return this.tsParseAmbientExternalModuleDeclaration(nany);
-                } else {
-                  return this.tsParseDeclaration(
-                    nany,
-                    value,
-                    /* next */
-                    true
-                  );
+                  if (value === "global") {
+                    return this.tsParseAmbientExternalModuleDeclaration(nany);
+                  } else {
+                    return this.tsParseDeclaration(
+                      nany,
+                      value,
+                      /* next */
+                      true
+                    );
+                  }
                 }
-              }
               }
             };
 
@@ -23854,37 +23854,37 @@
               expr
             ) {
               switch (expr.name) {
-              case "declare": {
-                var declaration = this.tsTryParseDeclare(node);
+                case "declare": {
+                  var declaration = this.tsTryParseDeclare(node);
 
-                if (declaration) {
-                  declaration.declare = true;
-                  return declaration;
+                  if (declaration) {
+                    declaration.declare = true;
+                    return declaration;
+                  }
+
+                  break;
                 }
 
-                break;
-              }
+                case "global":
+                  // `global { }` (with no `declare`) may appear inside an ambient module declaration.
+                  // Would like to use tsParseAmbientExternalModuleDeclaration here, but already ran past "global".
+                  if (this.match(types.braceL)) {
+                    var mod = node;
+                    mod.global = true;
+                    mod.id = expr;
+                    mod.body = this.tsParseModuleBlock();
+                    return this.finishNode(mod, "TSModuleDeclaration");
+                  }
 
-              case "global":
-                // `global { }` (with no `declare`) may appear inside an ambient module declaration.
-                // Would like to use tsParseAmbientExternalModuleDeclaration here, but already ran past "global".
-                if (this.match(types.braceL)) {
-                  var mod = node;
-                  mod.global = true;
-                  mod.id = expr;
-                  mod.body = this.tsParseModuleBlock();
-                  return this.finishNode(mod, "TSModuleDeclaration");
-                }
+                  break;
 
-                break;
-
-              default:
-                return this.tsParseDeclaration(
-                  node,
-                  expr.name,
-                  /* next */
-                  false
-                );
+                default:
+                  return this.tsParseDeclaration(
+                    node,
+                    expr.name,
+                    /* next */
+                    false
+                  );
               }
             }; // Common to tsTryParseDeclare, tsTryParseExportDeclaration, and tsParseExpressionStatement.
 
@@ -23894,68 +23894,68 @@
               next
             ) {
               switch (value) {
-              case "abstract":
-                if (next || this.match(types._class)) {
-                  var cls = node;
-                  cls.abstract = true;
+                case "abstract":
+                  if (next || this.match(types._class)) {
+                    var cls = node;
+                    cls.abstract = true;
+                    if (next) this.next();
+                    return this.parseClass(
+                      cls,
+                      /* isStatement */
+                      true,
+                      /* optionalId */
+                      false
+                    );
+                  }
+
+                  break;
+
+                case "enum":
+                  if (next || this.match(types.name)) {
+                    if (next) this.next();
+                    return this.tsParseEnumDeclaration(
+                      node,
+                      /* isConst */
+                      false
+                    );
+                  }
+
+                  break;
+
+                case "interface":
+                  if (next || this.match(types.name)) {
+                    if (next) this.next();
+                    return this.tsParseInterfaceDeclaration(node);
+                  }
+
+                  break;
+
+                case "module":
                   if (next) this.next();
-                  return this.parseClass(
-                    cls,
-                    /* isStatement */
-                    true,
-                    /* optionalId */
-                    false
-                  );
-                }
 
-                break;
+                  if (this.match(types.string)) {
+                    return this.tsParseAmbientExternalModuleDeclaration(node);
+                  } else if (next || this.match(types.name)) {
+                    return this.tsParseModuleOrNamespaceDeclaration(node);
+                  }
 
-              case "enum":
-                if (next || this.match(types.name)) {
-                  if (next) this.next();
-                  return this.tsParseEnumDeclaration(
-                    node,
-                    /* isConst */
-                    false
-                  );
-                }
+                  break;
 
-                break;
+                case "namespace":
+                  if (next || this.match(types.name)) {
+                    if (next) this.next();
+                    return this.tsParseModuleOrNamespaceDeclaration(node);
+                  }
 
-              case "interface":
-                if (next || this.match(types.name)) {
-                  if (next) this.next();
-                  return this.tsParseInterfaceDeclaration(node);
-                }
+                  break;
 
-                break;
+                case "type":
+                  if (next || this.match(types.name)) {
+                    if (next) this.next();
+                    return this.tsParseTypeAliasDeclaration(node);
+                  }
 
-              case "module":
-                if (next) this.next();
-
-                if (this.match(types.string)) {
-                  return this.tsParseAmbientExternalModuleDeclaration(node);
-                } else if (next || this.match(types.name)) {
-                  return this.tsParseModuleOrNamespaceDeclaration(node);
-                }
-
-                break;
-
-              case "namespace":
-                if (next || this.match(types.name)) {
-                  if (next) this.next();
-                  return this.tsParseModuleOrNamespaceDeclaration(node);
-                }
-
-                break;
-
-              case "type":
-                if (next || this.match(types.name)) {
-                  if (next) this.next();
-                  return this.tsParseTypeAliasDeclaration(node);
-                }
-
-                break;
+                  break;
               }
             };
 
@@ -24339,15 +24339,15 @@
               var mod = this.tsParseModifier(["abstract", "readonly"]);
 
               switch (mod) {
-              case "readonly":
-                readonly = true;
-                abstract = !!this.tsParseModifier(["abstract"]);
-                break;
+                case "readonly":
+                  readonly = true;
+                  abstract = !!this.tsParseModifier(["abstract"]);
+                  break;
 
-              case "abstract":
-                abstract = true;
-                readonly = !!this.tsParseModifier(["readonly"]);
-                break;
+                case "abstract":
+                  abstract = true;
+                  readonly = !!this.tsParseModifier(["readonly"]);
+                  break;
               }
 
               if (abstract) methodOrProp.abstract = true;
@@ -24412,14 +24412,14 @@
             _class.prototype.shouldParseExportDeclaration = function shouldParseExportDeclaration() {
               if (this.match(types.name)) {
                 switch (this.state.value) {
-                case "abstract":
-                case "declare":
-                case "enum":
-                case "interface":
-                case "module":
-                case "namespace":
-                case "type":
-                  return true;
+                  case "abstract":
+                  case "declare":
+                  case "enum":
+                  case "interface":
+                  case "module":
+                  case "namespace":
+                  case "type":
+                    return true;
                 }
               }
 
@@ -24840,29 +24840,29 @@
               contextDescription
             ) {
               switch (node.type) {
-              case "TSTypeCastExpression":
-                return _superClass.prototype.toAssignable.call(
-                  this,
-                  this.typeCastToParameter(node),
-                  isBinding,
-                  contextDescription
-                );
+                case "TSTypeCastExpression":
+                  return _superClass.prototype.toAssignable.call(
+                    this,
+                    this.typeCastToParameter(node),
+                    isBinding,
+                    contextDescription
+                  );
 
-              case "TSParameterProperty":
-                return _superClass.prototype.toAssignable.call(
-                  this,
-                  node,
-                  isBinding,
-                  contextDescription
-                );
+                case "TSParameterProperty":
+                  return _superClass.prototype.toAssignable.call(
+                    this,
+                    node,
+                    isBinding,
+                    contextDescription
+                  );
 
-              default:
-                return _superClass.prototype.toAssignable.call(
-                  this,
-                  node,
-                  isBinding,
-                  contextDescription
-                );
+                default:
+                  return _superClass.prototype.toAssignable.call(
+                    this,
+                    node,
+                    isBinding,
+                    contextDescription
+                  );
               }
             };
 
@@ -24873,45 +24873,45 @@
               contextDescription
             ) {
               switch (expr.type) {
-              case "TSTypeCastExpression":
-                // Allow "typecasts" to appear on the left of assignment expressions,
-                // because it may be in an arrow function.
-                // e.g. `const f = (foo: number = 0) => foo;`
-                return;
+                case "TSTypeCastExpression":
+                  // Allow "typecasts" to appear on the left of assignment expressions,
+                  // because it may be in an arrow function.
+                  // e.g. `const f = (foo: number = 0) => foo;`
+                  return;
 
-              case "TSParameterProperty":
-                this.checkLVal(
-                  expr.parameter,
-                  isBinding,
-                  checkClashes,
-                  "parameter property"
-                );
-                return;
+                case "TSParameterProperty":
+                  this.checkLVal(
+                    expr.parameter,
+                    isBinding,
+                    checkClashes,
+                    "parameter property"
+                  );
+                  return;
 
-              default:
-                _superClass.prototype.checkLVal.call(
-                  this,
-                  expr,
-                  isBinding,
-                  checkClashes,
-                  contextDescription
-                );
+                default:
+                  _superClass.prototype.checkLVal.call(
+                    this,
+                    expr,
+                    isBinding,
+                    checkClashes,
+                    contextDescription
+                  );
 
-                return;
+                  return;
               }
             };
 
             _class.prototype.parseBindingAtom = function parseBindingAtom() {
               switch (this.state.type) {
-              case types._this:
-                // "this" may be the name of a parameter, so allow it.
-                return this.parseIdentifier(
-                  /* liberal */
-                  true
-                );
+                case types._this:
+                  // "this" may be the name of a parameter, so allow it.
+                  return this.parseIdentifier(
+                    /* liberal */
+                    true
+                  );
 
-              default:
-                return _superClass.prototype.parseBindingAtom.call(this);
+                default:
+                  return _superClass.prototype.parseBindingAtom.call(this);
               }
             }; // === === === === === === === === === === === === === === === ===
             // Note: All below methods are duplicates of something in flow.js.
@@ -27120,8 +27120,7 @@
         });
 
         for (
-          var es6Symbols = "hasInstance,isConcatSpreadable,iterator,match,replace,search,species,split,toPrimitive,toStringTag,unscopables".split(
-              // 19.4.2.2, 19.4.2.3, 19.4.2.4, 19.4.2.6, 19.4.2.8, 19.4.2.9, 19.4.2.10, 19.4.2.11, 19.4.2.12, 19.4.2.13, 19.4.2.14
+          var es6Symbols = "hasInstance,isConcatSpreadable,iterator,match,replace,search,species,split,toPrimitive,toStringTag,unscopables".split( // 19.4.2.2, 19.4.2.3, 19.4.2.4, 19.4.2.6, 19.4.2.8, 19.4.2.9, 19.4.2.10, 19.4.2.11, 19.4.2.12, 19.4.2.13, 19.4.2.14
               ","
             ),
             j = 0;
@@ -29295,20 +29294,20 @@
 
             if (ctorString) {
               switch (ctorString) {
-              case dataViewCtorString:
-                return dataViewTag;
+                case dataViewCtorString:
+                  return dataViewTag;
 
-              case mapCtorString:
-                return mapTag;
+                case mapCtorString:
+                  return mapTag;
 
-              case promiseCtorString:
-                return promiseTag;
+                case promiseCtorString:
+                  return promiseTag;
 
-              case setCtorString:
-                return setTag;
+                case setCtorString:
+                  return setTag;
 
-              case weakMapCtorString:
-                return weakMapTag;
+                case weakMapCtorString:
+                  return weakMapTag;
               }
             }
 
@@ -29878,48 +29877,48 @@
           var type = (match[2] || "ms").toLowerCase();
 
           switch (type) {
-          case "years":
-          case "year":
-          case "yrs":
-          case "yr":
-          case "y":
-            return n * y;
+            case "years":
+            case "year":
+            case "yrs":
+            case "yr":
+            case "y":
+              return n * y;
 
-          case "days":
-          case "day":
-          case "d":
-            return n * d;
+            case "days":
+            case "day":
+            case "d":
+              return n * d;
 
-          case "hours":
-          case "hour":
-          case "hrs":
-          case "hr":
-          case "h":
-            return n * h;
+            case "hours":
+            case "hour":
+            case "hrs":
+            case "hr":
+            case "h":
+              return n * h;
 
-          case "minutes":
-          case "minute":
-          case "mins":
-          case "min":
-          case "m":
-            return n * m;
+            case "minutes":
+            case "minute":
+            case "mins":
+            case "min":
+            case "m":
+              return n * m;
 
-          case "seconds":
-          case "second":
-          case "secs":
-          case "sec":
-          case "s":
-            return n * s;
+            case "seconds":
+            case "second":
+            case "secs":
+            case "sec":
+            case "s":
+              return n * s;
 
-          case "milliseconds":
-          case "millisecond":
-          case "msecs":
-          case "msec":
-          case "ms":
-            return n;
+            case "milliseconds":
+            case "millisecond":
+            case "msecs":
+            case "msec":
+            case "ms":
+              return n;
 
-          default:
-            return undefined;
+            default:
+              return undefined;
           }
         }
         /**
@@ -30225,17 +30224,17 @@
          */
         function apply(func, thisArg, args) {
           switch (args.length) {
-          case 0:
-            return func.call(thisArg);
+            case 0:
+              return func.call(thisArg);
 
-          case 1:
-            return func.call(thisArg, args[0]);
+            case 1:
+              return func.call(thisArg, args[0]);
 
-          case 2:
-            return func.call(thisArg, args[0], args[1]);
+            case 2:
+              return func.call(thisArg, args[0], args[1]);
 
-          case 3:
-            return func.call(thisArg, args[0], args[1], args[2]);
+            case 3:
+              return func.call(thisArg, args[0], args[1], args[2]);
           }
 
           return func.apply(thisArg, args);
@@ -30606,23 +30605,23 @@
           v *= 255;
 
           switch (hi) {
-          case 0:
-            return [v, t, p];
+            case 0:
+              return [v, t, p];
 
-          case 1:
-            return [q, v, p];
+            case 1:
+              return [q, v, p];
 
-          case 2:
-            return [p, v, t];
+            case 2:
+              return [p, v, t];
 
-          case 3:
-            return [p, q, v];
+            case 3:
+              return [p, q, v];
 
-          case 4:
-            return [t, p, v];
+            case 4:
+              return [t, p, v];
 
-          case 5:
-            return [v, p, q];
+            case 5:
+              return [v, p, q];
           }
         };
 
@@ -30673,43 +30672,43 @@
           var b;
 
           switch (i) {
-          default:
-          case 6:
-          case 0:
-            r = v;
-            g = n;
-            b = wh;
-            break;
+            default:
+            case 6:
+            case 0:
+              r = v;
+              g = n;
+              b = wh;
+              break;
 
-          case 1:
-            r = n;
-            g = v;
-            b = wh;
-            break;
+            case 1:
+              r = n;
+              g = v;
+              b = wh;
+              break;
 
-          case 2:
-            r = wh;
-            g = v;
-            b = n;
-            break;
+            case 2:
+              r = wh;
+              g = v;
+              b = n;
+              break;
 
-          case 3:
-            r = wh;
-            g = n;
-            b = v;
-            break;
+            case 3:
+              r = wh;
+              g = n;
+              b = v;
+              break;
 
-          case 4:
-            r = n;
-            g = wh;
-            b = v;
-            break;
+            case 4:
+              r = n;
+              g = wh;
+              b = v;
+              break;
 
-          case 5:
-            r = v;
-            g = wh;
-            b = n;
-            break;
+            case 5:
+              r = v;
+              g = wh;
+              b = n;
+              break;
           }
 
           return [r * 255, g * 255, b * 255];
@@ -31028,40 +31027,40 @@
           var mg = 0;
 
           switch (Math.floor(hi)) {
-          case 0:
-            pure[0] = 1;
-            pure[1] = v;
-            pure[2] = 0;
-            break;
+            case 0:
+              pure[0] = 1;
+              pure[1] = v;
+              pure[2] = 0;
+              break;
 
-          case 1:
-            pure[0] = w;
-            pure[1] = 1;
-            pure[2] = 0;
-            break;
+            case 1:
+              pure[0] = w;
+              pure[1] = 1;
+              pure[2] = 0;
+              break;
 
-          case 2:
-            pure[0] = 0;
-            pure[1] = 1;
-            pure[2] = v;
-            break;
+            case 2:
+              pure[0] = 0;
+              pure[1] = 1;
+              pure[2] = v;
+              break;
 
-          case 3:
-            pure[0] = 0;
-            pure[1] = w;
-            pure[2] = 1;
-            break;
+            case 3:
+              pure[0] = 0;
+              pure[1] = w;
+              pure[2] = 1;
+              break;
 
-          case 4:
-            pure[0] = v;
-            pure[1] = 0;
-            pure[2] = 1;
-            break;
+            case 4:
+              pure[0] = v;
+              pure[1] = 0;
+              pure[2] = 1;
+              break;
 
-          default:
-            pure[0] = 1;
-            pure[1] = 0;
-            pure[2] = w;
+            default:
+              pure[0] = 1;
+              pure[1] = 0;
+              pure[2] = w;
           }
 
           mg = (1.0 - c) * g;
@@ -33350,21 +33349,21 @@
 
           Buffer.isEncoding = function isEncoding(encoding) {
             switch (String(encoding).toLowerCase()) {
-            case "hex":
-            case "utf8":
-            case "utf-8":
-            case "ascii":
-            case "latin1":
-            case "binary":
-            case "base64":
-            case "ucs2":
-            case "ucs-2":
-            case "utf16le":
-            case "utf-16le":
-              return true;
+              case "hex":
+              case "utf8":
+              case "utf-8":
+              case "ascii":
+              case "latin1":
+              case "binary":
+              case "base64":
+              case "ucs2":
+              case "ucs-2":
+              case "utf16le":
+              case "utf-16le":
+                return true;
 
-            default:
-              return false;
+              default:
+                return false;
             }
           };
 
@@ -33432,33 +33431,33 @@
 
             for (;;) {
               switch (encoding) {
-              case "ascii":
-              case "latin1":
-              case "binary":
-                return len;
+                case "ascii":
+                case "latin1":
+                case "binary":
+                  return len;
 
-              case "utf8":
-              case "utf-8":
-              case undefined:
-                return utf8ToBytes(string).length;
+                case "utf8":
+                case "utf-8":
+                case undefined:
+                  return utf8ToBytes(string).length;
 
-              case "ucs2":
-              case "ucs-2":
-              case "utf16le":
-              case "utf-16le":
-                return len * 2;
+                case "ucs2":
+                case "ucs-2":
+                case "utf16le":
+                case "utf-16le":
+                  return len * 2;
 
-              case "hex":
-                return len >>> 1;
+                case "hex":
+                  return len >>> 1;
 
-              case "base64":
-                return base64ToBytes(string).length;
+                case "base64":
+                  return base64ToBytes(string).length;
 
-              default:
-                if (loweredCase) return utf8ToBytes(string).length; // assume utf8
+                default:
+                  if (loweredCase) return utf8ToBytes(string).length; // assume utf8
 
-                encoding = ("" + encoding).toLowerCase();
-                loweredCase = true;
+                  encoding = ("" + encoding).toLowerCase();
+                  loweredCase = true;
               }
             }
           }
@@ -33501,34 +33500,34 @@
 
             while (true) {
               switch (encoding) {
-              case "hex":
-                return hexSlice(this, start, end);
+                case "hex":
+                  return hexSlice(this, start, end);
 
-              case "utf8":
-              case "utf-8":
-                return utf8Slice(this, start, end);
+                case "utf8":
+                case "utf-8":
+                  return utf8Slice(this, start, end);
 
-              case "ascii":
-                return asciiSlice(this, start, end);
+                case "ascii":
+                  return asciiSlice(this, start, end);
 
-              case "latin1":
-              case "binary":
-                return latin1Slice(this, start, end);
+                case "latin1":
+                case "binary":
+                  return latin1Slice(this, start, end);
 
-              case "base64":
-                return base64Slice(this, start, end);
+                case "base64":
+                  return base64Slice(this, start, end);
 
-              case "ucs2":
-              case "ucs-2":
-              case "utf16le":
-              case "utf-16le":
-                return utf16leSlice(this, start, end);
+                case "ucs2":
+                case "ucs-2":
+                case "utf16le":
+                case "utf-16le":
+                  return utf16leSlice(this, start, end);
 
-              default:
-                if (loweredCase)
-                  throw new TypeError("Unknown encoding: " + encoding);
-                encoding = (encoding + "").toLowerCase();
-                loweredCase = true;
+                default:
+                  if (loweredCase)
+                    throw new TypeError("Unknown encoding: " + encoding);
+                  encoding = (encoding + "").toLowerCase();
+                  loweredCase = true;
               }
             }
           } // The property is used by `Buffer.isBuffer` and `is-buffer` (in Safari 5-7) to detect
@@ -33973,35 +33972,35 @@
 
             for (;;) {
               switch (encoding) {
-              case "hex":
-                return hexWrite(this, string, offset, length);
+                case "hex":
+                  return hexWrite(this, string, offset, length);
 
-              case "utf8":
-              case "utf-8":
-                return utf8Write(this, string, offset, length);
+                case "utf8":
+                case "utf-8":
+                  return utf8Write(this, string, offset, length);
 
-              case "ascii":
-                return asciiWrite(this, string, offset, length);
+                case "ascii":
+                  return asciiWrite(this, string, offset, length);
 
-              case "latin1":
-              case "binary":
-                return latin1Write(this, string, offset, length);
+                case "latin1":
+                case "binary":
+                  return latin1Write(this, string, offset, length);
 
-              case "base64":
-                // Warning: maxLength not taken into account in base64Write
-                return base64Write(this, string, offset, length);
+                case "base64":
+                  // Warning: maxLength not taken into account in base64Write
+                  return base64Write(this, string, offset, length);
 
-              case "ucs2":
-              case "ucs-2":
-              case "utf16le":
-              case "utf-16le":
-                return ucs2Write(this, string, offset, length);
+                case "ucs2":
+                case "ucs-2":
+                case "utf16le":
+                case "utf-16le":
+                  return ucs2Write(this, string, offset, length);
 
-              default:
-                if (loweredCase)
-                  throw new TypeError("Unknown encoding: " + encoding);
-                encoding = ("" + encoding).toLowerCase();
-                loweredCase = true;
+                default:
+                  if (loweredCase)
+                    throw new TypeError("Unknown encoding: " + encoding);
+                  encoding = ("" + encoding).toLowerCase();
+                  loweredCase = true;
               }
             }
           };
@@ -34038,70 +34037,70 @@
                 var secondByte, thirdByte, fourthByte, tempCodePoint;
 
                 switch (bytesPerSequence) {
-                case 1:
-                  if (firstByte < 0x80) {
-                    codePoint = firstByte;
-                  }
+                  case 1:
+                    if (firstByte < 0x80) {
+                      codePoint = firstByte;
+                    }
 
-                  break;
+                    break;
 
-                case 2:
-                  secondByte = buf[i + 1];
+                  case 2:
+                    secondByte = buf[i + 1];
 
-                  if ((secondByte & 0xc0) === 0x80) {
-                    tempCodePoint =
+                    if ((secondByte & 0xc0) === 0x80) {
+                      tempCodePoint =
                         ((firstByte & 0x1f) << 0x6) | (secondByte & 0x3f);
 
-                    if (tempCodePoint > 0x7f) {
-                      codePoint = tempCodePoint;
+                      if (tempCodePoint > 0x7f) {
+                        codePoint = tempCodePoint;
+                      }
                     }
-                  }
 
-                  break;
+                    break;
 
-                case 3:
-                  secondByte = buf[i + 1];
-                  thirdByte = buf[i + 2];
+                  case 3:
+                    secondByte = buf[i + 1];
+                    thirdByte = buf[i + 2];
 
-                  if (
-                    (secondByte & 0xc0) === 0x80 &&
+                    if (
+                      (secondByte & 0xc0) === 0x80 &&
                       (thirdByte & 0xc0) === 0x80
-                  ) {
-                    tempCodePoint =
+                    ) {
+                      tempCodePoint =
                         ((firstByte & 0xf) << 0xc) |
                         ((secondByte & 0x3f) << 0x6) |
                         (thirdByte & 0x3f);
 
-                    if (
-                      tempCodePoint > 0x7ff &&
+                      if (
+                        tempCodePoint > 0x7ff &&
                         (tempCodePoint < 0xd800 || tempCodePoint > 0xdfff)
-                    ) {
-                      codePoint = tempCodePoint;
+                      ) {
+                        codePoint = tempCodePoint;
+                      }
                     }
-                  }
 
-                  break;
+                    break;
 
-                case 4:
-                  secondByte = buf[i + 1];
-                  thirdByte = buf[i + 2];
-                  fourthByte = buf[i + 3];
+                  case 4:
+                    secondByte = buf[i + 1];
+                    thirdByte = buf[i + 2];
+                    fourthByte = buf[i + 3];
 
-                  if (
-                    (secondByte & 0xc0) === 0x80 &&
+                    if (
+                      (secondByte & 0xc0) === 0x80 &&
                       (thirdByte & 0xc0) === 0x80 &&
                       (fourthByte & 0xc0) === 0x80
-                  ) {
-                    tempCodePoint =
+                    ) {
+                      tempCodePoint =
                         ((firstByte & 0xf) << 0x12) |
                         ((secondByte & 0x3f) << 0xc) |
                         ((thirdByte & 0x3f) << 0x6) |
                         (fourthByte & 0x3f);
 
-                    if (tempCodePoint > 0xffff && tempCodePoint < 0x110000) {
-                      codePoint = tempCodePoint;
+                      if (tempCodePoint > 0xffff && tempCodePoint < 0x110000) {
+                        codePoint = tempCodePoint;
+                      }
                     }
-                  }
                 }
               }
 
@@ -36279,21 +36278,21 @@
               if (i >= len) return x;
 
               switch (x) {
-              case "%s":
-                return String(args[i++]);
+                case "%s":
+                  return String(args[i++]);
 
-              case "%d":
-                return Number(args[i++]);
+                case "%d":
+                  return Number(args[i++]);
 
-              case "%j":
-                try {
-                  return JSON.stringify(args[i++]);
-                } catch (_) {
-                  return "[Circular]";
-                }
+                case "%j":
+                  try {
+                    return JSON.stringify(args[i++]);
+                  } catch (_) {
+                    return "[Circular]";
+                  }
 
-              default:
-                return x;
+                default:
+                  return x;
               }
             });
 
@@ -40914,32 +40913,32 @@
                   var isDuplicate = false;
 
                   switch (_prop.kind) {
-                  case "get":
-                    if (alreadySeenData[name] || alreadySeenGetters[name]) {
-                      isDuplicate = true;
-                    }
+                    case "get":
+                      if (alreadySeenData[name] || alreadySeenGetters[name]) {
+                        isDuplicate = true;
+                      }
 
-                    alreadySeenGetters[name] = true;
-                    break;
+                      alreadySeenGetters[name] = true;
+                      break;
 
-                  case "set":
-                    if (alreadySeenData[name] || alreadySeenSetters[name]) {
-                      isDuplicate = true;
-                    }
+                    case "set":
+                      if (alreadySeenData[name] || alreadySeenSetters[name]) {
+                        isDuplicate = true;
+                      }
 
-                    alreadySeenSetters[name] = true;
-                    break;
+                      alreadySeenSetters[name] = true;
+                      break;
 
-                  default:
-                    if (
-                      alreadySeenData[name] ||
+                    default:
+                      if (
+                        alreadySeenData[name] ||
                         alreadySeenGetters[name] ||
                         alreadySeenSetters[name]
-                    ) {
-                      isDuplicate = true;
-                    }
+                      ) {
+                        isDuplicate = true;
+                      }
 
-                    alreadySeenData[name] = true;
+                      alreadySeenData[name] = true;
                   }
 
                   if (isDuplicate) {
@@ -43676,15 +43675,15 @@
           var tree = parse(pattern, config.useUnicodeFlag ? "u" : "");
 
           switch (tree.type) {
-          case "characterClass":
-          case "group":
-          case "value":
-            // No wrapping needed.
-            break;
+            case "characterClass":
+            case "group":
+            case "value":
+              // No wrapping needed.
+              break;
 
-          default:
-            // Wrap the pattern in a non-capturing group.
-            tree = wrap(tree, pattern);
+            default:
+              // Wrap the pattern in a non-capturing group.
+              tree = wrap(tree, pattern);
           }
 
           Object.assign(item, tree);
@@ -43722,60 +43721,60 @@
               var _item = _step.value;
 
               switch (_item.type) {
-              case "value":
-                set.add(_item.codePoint);
+                case "value":
+                  set.add(_item.codePoint);
 
-                if (
-                  config.ignoreCase &&
+                  if (
+                    config.ignoreCase &&
                     config.unicode &&
                     !config.useUnicodeFlag
-                ) {
-                  var folded = caseFold(_item.codePoint);
+                  ) {
+                    var folded = caseFold(_item.codePoint);
 
-                  if (folded) {
-                    set.add(folded);
+                    if (folded) {
+                      set.add(folded);
+                    }
                   }
-                }
 
-                break;
+                  break;
 
-              case "characterClassRange":
-                var min = _item.min.codePoint;
-                var max = _item.max.codePoint;
-                set.addRange(min, max);
+                case "characterClassRange":
+                  var min = _item.min.codePoint;
+                  var max = _item.max.codePoint;
+                  set.addRange(min, max);
 
-                if (
-                  config.ignoreCase &&
+                  if (
+                    config.ignoreCase &&
                     config.unicode &&
                     !config.useUnicodeFlag
-                ) {
-                  set.iuAddRange(min, max);
-                }
+                  ) {
+                    set.iuAddRange(min, max);
+                  }
 
-                break;
+                  break;
 
-              case "characterClassEscape":
-                set.add(
-                  getCharacterClassEscapeSet(
-                    _item.value,
-                    config.unicode,
-                    config.ignoreCase
-                  )
-                );
-                break;
+                case "characterClassEscape":
+                  set.add(
+                    getCharacterClassEscapeSet(
+                      _item.value,
+                      config.unicode,
+                      config.ignoreCase
+                    )
+                  );
+                  break;
 
-              case "unicodePropertyEscape":
-                set.add(
-                  getUnicodePropertyEscapeSet(_item.value, _item.negative)
-                );
-                break;
+                case "unicodePropertyEscape":
+                  set.add(
+                    getUnicodePropertyEscapeSet(_item.value, _item.negative)
+                  );
+                  break;
                 // The `default` clause is only here as a safeguard; it should never be
                 // reached. Code coverage tools should ignore it.
 
                 /* istanbul ignore next */
 
-              default:
-                throw new Error("Unknown term type: ".concat(_item.type));
+                default:
+                  throw new Error("Unknown term type: ".concat(_item.type));
               }
             }
           } catch (err) {
@@ -43803,80 +43802,80 @@
 
         var processTerm = function processTerm(item, regenerateOptions) {
           switch (item.type) {
-          case "dot":
-            update(
-              item,
-              getDotSet(config.unicode, config.dotAll).toString(
-                regenerateOptions
-              )
-            );
-            break;
+            case "dot":
+              update(
+                item,
+                getDotSet(config.unicode, config.dotAll).toString(
+                  regenerateOptions
+                )
+              );
+              break;
 
-          case "characterClass":
-            item = processCharacterClass(item, regenerateOptions);
-            break;
+            case "characterClass":
+              item = processCharacterClass(item, regenerateOptions);
+              break;
 
-          case "unicodePropertyEscape":
-            update(
-              item,
-              getUnicodePropertyEscapeSet(item.value, item.negative).toString(
-                regenerateOptions
-              )
-            );
-            break;
+            case "unicodePropertyEscape":
+              update(
+                item,
+                getUnicodePropertyEscapeSet(item.value, item.negative).toString(
+                  regenerateOptions
+                )
+              );
+              break;
 
-          case "characterClassEscape":
-            update(
-              item,
-              getCharacterClassEscapeSet(
-                item.value,
-                config.unicode,
-                config.ignoreCase
-              ).toString(regenerateOptions)
-            );
-            break;
+            case "characterClassEscape":
+              update(
+                item,
+                getCharacterClassEscapeSet(
+                  item.value,
+                  config.unicode,
+                  config.ignoreCase
+                ).toString(regenerateOptions)
+              );
+              break;
 
-          case "alternative":
-          case "disjunction":
-          case "group":
-          case "quantifier":
-            item.body = item.body.map(function(term) {
-              return processTerm(term, regenerateOptions);
-            });
-            break;
+            case "alternative":
+            case "disjunction":
+            case "group":
+            case "quantifier":
+              item.body = item.body.map(function(term) {
+                return processTerm(term, regenerateOptions);
+              });
+              break;
 
-          case "value":
-            var codePoint = item.codePoint;
-            var set = regenerate(codePoint);
+            case "value":
+              var codePoint = item.codePoint;
+              var set = regenerate(codePoint);
 
-            if (
-              config.ignoreCase &&
+              if (
+                config.ignoreCase &&
                 config.unicode &&
                 !config.useUnicodeFlag
-            ) {
-              var folded = caseFold(codePoint);
+              ) {
+                var folded = caseFold(codePoint);
 
-              if (folded) {
-                set.add(folded);
+                if (folded) {
+                  set.add(folded);
+                }
               }
-            }
 
-            update(item, set.toString(regenerateOptions));
-            break;
+              update(item, set.toString(regenerateOptions));
+              break;
 
-          case "anchor":
-          case "empty":
-          case "group":
-          case "reference":
-            // Nothing to do here.
-            break;
+            case "anchor":
+            case "empty":
+            case "group":
+            case "reference":
+              // Nothing to do here.
+              break;
             // The `default` clause is only here as a safeguard; it should never be
             // reached. Code coverage tools should ignore it.
 
             /* istanbul ignore next */
 
-          default:
-            throw new Error("Unknown term type: ".concat(item.type));
+            default:
+              throw new Error("Unknown term type: ".concat(item.type));
           }
 
           return item;
@@ -46544,15 +46543,15 @@
             if (!BUGGY && kind in proto) return proto[kind];
 
             switch (kind) {
-            case KEYS:
-              return function keys() {
-                return new Constructor(this, kind);
-              };
+              case KEYS:
+                return function keys() {
+                  return new Constructor(this, kind);
+                };
 
-            case VALUES:
-              return function values() {
-                return new Constructor(this, kind);
-              };
+              case VALUES:
+                return function values() {
+                  return new Constructor(this, kind);
+                };
             }
 
             return function entries() {
@@ -47225,25 +47224,25 @@
             return self.explodeExpression(path, ignoreResult);
 
           switch (node.type) {
-          case "Program":
-            return path.get("body").map(self.explodeStatement, self);
+            case "Program":
+              return path.get("body").map(self.explodeStatement, self);
 
-          case "VariableDeclarator":
-            throw getDeclError(node);
+            case "VariableDeclarator":
+              throw getDeclError(node);
             // These node types should be handled by their parent nodes
             // (ObjectExpression, SwitchStatement, and TryStatement, respectively).
 
-          case "Property":
-          case "SwitchCase":
-          case "CatchClause":
-            throw new Error(
-              node.type + " nodes should be handled by their parents"
-            );
+            case "Property":
+            case "SwitchCase":
+            case "CatchClause":
+              throw new Error(
+                node.type + " nodes should be handled by their parents"
+              );
 
-          default:
-            throw new Error(
-              "unknown Node of type " + JSON.stringify(node.type)
-            );
+            default:
+              throw new Error(
+                "unknown Node of type " + JSON.stringify(node.type)
+              );
           }
         };
 
@@ -47288,319 +47287,319 @@
           }
 
           switch (stmt.type) {
-          case "ExpressionStatement":
-            self.explodeExpression(path.get("expression"), true);
-            break;
+            case "ExpressionStatement":
+              self.explodeExpression(path.get("expression"), true);
+              break;
 
-          case "LabeledStatement":
-            after = loc(); // Did you know you can break from any labeled block statement or
-            // control structure? Well, you can! Note: when a labeled loop is
-            // encountered, the leap.LabeledEntry created here will immediately
-            // enclose a leap.LoopEntry on the leap manager's stack, and both
-            // entries will have the same label. Though this works just fine, it
-            // may seem a bit redundant. In theory, we could check here to
-            // determine if stmt knows how to handle its own label; for example,
-            // stmt happens to be a WhileStatement and so we know it's going to
-            // establish its own LoopEntry when we explode it (below). Then this
-            // LabeledEntry would be unnecessary. Alternatively, we might be
-            // tempted not to pass stmt.label down into self.explodeStatement,
-            // because we've handled the label here, but that's a mistake because
-            // labeled loops may contain labeled continue statements, which is not
-            // something we can handle in this generic case. All in all, I think a
-            // little redundancy greatly simplifies the logic of this case, since
-            // it's clear that we handle all possible LabeledStatements correctly
-            // here, regardless of whether they interact with the leap manager
-            // themselves. Also remember that labels and break/continue-to-label
-            // statements are rare, and all of this logic happens at transform
-            // time, so it has no additional runtime cost.
+            case "LabeledStatement":
+              after = loc(); // Did you know you can break from any labeled block statement or
+              // control structure? Well, you can! Note: when a labeled loop is
+              // encountered, the leap.LabeledEntry created here will immediately
+              // enclose a leap.LoopEntry on the leap manager's stack, and both
+              // entries will have the same label. Though this works just fine, it
+              // may seem a bit redundant. In theory, we could check here to
+              // determine if stmt knows how to handle its own label; for example,
+              // stmt happens to be a WhileStatement and so we know it's going to
+              // establish its own LoopEntry when we explode it (below). Then this
+              // LabeledEntry would be unnecessary. Alternatively, we might be
+              // tempted not to pass stmt.label down into self.explodeStatement,
+              // because we've handled the label here, but that's a mistake because
+              // labeled loops may contain labeled continue statements, which is not
+              // something we can handle in this generic case. All in all, I think a
+              // little redundancy greatly simplifies the logic of this case, since
+              // it's clear that we handle all possible LabeledStatements correctly
+              // here, regardless of whether they interact with the leap manager
+              // themselves. Also remember that labels and break/continue-to-label
+              // statements are rare, and all of this logic happens at transform
+              // time, so it has no additional runtime cost.
 
-            self.leapManager.withEntry(
-              new leap.LabeledEntry(after, stmt.label),
-              function() {
-                self.explodeStatement(path.get("body"), stmt.label);
-              }
-            );
-            self.mark(after);
-            break;
+              self.leapManager.withEntry(
+                new leap.LabeledEntry(after, stmt.label),
+                function() {
+                  self.explodeStatement(path.get("body"), stmt.label);
+                }
+              );
+              self.mark(after);
+              break;
 
-          case "WhileStatement":
-            before = loc();
-            after = loc();
-            self.mark(before);
-            self.jumpIfNot(self.explodeExpression(path.get("test")), after);
-            self.leapManager.withEntry(
-              new leap.LoopEntry(after, before, labelId),
-              function() {
-                self.explodeStatement(path.get("body"));
-              }
-            );
-            self.jump(before);
-            self.mark(after);
-            break;
-
-          case "DoWhileStatement":
-            var first = loc();
-            var test = loc();
-            after = loc();
-            self.mark(first);
-            self.leapManager.withEntry(
-              new leap.LoopEntry(after, test, labelId),
-              function() {
-                self.explode(path.get("body"));
-              }
-            );
-            self.mark(test);
-            self.jumpIf(self.explodeExpression(path.get("test")), first);
-            self.mark(after);
-            break;
-
-          case "ForStatement":
-            head = loc();
-            var update = loc();
-            after = loc();
-
-            if (stmt.init) {
-              // We pass true here to indicate that if stmt.init is an expression
-              // then we do not care about its result.
-              self.explode(path.get("init"), true);
-            }
-
-            self.mark(head);
-
-            if (stmt.test) {
+            case "WhileStatement":
+              before = loc();
+              after = loc();
+              self.mark(before);
               self.jumpIfNot(self.explodeExpression(path.get("test")), after);
-            } else {
-              // No test means continue unconditionally.
-            }
+              self.leapManager.withEntry(
+                new leap.LoopEntry(after, before, labelId),
+                function() {
+                  self.explodeStatement(path.get("body"));
+                }
+              );
+              self.jump(before);
+              self.mark(after);
+              break;
 
-            self.leapManager.withEntry(
-              new leap.LoopEntry(after, update, labelId),
-              function() {
-                self.explodeStatement(path.get("body"));
+            case "DoWhileStatement":
+              var first = loc();
+              var test = loc();
+              after = loc();
+              self.mark(first);
+              self.leapManager.withEntry(
+                new leap.LoopEntry(after, test, labelId),
+                function() {
+                  self.explode(path.get("body"));
+                }
+              );
+              self.mark(test);
+              self.jumpIf(self.explodeExpression(path.get("test")), first);
+              self.mark(after);
+              break;
+
+            case "ForStatement":
+              head = loc();
+              var update = loc();
+              after = loc();
+
+              if (stmt.init) {
+                // We pass true here to indicate that if stmt.init is an expression
+                // then we do not care about its result.
+                self.explode(path.get("init"), true);
               }
-            );
-            self.mark(update);
 
-            if (stmt.update) {
-              // We pass true here to indicate that if stmt.update is an
-              // expression then we do not care about its result.
-              self.explode(path.get("update"), true);
-            }
+              self.mark(head);
 
-            self.jump(head);
-            self.mark(after);
-            break;
-
-          case "TypeCastExpression":
-            return self.explodeExpression(path.get("expression"));
-
-          case "ForInStatement":
-            head = loc();
-            after = loc();
-            var keyIterNextFn = self.makeTempVar();
-            self.emitAssign(
-              keyIterNextFn,
-              t.callExpression(util.runtimeProperty("keys"), [
-                self.explodeExpression(path.get("right"))
-              ])
-            );
-            self.mark(head);
-            var keyInfoTmpVar = self.makeTempVar();
-            self.jumpIf(
-              t.memberExpression(
-                t.assignmentExpression(
-                  "=",
-                  keyInfoTmpVar,
-                  t.callExpression(keyIterNextFn, [])
-                ),
-                t.identifier("done"),
-                false
-              ),
-              after
-            );
-            self.emitAssign(
-              stmt.left,
-              t.memberExpression(keyInfoTmpVar, t.identifier("value"), false)
-            );
-            self.leapManager.withEntry(
-              new leap.LoopEntry(after, head, labelId),
-              function() {
-                self.explodeStatement(path.get("body"));
-              }
-            );
-            self.jump(head);
-            self.mark(after);
-            break;
-
-          case "BreakStatement":
-            self.emitAbruptCompletion({
-              type: "break",
-              target: self.leapManager.getBreakLoc(stmt.label)
-            });
-            break;
-
-          case "ContinueStatement":
-            self.emitAbruptCompletion({
-              type: "continue",
-              target: self.leapManager.getContinueLoc(stmt.label)
-            });
-            break;
-
-          case "SwitchStatement":
-            // Always save the discriminant into a temporary variable in case the
-            // test expressions overwrite values like context.sent.
-            var disc = self.emitAssign(
-              self.makeTempVar(),
-              self.explodeExpression(path.get("discriminant"))
-            );
-            after = loc();
-            var defaultLoc = loc();
-            var condition = defaultLoc;
-            var caseLocs = []; // If there are no cases, .cases might be undefined.
-
-            var cases = stmt.cases || [];
-
-            for (var i = cases.length - 1; i >= 0; --i) {
-              var c = cases[i];
-              t.assertSwitchCase(c);
-
-              if (c.test) {
-                condition = t.conditionalExpression(
-                  t.binaryExpression("===", disc, c.test),
-                  (caseLocs[i] = loc()),
-                  condition
-                );
+              if (stmt.test) {
+                self.jumpIfNot(self.explodeExpression(path.get("test")), after);
               } else {
-                caseLocs[i] = defaultLoc;
+                // No test means continue unconditionally.
               }
-            }
 
-            var discriminant = path.get("discriminant");
-            util.replaceWithOrRemove(discriminant, condition);
-            self.jump(self.explodeExpression(discriminant));
-            self.leapManager.withEntry(
-              new leap.SwitchEntry(after),
-              function() {
-                path.get("cases").forEach(function(casePath) {
-                  var i = casePath.key;
-                  self.mark(caseLocs[i]);
-                  casePath.get("consequent").forEach(function(path) {
-                    self.explodeStatement(path);
-                  });
-                });
+              self.leapManager.withEntry(
+                new leap.LoopEntry(after, update, labelId),
+                function() {
+                  self.explodeStatement(path.get("body"));
+                }
+              );
+              self.mark(update);
+
+              if (stmt.update) {
+                // We pass true here to indicate that if stmt.update is an
+                // expression then we do not care about its result.
+                self.explode(path.get("update"), true);
               }
-            );
-            self.mark(after);
 
-            if (defaultLoc.value === -1) {
-              self.mark(defaultLoc);
+              self.jump(head);
+              self.mark(after);
+              break;
 
-              _assert2.default.strictEqual(after.value, defaultLoc.value);
-            }
+            case "TypeCastExpression":
+              return self.explodeExpression(path.get("expression"));
 
-            break;
+            case "ForInStatement":
+              head = loc();
+              after = loc();
+              var keyIterNextFn = self.makeTempVar();
+              self.emitAssign(
+                keyIterNextFn,
+                t.callExpression(util.runtimeProperty("keys"), [
+                  self.explodeExpression(path.get("right"))
+                ])
+              );
+              self.mark(head);
+              var keyInfoTmpVar = self.makeTempVar();
+              self.jumpIf(
+                t.memberExpression(
+                  t.assignmentExpression(
+                    "=",
+                    keyInfoTmpVar,
+                    t.callExpression(keyIterNextFn, [])
+                  ),
+                  t.identifier("done"),
+                  false
+                ),
+                after
+              );
+              self.emitAssign(
+                stmt.left,
+                t.memberExpression(keyInfoTmpVar, t.identifier("value"), false)
+              );
+              self.leapManager.withEntry(
+                new leap.LoopEntry(after, head, labelId),
+                function() {
+                  self.explodeStatement(path.get("body"));
+                }
+              );
+              self.jump(head);
+              self.mark(after);
+              break;
 
-          case "IfStatement":
-            var elseLoc = stmt.alternate && loc();
-            after = loc();
-            self.jumpIfNot(
-              self.explodeExpression(path.get("test")),
-              elseLoc || after
-            );
-            self.explodeStatement(path.get("consequent"));
+            case "BreakStatement":
+              self.emitAbruptCompletion({
+                type: "break",
+                target: self.leapManager.getBreakLoc(stmt.label)
+              });
+              break;
 
-            if (elseLoc) {
-              self.jump(after);
-              self.mark(elseLoc);
-              self.explodeStatement(path.get("alternate"));
-            }
+            case "ContinueStatement":
+              self.emitAbruptCompletion({
+                type: "continue",
+                target: self.leapManager.getContinueLoc(stmt.label)
+              });
+              break;
 
-            self.mark(after);
-            break;
+            case "SwitchStatement":
+              // Always save the discriminant into a temporary variable in case the
+              // test expressions overwrite values like context.sent.
+              var disc = self.emitAssign(
+                self.makeTempVar(),
+                self.explodeExpression(path.get("discriminant"))
+              );
+              after = loc();
+              var defaultLoc = loc();
+              var condition = defaultLoc;
+              var caseLocs = []; // If there are no cases, .cases might be undefined.
 
-          case "ReturnStatement":
-            self.emitAbruptCompletion({
-              type: "return",
-              value: self.explodeExpression(path.get("argument"))
-            });
-            break;
+              var cases = stmt.cases || [];
 
-          case "WithStatement":
-            throw new Error(
-              "WithStatement not supported in generator functions."
-            );
+              for (var i = cases.length - 1; i >= 0; --i) {
+                var c = cases[i];
+                t.assertSwitchCase(c);
 
-          case "TryStatement":
-            after = loc();
-            var handler = stmt.handler;
-            var catchLoc = handler && loc();
-            var catchEntry =
-                catchLoc && new leap.CatchEntry(catchLoc, handler.param);
-            var finallyLoc = stmt.finalizer && loc();
-            var finallyEntry =
-                finallyLoc && new leap.FinallyEntry(finallyLoc, after);
-            var tryEntry = new leap.TryEntry(
-              self.getUnmarkedCurrentLoc(),
-              catchEntry,
-              finallyEntry
-            );
-            self.tryEntries.push(tryEntry);
-            self.updateContextPrevLoc(tryEntry.firstLoc);
-            self.leapManager.withEntry(tryEntry, function() {
-              self.explodeStatement(path.get("block"));
-
-              if (catchLoc) {
-                if (finallyLoc) {
-                  // If we have both a catch block and a finally block, then
-                  // because we emit the catch block first, we need to jump over
-                  // it to the finally block.
-                  self.jump(finallyLoc);
+                if (c.test) {
+                  condition = t.conditionalExpression(
+                    t.binaryExpression("===", disc, c.test),
+                    (caseLocs[i] = loc()),
+                    condition
+                  );
                 } else {
-                  // If there is no finally block, then we need to jump over the
-                  // catch block to the fall-through location.
-                  self.jump(after);
+                  caseLocs[i] = defaultLoc;
+                }
+              }
+
+              var discriminant = path.get("discriminant");
+              util.replaceWithOrRemove(discriminant, condition);
+              self.jump(self.explodeExpression(discriminant));
+              self.leapManager.withEntry(
+                new leap.SwitchEntry(after),
+                function() {
+                  path.get("cases").forEach(function(casePath) {
+                    var i = casePath.key;
+                    self.mark(caseLocs[i]);
+                    casePath.get("consequent").forEach(function(path) {
+                      self.explodeStatement(path);
+                    });
+                  });
+                }
+              );
+              self.mark(after);
+
+              if (defaultLoc.value === -1) {
+                self.mark(defaultLoc);
+
+                _assert2.default.strictEqual(after.value, defaultLoc.value);
+              }
+
+              break;
+
+            case "IfStatement":
+              var elseLoc = stmt.alternate && loc();
+              after = loc();
+              self.jumpIfNot(
+                self.explodeExpression(path.get("test")),
+                elseLoc || after
+              );
+              self.explodeStatement(path.get("consequent"));
+
+              if (elseLoc) {
+                self.jump(after);
+                self.mark(elseLoc);
+                self.explodeStatement(path.get("alternate"));
+              }
+
+              self.mark(after);
+              break;
+
+            case "ReturnStatement":
+              self.emitAbruptCompletion({
+                type: "return",
+                value: self.explodeExpression(path.get("argument"))
+              });
+              break;
+
+            case "WithStatement":
+              throw new Error(
+                "WithStatement not supported in generator functions."
+              );
+
+            case "TryStatement":
+              after = loc();
+              var handler = stmt.handler;
+              var catchLoc = handler && loc();
+              var catchEntry =
+                catchLoc && new leap.CatchEntry(catchLoc, handler.param);
+              var finallyLoc = stmt.finalizer && loc();
+              var finallyEntry =
+                finallyLoc && new leap.FinallyEntry(finallyLoc, after);
+              var tryEntry = new leap.TryEntry(
+                self.getUnmarkedCurrentLoc(),
+                catchEntry,
+                finallyEntry
+              );
+              self.tryEntries.push(tryEntry);
+              self.updateContextPrevLoc(tryEntry.firstLoc);
+              self.leapManager.withEntry(tryEntry, function() {
+                self.explodeStatement(path.get("block"));
+
+                if (catchLoc) {
+                  if (finallyLoc) {
+                    // If we have both a catch block and a finally block, then
+                    // because we emit the catch block first, we need to jump over
+                    // it to the finally block.
+                    self.jump(finallyLoc);
+                  } else {
+                    // If there is no finally block, then we need to jump over the
+                    // catch block to the fall-through location.
+                    self.jump(after);
+                  }
+
+                  self.updateContextPrevLoc(self.mark(catchLoc));
+                  var bodyPath = path.get("handler.body");
+                  var safeParam = self.makeTempVar();
+                  self.clearPendingException(tryEntry.firstLoc, safeParam);
+                  bodyPath.traverse(catchParamVisitor, {
+                    safeParam: safeParam,
+                    catchParamName: handler.param.name
+                  });
+                  self.leapManager.withEntry(catchEntry, function() {
+                    self.explodeStatement(bodyPath);
+                  });
                 }
 
-                self.updateContextPrevLoc(self.mark(catchLoc));
-                var bodyPath = path.get("handler.body");
-                var safeParam = self.makeTempVar();
-                self.clearPendingException(tryEntry.firstLoc, safeParam);
-                bodyPath.traverse(catchParamVisitor, {
-                  safeParam: safeParam,
-                  catchParamName: handler.param.name
-                });
-                self.leapManager.withEntry(catchEntry, function() {
-                  self.explodeStatement(bodyPath);
-                });
-              }
+                if (finallyLoc) {
+                  self.updateContextPrevLoc(self.mark(finallyLoc));
+                  self.leapManager.withEntry(finallyEntry, function() {
+                    self.explodeStatement(path.get("finalizer"));
+                  });
+                  self.emit(
+                    t.returnStatement(
+                      t.callExpression(self.contextProperty("finish"), [
+                        finallyEntry.firstLoc
+                      ])
+                    )
+                  );
+                }
+              });
+              self.mark(after);
+              break;
 
-              if (finallyLoc) {
-                self.updateContextPrevLoc(self.mark(finallyLoc));
-                self.leapManager.withEntry(finallyEntry, function() {
-                  self.explodeStatement(path.get("finalizer"));
-                });
-                self.emit(
-                  t.returnStatement(
-                    t.callExpression(self.contextProperty("finish"), [
-                      finallyEntry.firstLoc
-                    ])
-                  )
-                );
-              }
-            });
-            self.mark(after);
-            break;
+            case "ThrowStatement":
+              self.emit(
+                t.throwStatement(self.explodeExpression(path.get("argument")))
+              );
+              break;
 
-          case "ThrowStatement":
-            self.emit(
-              t.throwStatement(self.explodeExpression(path.get("argument")))
-            );
-            break;
-
-          default:
-            throw new Error(
-              "unknown Statement of type " + JSON.stringify(stmt.type)
-            );
+            default:
+              throw new Error(
+                "unknown Statement of type " + JSON.stringify(stmt.type)
+              );
           }
         };
 
@@ -47794,233 +47793,233 @@
           // return a result.
 
           switch (expr.type) {
-          case "MemberExpression":
-            return finish(
-              t.memberExpression(
-                self.explodeExpression(path.get("object")),
-                expr.computed
-                  ? explodeViaTempVar(null, path.get("property"))
-                  : expr.property,
-                expr.computed
-              )
-            );
-
-          case "CallExpression":
-            var calleePath = path.get("callee");
-            var argsPath = path.get("arguments");
-            var newCallee = void 0;
-            var newArgs = [];
-            var hasLeapingArgs = false;
-            argsPath.forEach(function(argPath) {
-              hasLeapingArgs =
-                  hasLeapingArgs || meta.containsLeap(argPath.node);
-            });
-
-            if (t.isMemberExpression(calleePath.node)) {
-              if (hasLeapingArgs) {
-                // If the arguments of the CallExpression contained any yield
-                // expressions, then we need to be sure to evaluate the callee
-                // before evaluating the arguments, but if the callee was a member
-                // expression, then we must be careful that the object of the
-                // member expression still gets bound to `this` for the call.
-                var newObject = explodeViaTempVar(
-                  // Assign the exploded callee.object expression to a temporary
-                  // variable so that we can use it twice without reevaluating it.
-                  self.makeTempVar(),
-                  calleePath.get("object")
-                );
-                var newProperty = calleePath.node.computed
-                  ? explodeViaTempVar(null, calleePath.get("property"))
-                  : calleePath.node.property;
-                newArgs.unshift(newObject);
-                newCallee = t.memberExpression(
-                  t.memberExpression(
-                    newObject,
-                    newProperty,
-                    calleePath.node.computed
-                  ),
-                  t.identifier("call"),
-                  false
-                );
-              } else {
-                newCallee = self.explodeExpression(calleePath);
-              }
-            } else {
-              newCallee = explodeViaTempVar(null, calleePath);
-
-              if (t.isMemberExpression(newCallee)) {
-                // If the callee was not previously a MemberExpression, then the
-                // CallExpression was "unqualified," meaning its `this` object
-                // should be the global object. If the exploded expression has
-                // become a MemberExpression (e.g. a context property, probably a
-                // temporary variable), then we need to force it to be unqualified
-                // by using the (0, object.property)(...) trick; otherwise, it
-                // will receive the object of the MemberExpression as its `this`
-                // object.
-                newCallee = t.sequenceExpression([
-                  t.numericLiteral(0),
-                  newCallee
-                ]);
-              }
-            }
-
-            argsPath.forEach(function(argPath) {
-              newArgs.push(explodeViaTempVar(null, argPath));
-            });
-            return finish(t.callExpression(newCallee, newArgs));
-
-          case "NewExpression":
-            return finish(
-              t.newExpression(
-                explodeViaTempVar(null, path.get("callee")),
-                path.get("arguments").map(function(argPath) {
-                  return explodeViaTempVar(null, argPath);
-                })
-              )
-            );
-
-          case "ObjectExpression":
-            return finish(
-              t.objectExpression(
-                path.get("properties").map(function(propPath) {
-                  if (propPath.isObjectProperty()) {
-                    return t.objectProperty(
-                      propPath.node.key,
-                      explodeViaTempVar(null, propPath.get("value")),
-                      propPath.node.computed
-                    );
-                  } else {
-                    return propPath.node;
-                  }
-                })
-              )
-            );
-
-          case "ArrayExpression":
-            return finish(
-              t.arrayExpression(
-                path.get("elements").map(function(elemPath) {
-                  return explodeViaTempVar(null, elemPath);
-                })
-              )
-            );
-
-          case "SequenceExpression":
-            var lastIndex = expr.expressions.length - 1;
-            path.get("expressions").forEach(function(exprPath) {
-              if (exprPath.key === lastIndex) {
-                result = self.explodeExpression(exprPath, ignoreResult);
-              } else {
-                self.explodeExpression(exprPath, true);
-              }
-            });
-            return result;
-
-          case "LogicalExpression":
-            after = loc();
-
-            if (!ignoreResult) {
-              result = self.makeTempVar();
-            }
-
-            var left = explodeViaTempVar(result, path.get("left"));
-
-            if (expr.operator === "&&") {
-              self.jumpIfNot(left, after);
-            } else {
-              _assert2.default.strictEqual(expr.operator, "||");
-
-              self.jumpIf(left, after);
-            }
-
-            explodeViaTempVar(result, path.get("right"), ignoreResult);
-            self.mark(after);
-            return result;
-
-          case "ConditionalExpression":
-            var elseLoc = loc();
-            after = loc();
-            var test = self.explodeExpression(path.get("test"));
-            self.jumpIfNot(test, elseLoc);
-
-            if (!ignoreResult) {
-              result = self.makeTempVar();
-            }
-
-            explodeViaTempVar(result, path.get("consequent"), ignoreResult);
-            self.jump(after);
-            self.mark(elseLoc);
-            explodeViaTempVar(result, path.get("alternate"), ignoreResult);
-            self.mark(after);
-            return result;
-
-          case "UnaryExpression":
-            return finish(
-              t.unaryExpression(
-                expr.operator, // Can't (and don't need to) break up the syntax of the argument.
-                // Think about delete a[b].
-                self.explodeExpression(path.get("argument")),
-                !!expr.prefix
-              )
-            );
-
-          case "BinaryExpression":
-            return finish(
-              t.binaryExpression(
-                expr.operator,
-                explodeViaTempVar(null, path.get("left")),
-                explodeViaTempVar(null, path.get("right"))
-              )
-            );
-
-          case "AssignmentExpression":
-            return finish(
-              t.assignmentExpression(
-                expr.operator,
-                self.explodeExpression(path.get("left")),
-                self.explodeExpression(path.get("right"))
-              )
-            );
-
-          case "UpdateExpression":
-            return finish(
-              t.updateExpression(
-                expr.operator,
-                self.explodeExpression(path.get("argument")),
-                expr.prefix
-              )
-            );
-
-          case "YieldExpression":
-            after = loc();
-            var arg =
-                expr.argument && self.explodeExpression(path.get("argument"));
-
-            if (arg && expr.delegate) {
-              var _result = self.makeTempVar();
-
-              self.emit(
-                t.returnStatement(
-                  t.callExpression(self.contextProperty("delegateYield"), [
-                    arg,
-                    t.stringLiteral(_result.property.name),
-                    after
-                  ])
+            case "MemberExpression":
+              return finish(
+                t.memberExpression(
+                  self.explodeExpression(path.get("object")),
+                  expr.computed
+                    ? explodeViaTempVar(null, path.get("property"))
+                    : expr.property,
+                  expr.computed
                 )
               );
+
+            case "CallExpression":
+              var calleePath = path.get("callee");
+              var argsPath = path.get("arguments");
+              var newCallee = void 0;
+              var newArgs = [];
+              var hasLeapingArgs = false;
+              argsPath.forEach(function(argPath) {
+                hasLeapingArgs =
+                  hasLeapingArgs || meta.containsLeap(argPath.node);
+              });
+
+              if (t.isMemberExpression(calleePath.node)) {
+                if (hasLeapingArgs) {
+                  // If the arguments of the CallExpression contained any yield
+                  // expressions, then we need to be sure to evaluate the callee
+                  // before evaluating the arguments, but if the callee was a member
+                  // expression, then we must be careful that the object of the
+                  // member expression still gets bound to `this` for the call.
+                  var newObject = explodeViaTempVar(
+                    // Assign the exploded callee.object expression to a temporary
+                    // variable so that we can use it twice without reevaluating it.
+                    self.makeTempVar(),
+                    calleePath.get("object")
+                  );
+                  var newProperty = calleePath.node.computed
+                    ? explodeViaTempVar(null, calleePath.get("property"))
+                    : calleePath.node.property;
+                  newArgs.unshift(newObject);
+                  newCallee = t.memberExpression(
+                    t.memberExpression(
+                      newObject,
+                      newProperty,
+                      calleePath.node.computed
+                    ),
+                    t.identifier("call"),
+                    false
+                  );
+                } else {
+                  newCallee = self.explodeExpression(calleePath);
+                }
+              } else {
+                newCallee = explodeViaTempVar(null, calleePath);
+
+                if (t.isMemberExpression(newCallee)) {
+                  // If the callee was not previously a MemberExpression, then the
+                  // CallExpression was "unqualified," meaning its `this` object
+                  // should be the global object. If the exploded expression has
+                  // become a MemberExpression (e.g. a context property, probably a
+                  // temporary variable), then we need to force it to be unqualified
+                  // by using the (0, object.property)(...) trick; otherwise, it
+                  // will receive the object of the MemberExpression as its `this`
+                  // object.
+                  newCallee = t.sequenceExpression([
+                    t.numericLiteral(0),
+                    newCallee
+                  ]);
+                }
+              }
+
+              argsPath.forEach(function(argPath) {
+                newArgs.push(explodeViaTempVar(null, argPath));
+              });
+              return finish(t.callExpression(newCallee, newArgs));
+
+            case "NewExpression":
+              return finish(
+                t.newExpression(
+                  explodeViaTempVar(null, path.get("callee")),
+                  path.get("arguments").map(function(argPath) {
+                    return explodeViaTempVar(null, argPath);
+                  })
+                )
+              );
+
+            case "ObjectExpression":
+              return finish(
+                t.objectExpression(
+                  path.get("properties").map(function(propPath) {
+                    if (propPath.isObjectProperty()) {
+                      return t.objectProperty(
+                        propPath.node.key,
+                        explodeViaTempVar(null, propPath.get("value")),
+                        propPath.node.computed
+                      );
+                    } else {
+                      return propPath.node;
+                    }
+                  })
+                )
+              );
+
+            case "ArrayExpression":
+              return finish(
+                t.arrayExpression(
+                  path.get("elements").map(function(elemPath) {
+                    return explodeViaTempVar(null, elemPath);
+                  })
+                )
+              );
+
+            case "SequenceExpression":
+              var lastIndex = expr.expressions.length - 1;
+              path.get("expressions").forEach(function(exprPath) {
+                if (exprPath.key === lastIndex) {
+                  result = self.explodeExpression(exprPath, ignoreResult);
+                } else {
+                  self.explodeExpression(exprPath, true);
+                }
+              });
+              return result;
+
+            case "LogicalExpression":
+              after = loc();
+
+              if (!ignoreResult) {
+                result = self.makeTempVar();
+              }
+
+              var left = explodeViaTempVar(result, path.get("left"));
+
+              if (expr.operator === "&&") {
+                self.jumpIfNot(left, after);
+              } else {
+                _assert2.default.strictEqual(expr.operator, "||");
+
+                self.jumpIf(left, after);
+              }
+
+              explodeViaTempVar(result, path.get("right"), ignoreResult);
               self.mark(after);
-              return _result;
-            }
+              return result;
 
-            self.emitAssign(self.contextProperty("next"), after);
-            self.emit(t.returnStatement(arg || null));
-            self.mark(after);
-            return self.contextProperty("sent");
+            case "ConditionalExpression":
+              var elseLoc = loc();
+              after = loc();
+              var test = self.explodeExpression(path.get("test"));
+              self.jumpIfNot(test, elseLoc);
 
-          default:
-            throw new Error(
-              "unknown Expression of type " + JSON.stringify(expr.type)
-            );
+              if (!ignoreResult) {
+                result = self.makeTempVar();
+              }
+
+              explodeViaTempVar(result, path.get("consequent"), ignoreResult);
+              self.jump(after);
+              self.mark(elseLoc);
+              explodeViaTempVar(result, path.get("alternate"), ignoreResult);
+              self.mark(after);
+              return result;
+
+            case "UnaryExpression":
+              return finish(
+                t.unaryExpression(
+                  expr.operator, // Can't (and don't need to) break up the syntax of the argument.
+                  // Think about delete a[b].
+                  self.explodeExpression(path.get("argument")),
+                  !!expr.prefix
+                )
+              );
+
+            case "BinaryExpression":
+              return finish(
+                t.binaryExpression(
+                  expr.operator,
+                  explodeViaTempVar(null, path.get("left")),
+                  explodeViaTempVar(null, path.get("right"))
+                )
+              );
+
+            case "AssignmentExpression":
+              return finish(
+                t.assignmentExpression(
+                  expr.operator,
+                  self.explodeExpression(path.get("left")),
+                  self.explodeExpression(path.get("right"))
+                )
+              );
+
+            case "UpdateExpression":
+              return finish(
+                t.updateExpression(
+                  expr.operator,
+                  self.explodeExpression(path.get("argument")),
+                  expr.prefix
+                )
+              );
+
+            case "YieldExpression":
+              after = loc();
+              var arg =
+                expr.argument && self.explodeExpression(path.get("argument"));
+
+              if (arg && expr.delegate) {
+                var _result = self.makeTempVar();
+
+                self.emit(
+                  t.returnStatement(
+                    t.callExpression(self.contextProperty("delegateYield"), [
+                      arg,
+                      t.stringLiteral(_result.property.name),
+                      after
+                    ])
+                  )
+                );
+                self.mark(after);
+                return _result;
+              }
+
+              self.emitAssign(self.contextProperty("next"), after);
+              self.emit(t.returnStatement(arg || null));
+              self.mark(after);
+              return self.contextProperty("sent");
+
+            default:
+              throw new Error(
+                "unknown Expression of type " + JSON.stringify(expr.type)
+              );
           }
         };
 
@@ -50734,42 +50733,42 @@
           var Ctor = object.constructor;
 
           switch (tag) {
-          case arrayBufferTag:
-            return cloneArrayBuffer(object);
+            case arrayBufferTag:
+              return cloneArrayBuffer(object);
 
-          case boolTag:
-          case dateTag:
-            return new Ctor(+object);
+            case boolTag:
+            case dateTag:
+              return new Ctor(+object);
 
-          case dataViewTag:
-            return cloneDataView(object, isDeep);
+            case dataViewTag:
+              return cloneDataView(object, isDeep);
 
-          case float32Tag:
-          case float64Tag:
-          case int8Tag:
-          case int16Tag:
-          case int32Tag:
-          case uint8Tag:
-          case uint8ClampedTag:
-          case uint16Tag:
-          case uint32Tag:
-            return cloneTypedArray(object, isDeep);
+            case float32Tag:
+            case float64Tag:
+            case int8Tag:
+            case int16Tag:
+            case int32Tag:
+            case uint8Tag:
+            case uint8ClampedTag:
+            case uint16Tag:
+            case uint32Tag:
+              return cloneTypedArray(object, isDeep);
 
-          case mapTag:
-            return cloneMap(object, isDeep, cloneFunc);
+            case mapTag:
+              return cloneMap(object, isDeep, cloneFunc);
 
-          case numberTag:
-          case stringTag:
-            return new Ctor(object);
+            case numberTag:
+            case stringTag:
+              return new Ctor(object);
 
-          case regexpTag:
-            return cloneRegExp(object);
+            case regexpTag:
+              return cloneRegExp(object);
 
-          case setTag:
-            return cloneSet(object, isDeep, cloneFunc);
+            case setTag:
+              return cloneSet(object, isDeep, cloneFunc);
 
-          case symbolTag:
-            return cloneSymbol(object);
+            case symbolTag:
+              return cloneSymbol(object);
           }
         }
 
@@ -52675,94 +52674,94 @@
 
         function isReferenced(node, parent) {
           switch (parent.type) {
-          case "BindExpression":
-            return parent.object === node || parent.callee === node;
+            case "BindExpression":
+              return parent.object === node || parent.callee === node;
 
-          case "MemberExpression":
-          case "JSXMemberExpression":
-            if (parent.property === node && parent.computed) {
-              return true;
-            } else if (parent.object === node) {
-              return true;
-            } else {
+            case "MemberExpression":
+            case "JSXMemberExpression":
+              if (parent.property === node && parent.computed) {
+                return true;
+              } else if (parent.object === node) {
+                return true;
+              } else {
+                return false;
+              }
+
+            case "MetaProperty":
               return false;
-            }
 
-          case "MetaProperty":
-            return false;
+            case "ObjectProperty":
+              if (parent.key === node) {
+                return parent.computed;
+              }
 
-          case "ObjectProperty":
-            if (parent.key === node) {
-              return parent.computed;
-            }
+            case "VariableDeclarator":
+              return parent.id !== node;
 
-          case "VariableDeclarator":
-            return parent.id !== node;
+            case "ArrowFunctionExpression":
+            case "FunctionDeclaration":
+            case "FunctionExpression":
+              var _arr = parent.params;
 
-          case "ArrowFunctionExpression":
-          case "FunctionDeclaration":
-          case "FunctionExpression":
-            var _arr = parent.params;
+              for (var _i = 0; _i < _arr.length; _i++) {
+                var param = _arr[_i];
+                if (param === node) return false;
+              }
 
-            for (var _i = 0; _i < _arr.length; _i++) {
-              var param = _arr[_i];
-              if (param === node) return false;
-            }
+              return parent.id !== node;
 
-            return parent.id !== node;
+            case "ExportSpecifier":
+              if (parent.source) {
+                return false;
+              } else {
+                return parent.local === node;
+              }
 
-          case "ExportSpecifier":
-            if (parent.source) {
+            case "ExportNamespaceSpecifier":
+            case "ExportDefaultSpecifier":
               return false;
-            } else {
-              return parent.local === node;
-            }
 
-          case "ExportNamespaceSpecifier":
-          case "ExportDefaultSpecifier":
-            return false;
+            case "JSXAttribute":
+              return parent.name !== node;
 
-          case "JSXAttribute":
-            return parent.name !== node;
+            case "ClassProperty":
+              if (parent.key === node) {
+                return parent.computed;
+              } else {
+                return parent.value === node;
+              }
 
-          case "ClassProperty":
-            if (parent.key === node) {
-              return parent.computed;
-            } else {
-              return parent.value === node;
-            }
+            case "ImportDefaultSpecifier":
+            case "ImportNamespaceSpecifier":
+            case "ImportSpecifier":
+              return false;
 
-          case "ImportDefaultSpecifier":
-          case "ImportNamespaceSpecifier":
-          case "ImportSpecifier":
-            return false;
+            case "ClassDeclaration":
+            case "ClassExpression":
+              return parent.id !== node;
 
-          case "ClassDeclaration":
-          case "ClassExpression":
-            return parent.id !== node;
+            case "ClassMethod":
+            case "ObjectMethod":
+              return parent.key === node && parent.computed;
 
-          case "ClassMethod":
-          case "ObjectMethod":
-            return parent.key === node && parent.computed;
+            case "LabeledStatement":
+              return false;
 
-          case "LabeledStatement":
-            return false;
+            case "CatchClause":
+              return parent.param !== node;
 
-          case "CatchClause":
-            return parent.param !== node;
+            case "RestElement":
+              return false;
 
-          case "RestElement":
-            return false;
+            case "AssignmentExpression":
+              return parent.right === node;
 
-          case "AssignmentExpression":
-            return parent.right === node;
+            case "AssignmentPattern":
+              return parent.right === node;
 
-          case "AssignmentPattern":
-            return parent.right === node;
-
-          case "ObjectPattern":
-          case "ArrayPattern":
-            return false;
+            case "ObjectPattern":
+            case "ArrayPattern":
+              return false;
           }
 
           return true;
@@ -52934,23 +52933,23 @@
             }
 
             switch (node.type) {
-            case "ArrayExpression":
-            case "AssignmentExpression":
-            case "BinaryExpression":
-            case "CallExpression":
-            case "ConditionalExpression":
-            case "FunctionExpression":
-            case "Identifier":
-            case "Literal":
-            case "LogicalExpression":
-            case "MemberExpression":
-            case "NewExpression":
-            case "ObjectExpression":
-            case "SequenceExpression":
-            case "ThisExpression":
-            case "UnaryExpression":
-            case "UpdateExpression":
-              return true;
+              case "ArrayExpression":
+              case "AssignmentExpression":
+              case "BinaryExpression":
+              case "CallExpression":
+              case "ConditionalExpression":
+              case "FunctionExpression":
+              case "Identifier":
+              case "Literal":
+              case "LogicalExpression":
+              case "MemberExpression":
+              case "NewExpression":
+              case "ObjectExpression":
+              case "SequenceExpression":
+              case "ThisExpression":
+              case "UnaryExpression":
+              case "UpdateExpression":
+                return true;
             }
 
             return false;
@@ -52962,11 +52961,11 @@
             }
 
             switch (node.type) {
-            case "DoWhileStatement":
-            case "ForInStatement":
-            case "ForStatement":
-            case "WhileStatement":
-              return true;
+              case "DoWhileStatement":
+              case "ForInStatement":
+              case "ForStatement":
+              case "WhileStatement":
+                return true;
             }
 
             return false;
@@ -52978,25 +52977,25 @@
             }
 
             switch (node.type) {
-            case "BlockStatement":
-            case "BreakStatement":
-            case "ContinueStatement":
-            case "DebuggerStatement":
-            case "DoWhileStatement":
-            case "EmptyStatement":
-            case "ExpressionStatement":
-            case "ForInStatement":
-            case "ForStatement":
-            case "IfStatement":
-            case "LabeledStatement":
-            case "ReturnStatement":
-            case "SwitchStatement":
-            case "ThrowStatement":
-            case "TryStatement":
-            case "VariableDeclaration":
-            case "WhileStatement":
-            case "WithStatement":
-              return true;
+              case "BlockStatement":
+              case "BreakStatement":
+              case "ContinueStatement":
+              case "DebuggerStatement":
+              case "DoWhileStatement":
+              case "EmptyStatement":
+              case "ExpressionStatement":
+              case "ForInStatement":
+              case "ForStatement":
+              case "IfStatement":
+              case "LabeledStatement":
+              case "ReturnStatement":
+              case "SwitchStatement":
+              case "ThrowStatement":
+              case "TryStatement":
+              case "VariableDeclaration":
+              case "WhileStatement":
+              case "WithStatement":
+                return true;
             }
 
             return false;
@@ -53011,19 +53010,19 @@
 
           function trailingStatement(node) {
             switch (node.type) {
-            case "IfStatement":
-              if (node.alternate != null) {
-                return node.alternate;
-              }
+              case "IfStatement":
+                if (node.alternate != null) {
+                  return node.alternate;
+                }
 
-              return node.consequent;
+                return node.consequent;
 
-            case "LabeledStatement":
-            case "ForStatement":
-            case "ForInStatement":
-            case "WhileStatement":
-            case "WithStatement":
-              return node.body;
+              case "LabeledStatement":
+              case "ForStatement":
+              case "ForInStatement":
+              case "WhileStatement":
+              case "WithStatement":
+                return node.body;
             }
 
             return null;
@@ -53100,18 +53099,18 @@
 
           function isStrictModeReservedWordES6(id) {
             switch (id) {
-            case "implements":
-            case "interface":
-            case "package":
-            case "private":
-            case "protected":
-            case "public":
-            case "static":
-            case "let":
-              return true;
+              case "implements":
+              case "interface":
+              case "package":
+              case "private":
+              case "protected":
+              case "public":
+              case "static":
+              case "let":
+                return true;
 
-            default:
-              return false;
+              default:
+                return false;
             }
           }
 
@@ -53130,27 +53129,27 @@
             }
 
             switch (id.length) {
-            case 2:
-              return id === "if" || id === "in" || id === "do";
+              case 2:
+                return id === "if" || id === "in" || id === "do";
 
-            case 3:
-              return (
-                id === "var" || id === "for" || id === "new" || id === "try"
-              );
+              case 3:
+                return (
+                  id === "var" || id === "for" || id === "new" || id === "try"
+                );
 
-            case 4:
-              return (
-                id === "this" ||
+              case 4:
+                return (
+                  id === "this" ||
                   id === "else" ||
                   id === "case" ||
                   id === "void" ||
                   id === "with" ||
                   id === "enum"
-              );
+                );
 
-            case 5:
-              return (
-                id === "while" ||
+              case 5:
+                return (
+                  id === "while" ||
                   id === "break" ||
                   id === "catch" ||
                   id === "throw" ||
@@ -53158,31 +53157,31 @@
                   id === "yield" ||
                   id === "class" ||
                   id === "super"
-              );
+                );
 
-            case 6:
-              return (
-                id === "return" ||
+              case 6:
+                return (
+                  id === "return" ||
                   id === "typeof" ||
                   id === "delete" ||
                   id === "switch" ||
                   id === "export" ||
                   id === "import"
-              );
+                );
 
-            case 7:
-              return id === "default" || id === "finally" || id === "extends";
+              case 7:
+                return id === "default" || id === "finally" || id === "extends";
 
-            case 8:
-              return (
-                id === "function" || id === "continue" || id === "debugger"
-              );
+              case 8:
+                return (
+                  id === "function" || id === "continue" || id === "debugger"
+                );
 
-            case 10:
-              return id === "instanceof";
+              case 10:
+                return id === "instanceof";
 
-            default:
-              return false;
+              default:
+                return false;
             }
           }
 
@@ -58970,20 +58969,20 @@
               if (!state.confident) return;
 
               switch (node.operator) {
-              case "!":
-                return !arg;
+                case "!":
+                  return !arg;
 
-              case "+":
-                return +arg;
+                case "+":
+                  return +arg;
 
-              case "-":
-                return -arg;
+                case "-":
+                  return -arg;
 
-              case "~":
-                return ~arg;
+                case "~":
+                  return ~arg;
 
-              case "typeof":
-                return _typeof(arg);
+                case "typeof":
+                  return _typeof(arg);
               }
             }
 
@@ -59099,22 +59098,22 @@
               state.confident = leftConfident && rightConfident;
 
               switch (node.operator) {
-              case "||":
-                if (left && leftConfident) {
-                  state.confident = true;
-                  return left;
-                }
+                case "||":
+                  if (left && leftConfident) {
+                    state.confident = true;
+                    return left;
+                  }
 
-                if (!state.confident) return;
-                return left || right;
+                  if (!state.confident) return;
+                  return left || right;
 
-              case "&&":
-                if ((!left && leftConfident) || (!right && rightConfident)) {
-                  state.confident = true;
-                }
+                case "&&":
+                  if ((!left && leftConfident) || (!right && rightConfident)) {
+                    state.confident = true;
+                  }
 
-                if (!state.confident) return;
-                return left && right;
+                  if (!state.confident) return;
+                  return left && right;
               }
             }
 
@@ -59128,65 +59127,65 @@
               if (!state.confident) return;
 
               switch (node.operator) {
-              case "-":
-                return _left - _right;
+                case "-":
+                  return _left - _right;
 
-              case "+":
-                return _left + _right;
+                case "+":
+                  return _left + _right;
 
-              case "/":
-                return _left / _right;
+                case "/":
+                  return _left / _right;
 
-              case "*":
-                return _left * _right;
+                case "*":
+                  return _left * _right;
 
-              case "%":
-                return _left % _right;
+                case "%":
+                  return _left % _right;
 
-              case "**":
-                return Math.pow(_left, _right);
+                case "**":
+                  return Math.pow(_left, _right);
 
-              case "<":
-                return _left < _right;
+                case "<":
+                  return _left < _right;
 
-              case ">":
-                return _left > _right;
+                case ">":
+                  return _left > _right;
 
-              case "<=":
-                return _left <= _right;
+                case "<=":
+                  return _left <= _right;
 
-              case ">=":
-                return _left >= _right;
+                case ">=":
+                  return _left >= _right;
 
-              case "==":
-                return _left == _right;
+                case "==":
+                  return _left == _right;
 
-              case "!=":
-                return _left != _right;
+                case "!=":
+                  return _left != _right;
 
-              case "===":
-                return _left === _right;
+                case "===":
+                  return _left === _right;
 
-              case "!==":
-                return _left !== _right;
+                case "!==":
+                  return _left !== _right;
 
-              case "|":
-                return _left | _right;
+                case "|":
+                  return _left | _right;
 
-              case "&":
-                return _left & _right;
+                case "&":
+                  return _left & _right;
 
-              case "^":
-                return _left ^ _right;
+                case "^":
+                  return _left ^ _right;
 
-              case "<<":
-                return _left << _right;
+                case "<<":
+                  return _left << _right;
 
-              case ">>":
-                return _left >> _right;
+                case ">>":
+                  return _left >> _right;
 
-              case ">>>":
-                return _left >>> _right;
+                case ">>>":
+                  return _left >>> _right;
               }
             }
 
@@ -62985,16 +62984,16 @@
           var mappings;
 
           switch (order) {
-          case SourceMapConsumer.GENERATED_ORDER:
-            mappings = this._generatedMappings;
-            break;
+            case SourceMapConsumer.GENERATED_ORDER:
+              mappings = this._generatedMappings;
+              break;
 
-          case SourceMapConsumer.ORIGINAL_ORDER:
-            mappings = this._originalMappings;
-            break;
+            case SourceMapConsumer.ORIGINAL_ORDER:
+              mappings = this._originalMappings;
+              break;
 
-          default:
-            throw new Error("Unknown order of iteration.");
+            default:
+              throw new Error("Unknown order of iteration.");
           }
 
           var sourceRoot = this.sourceRoot;
@@ -66379,81 +66378,81 @@
           stack
         ) {
           switch (tag) {
-          case dataViewTag:
-            if (
-              object.byteLength != other.byteLength ||
+            case dataViewTag:
+              if (
+                object.byteLength != other.byteLength ||
                 object.byteOffset != other.byteOffset
-            ) {
-              return false;
-            }
+              ) {
+                return false;
+              }
 
-            object = object.buffer;
-            other = other.buffer;
+              object = object.buffer;
+              other = other.buffer;
 
-          case arrayBufferTag:
-            if (
-              object.byteLength != other.byteLength ||
+            case arrayBufferTag:
+              if (
+                object.byteLength != other.byteLength ||
                 !equalFunc(new Uint8Array(object), new Uint8Array(other))
-            ) {
-              return false;
-            }
+              ) {
+                return false;
+              }
 
-            return true;
+              return true;
 
-          case boolTag:
-          case dateTag:
-          case numberTag:
-            // Coerce booleans to `1` or `0` and dates to milliseconds.
-            // Invalid dates are coerced to `NaN`.
-            return eq(+object, +other);
+            case boolTag:
+            case dateTag:
+            case numberTag:
+              // Coerce booleans to `1` or `0` and dates to milliseconds.
+              // Invalid dates are coerced to `NaN`.
+              return eq(+object, +other);
 
-          case errorTag:
-            return (
-              object.name == other.name && object.message == other.message
-            );
+            case errorTag:
+              return (
+                object.name == other.name && object.message == other.message
+              );
 
-          case regexpTag:
-          case stringTag:
-            // Coerce regexes to strings and treat strings, primitives and objects,
-            // as equal. See http://www.ecma-international.org/ecma-262/7.0/#sec-regexp.prototype.tostring
-            // for more details.
-            return object == other + "";
+            case regexpTag:
+            case stringTag:
+              // Coerce regexes to strings and treat strings, primitives and objects,
+              // as equal. See http://www.ecma-international.org/ecma-262/7.0/#sec-regexp.prototype.tostring
+              // for more details.
+              return object == other + "";
 
-          case mapTag:
-            var convert = mapToArray;
+            case mapTag:
+              var convert = mapToArray;
 
-          case setTag:
-            var isPartial = bitmask & COMPARE_PARTIAL_FLAG;
-            convert || (convert = setToArray);
+            case setTag:
+              var isPartial = bitmask & COMPARE_PARTIAL_FLAG;
+              convert || (convert = setToArray);
 
-            if (object.size != other.size && !isPartial) {
-              return false;
-            } // Assume cyclic values are equal.
+              if (object.size != other.size && !isPartial) {
+                return false;
+              } // Assume cyclic values are equal.
 
-            var stacked = stack.get(object);
+              var stacked = stack.get(object);
 
-            if (stacked) {
-              return stacked == other;
-            }
+              if (stacked) {
+                return stacked == other;
+              }
 
-            bitmask |= COMPARE_UNORDERED_FLAG; // Recursively compare objects (susceptible to call stack limits).
+              bitmask |= COMPARE_UNORDERED_FLAG; // Recursively compare objects (susceptible to call stack limits).
 
-            stack.set(object, other);
-            var result = equalArrays(
-              convert(object),
-              convert(other),
-              bitmask,
-              customizer,
-              equalFunc,
-              stack
-            );
-            stack["delete"](object);
-            return result;
+              stack.set(object, other);
+              var result = equalArrays(
+                convert(object),
+                convert(other),
+                bitmask,
+                customizer,
+                equalFunc,
+                stack
+              );
+              stack["delete"](object);
+              return result;
 
-          case symbolTag:
-            if (symbolValueOf) {
-              return symbolValueOf.call(object) == symbolValueOf.call(other);
-            }
+            case symbolTag:
+              if (symbolValueOf) {
+                return symbolValueOf.call(object) == symbolValueOf.call(other);
+              }
           }
 
           return false;
@@ -73308,35 +73307,35 @@
           var m = matches[0];
 
           switch (m) {
-          case "\\,":
-            return escapeCommas(str, arr, opts);
+            case "\\,":
+              return escapeCommas(str, arr, opts);
 
-          case "\\.":
-            return escapeDots(str, arr, opts);
+            case "\\.":
+              return escapeDots(str, arr, opts);
 
-          case "/.":
-            return escapePaths(str, arr, opts);
+            case "/.":
+              return escapePaths(str, arr, opts);
 
-          case " ":
-            return splitWhitespace(str);
+            case " ":
+              return splitWhitespace(str);
 
-          case "{,}":
-            return exponential(str, opts, braces);
+            case "{,}":
+              return exponential(str, opts, braces);
 
-          case "{}":
-            return emptyBraces(str, arr, opts);
+            case "{}":
+              return emptyBraces(str, arr, opts);
 
-          case "\\{":
-          case "\\}":
-            return escapeBraces(str, arr, opts);
+            case "\\{":
+            case "\\}":
+              return escapeBraces(str, arr, opts);
 
-          case "${":
-            if (!/\{[^{]+\{/.test(str)) {
-              return arr.concat(str);
-            } else {
-              es6 = true;
-              str = tokens.before(str, es6Regex());
-            }
+            case "${":
+              if (!/\{[^{]+\{/.test(str)) {
+                return arr.concat(str);
+              } else {
+                es6 = true;
+                str = tokens.before(str, es6Regex());
+              }
           }
 
           if (!(braceRe instanceof RegExp)) {
@@ -74864,23 +74863,23 @@
           if (esc) inner = escape(inner);
 
           switch (prefix) {
-          case "!":
-            return "(?!" + inner + ")[^/]" + (esc ? "%%%~" : "*?");
+            case "!":
+              return "(?!" + inner + ")[^/]" + (esc ? "%%%~" : "*?");
 
-          case "@":
-            return "(?:" + inner + ")";
+            case "@":
+              return "(?:" + inner + ")";
 
-          case "+":
-            return "(?:" + inner + ")+";
+            case "+":
+              return "(?:" + inner + ")+";
 
-          case "*":
-            return "(?:" + inner + ")" + (esc ? "%%" : "*");
+            case "*":
+              return "(?:" + inner + ")" + (esc ? "%%" : "*");
 
-          case "?":
-            return "(?:" + inner + "|)";
+            case "?":
+              return "(?:" + inner + "|)";
 
-          default:
-            return inner;
+            default:
+              return inner;
           }
         }
 
@@ -80512,16 +80511,16 @@
                 cause = _ref.cause;
 
               switch (cause) {
-              case "indexGetter":
-                optimiseIndexGetter(_path, argsId, state.offset);
-                break;
+                case "indexGetter":
+                  optimiseIndexGetter(_path, argsId, state.offset);
+                  break;
 
-              case "lengthGetter":
-                optimiseLengthGetter(_path, argsId, state.offset);
-                break;
+                case "lengthGetter":
+                  optimiseLengthGetter(_path, argsId, state.offset);
+                  break;
 
-              default:
-                _path.replaceWith(argsId);
+                default:
+                  _path.replaceWith(argsId);
               }
             }
 
@@ -80891,20 +80890,20 @@
               assertType(node.type, "anchor");
 
               switch (node.kind) {
-              case "start":
-                return "^";
+                case "start":
+                  return "^";
 
-              case "end":
-                return "$";
+                case "end":
+                  return "$";
 
-              case "boundary":
-                return "\\b";
+                case "boundary":
+                  return "\\b";
 
-              case "not-boundary":
-                return "\\B";
+                case "not-boundary":
+                  return "\\B";
 
-              default:
-                throw Error("Invalid assertion");
+                default:
+                  throw Error("Invalid assertion");
               }
             }
 
@@ -80997,23 +80996,23 @@
               var result = "";
 
               switch (node.behavior) {
-              case "normal":
-                break;
+                case "normal":
+                  break;
 
-              case "ignore":
-                result += "?:";
-                break;
+                case "ignore":
+                  result += "?:";
+                  break;
 
-              case "lookahead":
-                result += "?=";
-                break;
+                case "lookahead":
+                  result += "?=";
+                  break;
 
-              case "negativeLookahead":
-                result += "?!";
-                break;
+                case "negativeLookahead":
+                  result += "?!";
+                  break;
 
-              default:
-                throw Error("Invalid behaviour: " + node.behaviour);
+                default:
+                  throw Error("Invalid behaviour: " + node.behaviour);
               }
 
               var body = node.body,
@@ -81075,62 +81074,62 @@
                 codePoint = node.codePoint;
 
               switch (kind) {
-              case "controlLetter":
-                return "\\c" + fromCodePoint(codePoint + 64);
+                case "controlLetter":
+                  return "\\c" + fromCodePoint(codePoint + 64);
 
-              case "hexadecimalEscape":
-                return (
-                  "\\x" +
+                case "hexadecimalEscape":
+                  return (
+                    "\\x" +
                     ("00" + codePoint.toString(16).toUpperCase()).slice(-2)
-                );
+                  );
 
-              case "identifier":
-                return "\\" + fromCodePoint(codePoint);
+                case "identifier":
+                  return "\\" + fromCodePoint(codePoint);
 
-              case "null":
-                return "\\" + codePoint;
+                case "null":
+                  return "\\" + codePoint;
 
-              case "octal":
-                return "\\" + codePoint.toString(8);
+                case "octal":
+                  return "\\" + codePoint.toString(8);
 
-              case "singleEscape":
-                switch (codePoint) {
-                case 0x0008:
-                  return "\\b";
+                case "singleEscape":
+                  switch (codePoint) {
+                    case 0x0008:
+                      return "\\b";
 
-                case 0x0009:
-                  return "\\t";
+                    case 0x0009:
+                      return "\\t";
 
-                case 0x000a:
-                  return "\\n";
+                    case 0x000a:
+                      return "\\n";
 
-                case 0x000b:
-                  return "\\v";
+                    case 0x000b:
+                      return "\\v";
 
-                case 0x000c:
-                  return "\\f";
+                    case 0x000c:
+                      return "\\f";
 
-                case 0x000d:
-                  return "\\r";
+                    case 0x000d:
+                      return "\\r";
+
+                    default:
+                      throw Error("Invalid codepoint: " + codePoint);
+                  }
+
+                case "symbol":
+                  return fromCodePoint(codePoint);
+
+                case "unicodeEscape":
+                  return (
+                    "\\u" +
+                    ("0000" + codePoint.toString(16).toUpperCase()).slice(-4)
+                  );
+
+                case "unicodeCodePointEscape":
+                  return "\\u{" + codePoint.toString(16).toUpperCase() + "}";
 
                 default:
-                  throw Error("Invalid codepoint: " + codePoint);
-                }
-
-              case "symbol":
-                return fromCodePoint(codePoint);
-
-              case "unicodeEscape":
-                return (
-                  "\\u" +
-                    ("0000" + codePoint.toString(16).toUpperCase()).slice(-4)
-                );
-
-              case "unicodeCodePointEscape":
-                return "\\u{" + codePoint.toString(16).toUpperCase() + "}";
-
-              default:
-                throw Error("Unsupported node kind: " + kind);
+                  throw Error("Unsupported node kind: " + kind);
               }
             }
             /*--------------------------------------------------------------------------*/
@@ -81926,25 +81925,25 @@
                 var codePoint = 0;
 
                 switch (res[0]) {
-                case "t":
-                  codePoint = 0x009;
-                  break;
+                  case "t":
+                    codePoint = 0x009;
+                    break;
 
-                case "n":
-                  codePoint = 0x00a;
-                  break;
+                  case "n":
+                    codePoint = 0x00a;
+                    break;
 
-                case "v":
-                  codePoint = 0x00b;
-                  break;
+                  case "v":
+                    codePoint = 0x00b;
+                    break;
 
-                case "f":
-                  codePoint = 0x00c;
-                  break;
+                  case "f":
+                    codePoint = 0x00c;
+                    break;
 
-                case "r":
-                  codePoint = 0x00d;
-                  break;
+                  case "r":
+                    codePoint = 0x00d;
+                    break;
                 }
 
                 return createEscaped("singleEscape", codePoint, "\\" + res[0]);
@@ -85529,20 +85528,20 @@
           if (that === undefined) return fn;
 
           switch (length) {
-          case 1:
-            return function(a) {
-              return fn.call(that, a);
-            };
+            case 1:
+              return function(a) {
+                return fn.call(that, a);
+              };
 
-          case 2:
-            return function(a, b) {
-              return fn.call(that, a, b);
-            };
+            case 2:
+              return function(a, b) {
+                return fn.call(that, a, b);
+              };
 
-          case 3:
-            return function(a, b, c) {
-              return fn.call(that, a, b, c);
-            };
+            case 3:
+              return function(a, b, c) {
+                return fn.call(that, a, b, c);
+              };
           }
 
           return function() /* ...args */
@@ -86321,112 +86320,112 @@
 
         function isReferenced(node, parent) {
           switch (parent.type) {
-          case "BindExpression":
-            return parent.object === node || parent.callee === node;
+            case "BindExpression":
+              return parent.object === node || parent.callee === node;
 
-          case "MemberExpression":
-          case "JSXMemberExpression":
-            if (parent.property === node && parent.computed) {
-              return true;
-            } else if (parent.object === node) {
-              return true;
-            } else {
-              return false;
-            }
-
-          case "MetaProperty":
-            return false;
-
-          case "ObjectProperty":
-            if (parent.key === node) {
-              return parent.computed;
-            }
-
-          case "VariableDeclarator":
-            return parent.id !== node;
-
-          case "ArrowFunctionExpression":
-          case "FunctionDeclaration":
-          case "FunctionExpression":
-            for (
-              var _iterator = parent.params,
-                _isArray = Array.isArray(_iterator),
-                _i = 0,
-                _iterator = _isArray
-                  ? _iterator
-                  : (0, _getIterator3.default)(_iterator);
-              ;
-
-            ) {
-              var _ref;
-
-              if (_isArray) {
-                if (_i >= _iterator.length) break;
-                _ref = _iterator[_i++];
+            case "MemberExpression":
+            case "JSXMemberExpression":
+              if (parent.property === node && parent.computed) {
+                return true;
+              } else if (parent.object === node) {
+                return true;
               } else {
-                _i = _iterator.next();
-                if (_i.done) break;
-                _ref = _i.value;
+                return false;
               }
 
-              var param = _ref;
-              if (param === node) return false;
-            }
-
-            return parent.id !== node;
-
-          case "ExportSpecifier":
-            if (parent.source) {
+            case "MetaProperty":
               return false;
-            } else {
-              return parent.local === node;
-            }
 
-          case "ExportNamespaceSpecifier":
-          case "ExportDefaultSpecifier":
-            return false;
+            case "ObjectProperty":
+              if (parent.key === node) {
+                return parent.computed;
+              }
 
-          case "JSXAttribute":
-            return parent.name !== node;
+            case "VariableDeclarator":
+              return parent.id !== node;
 
-          case "ClassProperty":
-            if (parent.key === node) {
-              return parent.computed;
-            } else {
-              return parent.value === node;
-            }
+            case "ArrowFunctionExpression":
+            case "FunctionDeclaration":
+            case "FunctionExpression":
+              for (
+                var _iterator = parent.params,
+                  _isArray = Array.isArray(_iterator),
+                  _i = 0,
+                  _iterator = _isArray
+                    ? _iterator
+                    : (0, _getIterator3.default)(_iterator);
+                ;
 
-          case "ImportDefaultSpecifier":
-          case "ImportNamespaceSpecifier":
-          case "ImportSpecifier":
-            return false;
+              ) {
+                var _ref;
 
-          case "ClassDeclaration":
-          case "ClassExpression":
-            return parent.id !== node;
+                if (_isArray) {
+                  if (_i >= _iterator.length) break;
+                  _ref = _iterator[_i++];
+                } else {
+                  _i = _iterator.next();
+                  if (_i.done) break;
+                  _ref = _i.value;
+                }
 
-          case "ClassMethod":
-          case "ObjectMethod":
-            return parent.key === node && parent.computed;
+                var param = _ref;
+                if (param === node) return false;
+              }
 
-          case "LabeledStatement":
-            return false;
+              return parent.id !== node;
 
-          case "CatchClause":
-            return parent.param !== node;
+            case "ExportSpecifier":
+              if (parent.source) {
+                return false;
+              } else {
+                return parent.local === node;
+              }
 
-          case "RestElement":
-            return false;
+            case "ExportNamespaceSpecifier":
+            case "ExportDefaultSpecifier":
+              return false;
 
-          case "AssignmentExpression":
-            return parent.right === node;
+            case "JSXAttribute":
+              return parent.name !== node;
 
-          case "AssignmentPattern":
-            return parent.right === node;
+            case "ClassProperty":
+              if (parent.key === node) {
+                return parent.computed;
+              } else {
+                return parent.value === node;
+              }
 
-          case "ObjectPattern":
-          case "ArrayPattern":
-            return false;
+            case "ImportDefaultSpecifier":
+            case "ImportNamespaceSpecifier":
+            case "ImportSpecifier":
+              return false;
+
+            case "ClassDeclaration":
+            case "ClassExpression":
+              return parent.id !== node;
+
+            case "ClassMethod":
+            case "ObjectMethod":
+              return parent.key === node && parent.computed;
+
+            case "LabeledStatement":
+              return false;
+
+            case "CatchClause":
+              return parent.param !== node;
+
+            case "RestElement":
+              return false;
+
+            case "AssignmentExpression":
+              return parent.right === node;
+
+            case "AssignmentPattern":
+              return parent.right === node;
+
+            case "ObjectPattern":
+            case "ArrayPattern":
+              return false;
           }
 
           return true;
@@ -90467,112 +90466,112 @@
 
         function isReferenced(node, parent) {
           switch (parent.type) {
-          case "BindExpression":
-            return parent.object === node || parent.callee === node;
+            case "BindExpression":
+              return parent.object === node || parent.callee === node;
 
-          case "MemberExpression":
-          case "JSXMemberExpression":
-            if (parent.property === node && parent.computed) {
-              return true;
-            } else if (parent.object === node) {
-              return true;
-            } else {
-              return false;
-            }
-
-          case "MetaProperty":
-            return false;
-
-          case "ObjectProperty":
-            if (parent.key === node) {
-              return parent.computed;
-            }
-
-          case "VariableDeclarator":
-            return parent.id !== node;
-
-          case "ArrowFunctionExpression":
-          case "FunctionDeclaration":
-          case "FunctionExpression":
-            for (
-              var _iterator = parent.params,
-                _isArray = Array.isArray(_iterator),
-                _i = 0,
-                _iterator = _isArray
-                  ? _iterator
-                  : (0, _getIterator3.default)(_iterator);
-              ;
-
-            ) {
-              var _ref;
-
-              if (_isArray) {
-                if (_i >= _iterator.length) break;
-                _ref = _iterator[_i++];
+            case "MemberExpression":
+            case "JSXMemberExpression":
+              if (parent.property === node && parent.computed) {
+                return true;
+              } else if (parent.object === node) {
+                return true;
               } else {
-                _i = _iterator.next();
-                if (_i.done) break;
-                _ref = _i.value;
+                return false;
               }
 
-              var param = _ref;
-              if (param === node) return false;
-            }
-
-            return parent.id !== node;
-
-          case "ExportSpecifier":
-            if (parent.source) {
+            case "MetaProperty":
               return false;
-            } else {
-              return parent.local === node;
-            }
 
-          case "ExportNamespaceSpecifier":
-          case "ExportDefaultSpecifier":
-            return false;
+            case "ObjectProperty":
+              if (parent.key === node) {
+                return parent.computed;
+              }
 
-          case "JSXAttribute":
-            return parent.name !== node;
+            case "VariableDeclarator":
+              return parent.id !== node;
 
-          case "ClassProperty":
-            if (parent.key === node) {
-              return parent.computed;
-            } else {
-              return parent.value === node;
-            }
+            case "ArrowFunctionExpression":
+            case "FunctionDeclaration":
+            case "FunctionExpression":
+              for (
+                var _iterator = parent.params,
+                  _isArray = Array.isArray(_iterator),
+                  _i = 0,
+                  _iterator = _isArray
+                    ? _iterator
+                    : (0, _getIterator3.default)(_iterator);
+                ;
 
-          case "ImportDefaultSpecifier":
-          case "ImportNamespaceSpecifier":
-          case "ImportSpecifier":
-            return false;
+              ) {
+                var _ref;
 
-          case "ClassDeclaration":
-          case "ClassExpression":
-            return parent.id !== node;
+                if (_isArray) {
+                  if (_i >= _iterator.length) break;
+                  _ref = _iterator[_i++];
+                } else {
+                  _i = _iterator.next();
+                  if (_i.done) break;
+                  _ref = _i.value;
+                }
 
-          case "ClassMethod":
-          case "ObjectMethod":
-            return parent.key === node && parent.computed;
+                var param = _ref;
+                if (param === node) return false;
+              }
 
-          case "LabeledStatement":
-            return false;
+              return parent.id !== node;
 
-          case "CatchClause":
-            return parent.param !== node;
+            case "ExportSpecifier":
+              if (parent.source) {
+                return false;
+              } else {
+                return parent.local === node;
+              }
 
-          case "RestElement":
-            return false;
+            case "ExportNamespaceSpecifier":
+            case "ExportDefaultSpecifier":
+              return false;
 
-          case "AssignmentExpression":
-            return parent.right === node;
+            case "JSXAttribute":
+              return parent.name !== node;
 
-          case "AssignmentPattern":
-            return parent.right === node;
+            case "ClassProperty":
+              if (parent.key === node) {
+                return parent.computed;
+              } else {
+                return parent.value === node;
+              }
 
-          case "ObjectPattern":
-          case "ArrayPattern":
-            return false;
+            case "ImportDefaultSpecifier":
+            case "ImportNamespaceSpecifier":
+            case "ImportSpecifier":
+              return false;
+
+            case "ClassDeclaration":
+            case "ClassExpression":
+              return parent.id !== node;
+
+            case "ClassMethod":
+            case "ObjectMethod":
+              return parent.key === node && parent.computed;
+
+            case "LabeledStatement":
+              return false;
+
+            case "CatchClause":
+              return parent.param !== node;
+
+            case "RestElement":
+              return false;
+
+            case "AssignmentExpression":
+              return parent.right === node;
+
+            case "AssignmentPattern":
+              return parent.right === node;
+
+            case "ObjectPattern":
+            case "ArrayPattern":
+              return false;
           }
 
           return true;
@@ -94215,14 +94214,14 @@
 
         function isInType(path) {
           switch (path.parent.type) {
-          case "TSTypeReference":
-          case "TSQualifiedName":
-          case "TSExpressionWithTypeArguments":
-          case "TSTypeQuery":
-            return true;
+            case "TSTypeReference":
+            case "TSQualifiedName":
+            case "TSExpressionWithTypeArguments":
+            case "TSTypeQuery":
+              return true;
 
-          default:
-            return false;
+            default:
+              return false;
           }
         }
 
@@ -94557,36 +94556,36 @@
           var fill = enumFill(path, t, node.id);
 
           switch (path.parent.type) {
-          case "BlockStatement":
-          case "Program": {
-            var isGlobal = t.isProgram(path.parent);
+            case "BlockStatement":
+            case "Program": {
+              var isGlobal = t.isProgram(path.parent);
 
-            if (seen(path.parentPath)) {
-              path.replaceWith(fill);
-            } else {
-              path.replaceWithMultiple([
-                makeVar(node.id, t, isGlobal ? "var" : "let"),
-                fill
-              ]);
+              if (seen(path.parentPath)) {
+                path.replaceWith(fill);
+              } else {
+                path.replaceWithMultiple([
+                  makeVar(node.id, t, isGlobal ? "var" : "let"),
+                  fill
+                ]);
+              }
+
+              break;
             }
 
-            break;
-          }
+            case "ExportNamedDeclaration": {
+              path.parentPath.insertAfter(fill);
 
-          case "ExportNamedDeclaration": {
-            path.parentPath.insertAfter(fill);
+              if (seen(path.parentPath.parentPath)) {
+                path.remove();
+              } else {
+                path.replaceWith(makeVar(node.id, t, "let"));
+              }
 
-            if (seen(path.parentPath.parentPath)) {
-              path.remove();
-            } else {
-              path.replaceWith(makeVar(node.id, t, "let"));
+              break;
             }
 
-            break;
-          }
-
-          default:
-            throw new Error("Unexpected enum parent '" + path.parent.type);
+            default:
+              throw new Error("Unexpected enum parent '" + path.parent.type);
           }
 
           function seen(parentPath) {
@@ -94670,23 +94669,23 @@
 
           function evalConstant(expr) {
             switch (expr.type) {
-            case "UnaryExpression":
-              return evalUnaryExpression(expr);
+              case "UnaryExpression":
+                return evalUnaryExpression(expr);
 
-            case "BinaryExpression":
-              return evalBinaryExpression(expr);
+              case "BinaryExpression":
+                return evalBinaryExpression(expr);
 
-            case "NumericLiteral":
-              return expr.value;
+              case "NumericLiteral":
+                return expr.value;
 
-            case "ParenthesizedExpression":
-              return evalConstant(expr.expression);
+              case "ParenthesizedExpression":
+                return evalConstant(expr.expression);
 
-            case "Identifier":
-              return seen[expr.name];
+              case "Identifier":
+                return seen[expr.name];
 
-            default:
-              return undefined;
+              default:
+                return undefined;
             }
           }
 
@@ -94700,17 +94699,17 @@
             }
 
             switch (operator) {
-            case "+":
-              return value;
+              case "+":
+                return value;
 
-            case "-":
-              return -value;
+              case "-":
+                return -value;
 
-            case "~":
-              return ~value;
+              case "~":
+                return ~value;
 
-            default:
-              return undefined;
+              default:
+                return undefined;
             }
           }
 
@@ -94728,41 +94727,41 @@
             }
 
             switch (expr.operator) {
-            case "|":
-              return left | right;
+              case "|":
+                return left | right;
 
-            case "&":
-              return left & right;
+              case "&":
+                return left & right;
 
-            case ">>":
-              return left >> right;
+              case ">>":
+                return left >> right;
 
-            case ">>>":
-              return left >>> right;
+              case ">>>":
+                return left >>> right;
 
-            case "<<":
-              return left << right;
+              case "<<":
+                return left << right;
 
-            case "^":
-              return left ^ right;
+              case "^":
+                return left ^ right;
 
-            case "*":
-              return left * right;
+              case "*":
+                return left * right;
 
-            case "/":
-              return left / right;
+              case "/":
+                return left / right;
 
-            case "+":
-              return left + right;
+              case "+":
+                return left + right;
 
-            case "-":
-              return left - right;
+              case "-":
+                return left - right;
 
-            case "%":
-              return left % right;
+              case "%":
+                return left % right;
 
-            default:
-              return undefined;
+              default:
+                return undefined;
             }
           }
         }
