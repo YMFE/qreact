@@ -347,7 +347,6 @@ function commitAllWork(fiber) {
     commitWork(f);
   });
   fiber.stateNode._rootContainerFiber = fiber;
-  console.log(new Date() - 0, "commitAllWork");
   nextUnitOfWork = null;
   pendingCommit = null;
 }
@@ -374,6 +373,7 @@ function commitWork(fiber) {
 
 function commitDeletion(fiber, domParent) {
   let node = fiber;
+  // eslint-disable-next-line
   while (true) {
     if (node.tag == CLASS_COMPONENT) {
       node = node.child;
@@ -390,6 +390,7 @@ function commitDeletion(fiber, domParent) {
   }
 }
 
+// eslint-disable-next-line
 let React = {
   createElement,
   Component,

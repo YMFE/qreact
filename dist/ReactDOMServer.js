@@ -283,9 +283,7 @@
       ",getAttribute,insertBefore,removeChild,addEventListener,removeEventListener,attachEvent" +
       ",detachEvent"
   ).replace(/\w+/g, function(name) {
-    fn[name] = function() {
-      console.log("fire " + name);
-    };
+    fn[name] = function() {};
   });
   var fakeDoc = new DOMElement();
   fakeDoc.createElement = fakeDoc.createElementNS = fakeDoc.createDocumentFragment = function(

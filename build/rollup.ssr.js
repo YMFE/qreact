@@ -1,6 +1,7 @@
 import babel from "rollup-plugin-babel";
 import cleanup from "rollup-plugin-cleanup";
 //import builtins from "rollup-plugin-node-builtins";
+import strip from "rollup-plugin-strip";
 
 export default {
   entry: "./server/index.js",
@@ -19,7 +20,11 @@ export default {
         ]
       ]
     }),
-    cleanup()
+    cleanup(),
+    strip({
+      debugger: true,
+      functions: ["console.*", "assert.*", "debug", "alert"]
+    })
   ],
   moduleName: "ReactDOMServer",
   useStrict: false

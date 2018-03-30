@@ -1,10 +1,4 @@
-import {
-  options,
-  innerHTML,
-  noop,
-  inherit,
-  deprecatedWarn
-} from "./util";
+import { options, innerHTML, noop, inherit, deprecatedWarn } from "./util";
 import { emptyElement, insertElement } from "./browser";
 import { disposeVnode, disposeChildren, topFibers, topNodes } from "./dispose";
 import { createVnode, fiberizeChildren, createElement } from "./createElement";

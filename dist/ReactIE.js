@@ -1,5 +1,5 @@
 /**
- * IE6+，有问题请加QQ 370262116 by 司徒正美 Copyright 2018-03-26
+ * IE6+，有问题请加QQ 370262116 by 司徒正美 Copyright 2018-03-30
  */
 
 (function(global, factory) {
@@ -20,7 +20,6 @@
   var emptyObject = {};
   function deprecatedWarn(methodName) {
     if (!deprecatedWarn[methodName]) {
-      console.warn(methodName + " is deprecated");
       deprecatedWarn[methodName] = 1;
     }
   }
@@ -536,9 +535,7 @@
       ",getAttribute,insertBefore,removeChild,addEventListener,removeEventListener,attachEvent" +
       ",detachEvent"
   ).replace(/\w+/g, function(name) {
-    fn[name] = function() {
-      console.log("fire " + name);
-    };
+    fn[name] = function() {};
   });
   var fakeDoc = new DOMElement();
   fakeDoc.createElement = fakeDoc.createElementNS = fakeDoc.createDocumentFragment = function(
@@ -1424,7 +1421,6 @@
           if (name !== "displayName") {
             for (var i in props) {
               if (!isFn(props[i])) {
-                console.error(i + " in " + name + " must be a function");
               }
             }
           }
@@ -1557,19 +1553,6 @@
       var event1 = data[5];
       var event2 = data[6];
       if (!hasOtherControllProperty(props, keys)) {
-        console.warn(
-          "\u4F60\u4E3A" +
-            vnode.type +
-            "[type=" +
-            domType +
-            "]\u5143\u7D20\u6307\u5B9A\u4E86**\u53D7\u63A7\u5C5E\u6027**" +
-            duplexProp +
-            "\uFF0C\n\u4F46\u662F\u6CA1\u6709\u63D0\u4F9B\u53E6\u5916\u7684" +
-            Object.keys(keys) +
-            "\n\u6765\u64CD\u4F5C" +
-            duplexProp +
-            "\u7684\u503C\uFF0C\b\u6846\u67B6\u5C06\u4E0D\u5141\u8BB8\u4F60\u901A\u8FC7\u8F93\u5165\u6539\u53D8\u8BE5\u503C"
-        );
         dom["on" + event1] = handle;
         dom["on" + event2] = handle;
       } else {
@@ -1648,9 +1631,7 @@
       for (var i = 0; i < propValue.length; i++) {
         selectedValue["&" + propValue[i]] = true;
       }
-    } catch (e) {
-      console.warn("<select multiple=\"true\"> 的value应该对应一个字符串数组");
-    }
+    } catch (e) {}
     for (var _i = 0; _i < n; _i++) {
       var option = options[_i];
       var value = option.duplexValue;
@@ -1678,9 +1659,7 @@
         }
         try {
           dom.style[name] = val;
-        } catch (e) {
-          console.log("dom.style[" + name + "] = " + val + "throw error");
-        }
+        } catch (e) {}
       }
     }
     for (var _name in lastStyle) {
@@ -1993,9 +1972,7 @@
       }
       try {
         dom.setAttribute(name, val);
-      } catch (e) {
-        console.warn("setAttribute error", name, val);
-      }
+      } catch (e) {}
     },
     property: function property(dom, name, val) {
       if (controlled[name]) {
@@ -2275,7 +2252,6 @@
       }
       delete catchUpdater.child;
     } else {
-      console.warn(stack);
       if (!Refs.error) {
         Refs.error = error;
       }
@@ -2518,6 +2494,7 @@
         var lastProps = instance.props,
           lastState = instance.state;
         this._hookArgs = [lastProps, lastState];
+        delete this._willReceive;
       }
       if (this._hasError) {
         return;
@@ -3197,7 +3174,7 @@
     React = win.React;
   } else {
     React = win.React = win.ReactDOM = {
-      version: "2.1.1",
+      version: "2.1.2",
       render: render,
       hydrate: render,
       Fragment: Fragment,
@@ -3219,7 +3196,6 @@
       unmountComponentAtNode: unmountComponentAtNode,
       unstable_renderSubtreeIntoContainer: unstable_renderSubtreeIntoContainer,
       createFactory: function createFactory(type) {
-        console.warn("createFactory is deprecated");
         var factory = createElement.bind(null, type);
         factory.type = type;
         return factory;

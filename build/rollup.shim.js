@@ -2,6 +2,7 @@ import babel from "rollup-plugin-babel";
 import replace from "rollup-plugin-re";
 import filesize from "rollup-plugin-filesize";
 import cleanup from "rollup-plugin-cleanup";
+import strip from "rollup-plugin-strip";
 
 const license = require("rollup-plugin-license");
 const json = require("../package.json");
@@ -47,7 +48,11 @@ export default {
         }
       ]
     }),
-    filesize()
+    filesize(),
+    strip({
+      debugger: true,
+      functions: ["console.*", "assert.*", "debug", "alert"]
+    })
   ],
   moduleName: "React",
   useStrict: false

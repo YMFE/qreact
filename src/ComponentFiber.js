@@ -213,6 +213,7 @@ ComponentFiber.prototype = {
       captureError(instance, "componentWillUpdate", [props, state, context]);
       let { props: lastProps, state: lastState } = instance;
       this._hookArgs = [lastProps, lastState];
+      delete this._willReceive;
     }
 
     if (this._hasError) {

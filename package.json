@@ -1,6 +1,6 @@
 {
   "name": "qreact",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "a mini React-like framework",
   "main": "dist/React.js",
   "scripts": {
@@ -111,6 +111,7 @@
     "fs-extra": "^5.0.0",
     "pre-commit": "^1.2.2",
     "prettier-eslint-cli": "^4.7.1",
-    "rollup-plugin-cleanup": "^2.0.0"
+    "rollup-plugin-cleanup": "^2.0.0",
+    "rollup-plugin-strip": "^1.1.1"
   }
 }
