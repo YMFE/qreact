@@ -3,8 +3,8 @@ import replace from "rollup-plugin-re";
 import filesize from "rollup-plugin-filesize";
 import cleanup from "rollup-plugin-cleanup";
 import strip from "rollup-plugin-strip";
+import license from "rollup-plugin-license";
 
-const license = require("rollup-plugin-license");
 const json = require("../package.json");
 
 export default {
@@ -14,8 +14,6 @@ export default {
   dest: "./dist/ReactShim.js",
   plugins: [
     babel({
-      //  plugins: ['external-helpers'],
-      // externalHelpers: true,
       babelrc: false,
       presets: [
         [
@@ -28,14 +26,8 @@ export default {
     }),
     cleanup(),
     license({
-      banner: `此版本要求浏览器没有createClass, createFactory, PropTypes, isValidElement,
-        unmountComponentAtNode,unstable_renderSubtreeIntoContainer
-        QQ 370262116 by 司徒正美 Copyright ${JSON.stringify(new Date()).replace(
-    /T.*|"/g,
-    ""
-  )}`
+      banner: "Powered by YMFE (https://ymfe.org)"
     }),
-
     replace({
       patterns: [
         {

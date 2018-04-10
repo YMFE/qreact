@@ -1,5 +1,5 @@
 /**
- * IE6+，有问题请加QQ 370262116 by 司徒正美 Copyright 2018-03-30
+ * Powered by YMFE (https://ymfe.org)
  */
 
 (function(global, factory) {
@@ -681,7 +681,11 @@
     var elem = document.createElement(type);
     var inputType = props && props.type;
     if (inputType) {
-      elem.type = inputType;
+      try {
+        elem = document.createElement(
+          "<" + type + " type='" + inputType + "'/>"
+        );
+      } catch (error) {}
     }
     return elem;
   }
@@ -1312,16 +1316,16 @@
   var _typeof =
     typeof Symbol === "function" && typeof Symbol.iterator === "symbol"
       ? function(obj) {
-        return typeof obj;
-      }
+          return typeof obj;
+        }
       : function(obj) {
-        return obj &&
+          return obj &&
             typeof Symbol === "function" &&
             obj.constructor === Symbol &&
             obj !== Symbol.prototype
-          ? "symbol"
-          : typeof obj;
-      };
+            ? "symbol"
+            : typeof obj;
+        };
   var NOBIND = {
     render: 1,
     shouldComponentUpdate: 1,
@@ -1395,7 +1399,7 @@
       "spec",
       "return function " +
         className +
-        "(props, context) {\n      ReactComponent.call(this, props, context);\n\n     for (var methodName in this) {\n        var method = this[methodName];\n        if (typeof method  === \"function\"&& !blacklist[methodName]) {\n          this[methodName] = method.bind(this);\n        }\n      }\n\n      if (spec.getInitialState) {\n        var test = this.state = spec.getInitialState.call(this);\n        if(!(test === null || ({}).toString.call(test) == \"[object Object]\")){\n          throw \"getInitialState\u53EA\u80FD\u8FD4\u56DE\u7EAFJS\u5BF9\u8C61\u6216\u8005null\"\n        }\n      }\n  };"
+        '(props, context) {\n      ReactComponent.call(this, props, context);\n\n     for (var methodName in this) {\n        var method = this[methodName];\n        if (typeof method  === "function"&& !blacklist[methodName]) {\n          this[methodName] = method.bind(this);\n        }\n      }\n\n      if (spec.getInitialState) {\n        var test = this.state = spec.getInitialState.call(this);\n        if(!(test === null || ({}).toString.call(test) == "[object Object]")){\n          throw "getInitialState\u53EA\u80FD\u8FD4\u56DE\u7EAFJS\u5BF9\u8C61\u6216\u8005null"\n        }\n      }\n  };'
     );
     return curry(Component, NOBIND, spec);
   }
@@ -3174,7 +3178,7 @@
     React = win.React;
   } else {
     React = win.React = win.ReactDOM = {
-      version: "2.1.2",
+      version: "2.1.3",
       render: render,
       hydrate: render,
       Fragment: Fragment,

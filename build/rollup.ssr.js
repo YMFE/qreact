@@ -1,6 +1,5 @@
 import babel from "rollup-plugin-babel";
 import cleanup from "rollup-plugin-cleanup";
-//import builtins from "rollup-plugin-node-builtins";
 import strip from "rollup-plugin-strip";
 
 export default {

@@ -1,7 +1,5 @@
 /**
- * 此版本要求浏览器没有createClass, createFactory, PropTypes, isValidElement,
- * unmountComponentAtNode,unstable_renderSubtreeIntoContainer
- * QQ 370262116 by 司徒正美 Copyright 2018-03-30
+ * Powered by YMFE (https://ymfe.org)
  */
 
 (function(global, factory) {
@@ -713,7 +711,11 @@
     var elem = document.createElement(type);
     var inputType = props && props.type;
     if (inputType) {
-      elem.type = inputType;
+      try {
+        elem = document.createElement(
+          "<" + type + " type='" + inputType + "'/>"
+        );
+      } catch (error) {}
     }
     return elem;
   }
@@ -2856,7 +2858,7 @@
     React = win.React;
   } else {
     React = win.React = win.ReactDOM = {
-      version: "2.1.2",
+      version: "2.1.3",
       render: render,
       hydrate: render,
       Fragment: Fragment,

@@ -175,12 +175,16 @@ export function createElement(vnode, p) {
       vnode.namespaceURI = ns;
       return document.createElementNS(ns, type);
     }
-    //eslint-disable-next-line
+    // eslint-disable-next-line
   } catch (e) {}
   let elem = document.createElement(type);
-  let inputType = props && props.type; //IE6-8下立即设置type属性
+  let inputType = props && props.type; // IE6-8下立即设置type属性
   if (inputType) {
-    elem.type = inputType;
+    try {
+      elem = document.createElement("<" + type + " type='" + inputType + "'/>");
+    } catch (error) {
+      // noop
+    }
   }
   return elem;
 }

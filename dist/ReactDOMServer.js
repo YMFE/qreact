@@ -406,16 +406,16 @@
   var _typeof =
     typeof Symbol === "function" && typeof Symbol.iterator === "symbol"
       ? function(obj) {
-        return typeof obj;
-      }
+          return typeof obj;
+        }
       : function(obj) {
-        return obj &&
+          return obj &&
             typeof Symbol === "function" &&
             obj.constructor === Symbol &&
             obj !== Symbol.prototype
-          ? "symbol"
-          : typeof obj;
-      };
+            ? "symbol"
+            : typeof obj;
+        };
   var skipAttributes = {
     ref: 1,
     key: 1,
@@ -448,7 +448,7 @@
     if (attrCached[value]) {
       return attrCached[value];
     }
-    return (attrCached[value] = "\"" + encodeEntities(value) + "\"");
+    return (attrCached[value] = '"' + encodeEntities(value) + '"');
   }
   function skipFalseAndFunction(a) {
     return a !== false && Object(a) !== a;
@@ -616,9 +616,9 @@
           switch ((_context.prev = _context.next)) {
             case 0:
               (_vnode2 = vnode),
-              (tag = _vnode2.tag),
-              (type = _vnode2.type),
-              (props = _vnode2.props);
+                (tag = _vnode2.tag),
+                (type = _vnode2.type),
+                (props = _vnode2.props);
               _context.t0 = type;
               _context.next =
                 _context.t0 === "#text"

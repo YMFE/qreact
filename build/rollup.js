@@ -3,8 +3,8 @@ import replace from "rollup-plugin-re";
 import filesize from "rollup-plugin-filesize";
 import cleanup from "rollup-plugin-cleanup";
 import strip from "rollup-plugin-strip";
+import license from "rollup-plugin-license";
 
-const license = require("rollup-plugin-license");
 const json = require("../package.json");
 
 export default {
@@ -14,8 +14,6 @@ export default {
   dest: "./dist/React.js",
   plugins: [
     babel({
-      //  plugins: ['external-helpers'],
-      // externalHelpers: true,
       babelrc: false,
       presets: [
         [
@@ -26,22 +24,14 @@ export default {
         ]
       ]
     }),
-
     license({
-      banner: `by 司徒正美 Copyright ${JSON.stringify(new Date()).replace(
-        /T.*|"/g,
-        ""
-      )}
-      IE9+
-      `
+      banner: "Powered by YMFE (https://ymfe.org)"
     }),
     cleanup(),
     replace({
-      // ... do replace before commonjs
       patterns: [
         {
           test: "VERSION",
-          // string or function to replaced with
           replace: json.version
         }
       ]
