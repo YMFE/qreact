@@ -1,8 +1,11 @@
 {
   "name": "qreact",
   "version": "2.1.4",
-  "description": "React16-compat mini library",
+  "description": "mini React 16 compatible library",
   "main": "dist/React.js",
+  "engines": {
+    "node": ">6.5.0"
+  },
   "scripts": {
     "build": "node scripts/build.js",
     "test": "node node_modules/karma-event-driver-ext",
@@ -16,13 +19,13 @@
   "lint-staged": {
     "src/**/*.js": ["format", "lint", "git add"]
   },
-  "keywords": ["react-like"],
+  "keywords": ["react like", "mini react", "react 16 compatible"],
   "author": "YMFE (https://github.com/YMFE) / 司徒正美 / 祝鑫奔",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/YMFE/qreact/issues"
   },
-  "homepage": "https://github.com/YMFE/qreact#readme",
+  "homepage": "https://github.com/YMFE/qreact",
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.2.2",
@@ -85,9 +88,9 @@
     "warnOnFail": false,
     "maxSubjectLength": 100,
     "subjectPattern": ".+",
-    "subjectPatternErrorMsg": "请输入message信息!",
+    "subjectPatternErrorMsg": "请输入 commit message!",
     "helpMessage":
-      "Commit message 格式错误, \n请查看规范: http://wiki.corp.qunar.com/pages/viewpage.action?pageId=159698767"
+      "Commit message 格式错误"
   },
   "dependencies": {}
 }

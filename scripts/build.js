@@ -84,13 +84,9 @@ const execute = cmd =>
       {
         cwd: path.resolve(__dirname, "..")
       },
-      (err, stdout, stderr) => {
+      (err, stdout) => {
         if (err) {
-          reject({
-            err,
-            stdout,
-            stderr
-          });
+          reject(err);
         } else {
           resolve({ stdout });
         }
@@ -124,7 +120,7 @@ const minifyCode = filename => {
     sourceMap: true
   };
 
-  // 针对 IE 启用 IE 8 支持
+  // 针对 IE 启用 IE 支持
   if (/ie/i.test(filename)) {
     options.ie8 = true;
   }
