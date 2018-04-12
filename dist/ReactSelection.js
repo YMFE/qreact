@@ -1064,7 +1064,16 @@
       dispatchEvent(e, name);
     });
   }
-  createHandle("change");
+  function onCompositionStart(e) {
+    e.target.__onComposition = true;
+  }
+  function onCompositionEnd(e) {
+    e.target.__onComposition = false;
+    dispatchEvent(e, "change");
+  }
+  function isInCompositionMode(e) {
+    return !e.target.__onComposition;
+  }
   createHandle("doubleclick");
   createHandle("scroll");
   createHandle("wheel");
@@ -1074,6 +1083,21 @@
   if (isTouch) {
     eventHooks.click = eventHooks.clickcapture = function(dom) {
       dom.onclick = dom.onclick || noop;
+    };
+    createHandle("change", isInCompositionMode);
+    eventHooks.changecapture = eventHooks.change = function(dom) {
+      if (/text|password|search/.test(dom.type)) {
+        addEvent(dom, "compositionstart", onCompositionStart);
+        addEvent(dom, "compositionend", onCompositionEnd);
+        addEvent(document$1, "input", specialHandles.change);
+      }
+    };
+  } else {
+    createHandle("change");
+    eventHooks.changecapture = eventHooks.change = function(dom) {
+      if (/text|password|search/.test(dom.type)) {
+        addEvent(document$1, "input", specialHandles.change);
+      }
     };
   }
   eventPropHooks.click = function(e) {
@@ -1097,11 +1121,6 @@
         : "wheelDeltaY" in event
           ? -event.wheelDeltaY
           : "wheelDelta" in event ? -event.wheelDelta : 0;
-  };
-  eventHooks.changecapture = eventHooks.change = function(dom) {
-    if (/text|password|search/.test(dom.type)) {
-      addEvent(document$1, "input", specialHandles.change);
-    }
   };
   var focusMap = {
     focus: "focus",
@@ -2995,7 +3014,7 @@
     React = win.React;
   } else {
     React = win.React = win.ReactDOM = {
-      version: "2.1.3",
+      version: "2.1.4",
       render: render,
       hydrate: render,
       options: options,

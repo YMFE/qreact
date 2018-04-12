@@ -212,7 +212,19 @@ export function createHandle(name, fn) {
   });
 }
 
-createHandle("change");
+function onCompositionStart(e) {
+  e.target.__onComposition = true;
+}
+
+function onCompositionEnd(e) {
+  e.target.__onComposition = false;
+  dispatchEvent(e, "change");
+}
+
+function isInCompositionMode(e) {
+  return !e.target.__onComposition;
+}
+
 createHandle("doubleclick");
 createHandle("scroll");
 createHandle("wheel");
@@ -223,6 +235,23 @@ globalEvents.doubleclick = true;
 if (isTouch) {
   eventHooks.click = eventHooks.clickcapture = function(dom) {
     dom.onclick = dom.onclick || noop;
+  };
+
+  createHandle("change", isInCompositionMode);
+  // react 将 text,textarea,password 元素中的 onChange 事件当成 onInput事件
+  eventHooks.changecapture = eventHooks.change = function(dom) {
+    if (/text|password|search/.test(dom.type)) {
+      addEvent(dom, "compositionstart", onCompositionStart);
+      addEvent(dom, "compositionend", onCompositionEnd);
+      addEvent(document, "input", specialHandles.change);
+    }
+  };
+} else {
+  createHandle("change");
+  eventHooks.changecapture = eventHooks.change = function(dom) {
+    if (/text|password|search/.test(dom.type)) {
+      addEvent(document, "input", specialHandles.change);
+    }
   };
 }
 
@@ -254,12 +283,6 @@ eventPropHooks.wheel = function(event) {
         "wheelDelta" in event ? -event.wheelDelta : 0;
 };
 
-//react将text,textarea,password元素中的onChange事件当成onInput事件
-eventHooks.changecapture = eventHooks.change = function(dom) {
-  if (/text|password|search/.test(dom.type)) {
-    addEvent(document, "input", specialHandles.change);
-  }
-};
 export let focusMap = {
   focus: "focus",
   blur: "blur"
