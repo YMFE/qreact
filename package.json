@@ -1,6 +1,6 @@
 {
   "name": "qreact",
-  "version": "2.1.4",
+  "version": "2.2.0",
   "description": "mini React 16 compatible library",
   "main": "dist/React.js",
   "engines": {
@@ -8,18 +8,28 @@
   },
   "scripts": {
     "build": "node scripts/build.js",
-    "test": "node node_modules/karma-event-driver-ext",
+    "test": "cross-env NODE_ENV=development jest --config ./scripts/jest/config.source.js",
     "devtools": "rollup -c build/rollup.tools.js",
     "precommit-msg": "echo 'Linting code...' && exit 0",
-    "lint": "eslint src/ server/ --fix",
-    "format":
-      "prettier-eslint \"?(build|src|server|test)/**/*.js\" --write --log-level error"
+    "lint": "eslint packages",
+    "format": "prettier-eslint \"?(packages|lib|scripts)/**/*.js\" --write --log-level error"
   },
-  "pre-commit": ["precommit-msg", "test"],
+  "pre-commit": [
+    "precommit-msg",
+    "test"
+  ],
   "lint-staged": {
-    "src/**/*.js": ["format", "lint", "git add"]
+    "src/**/*.js": [
+      "format",
+      "lint",
+      "git add"
+    ]
   },
-  "keywords": ["react like", "mini react", "react 16 compatible"],
+  "keywords": [
+    "react like",
+    "mini react",
+    "react 16 compatible"
+  ],
   "author": "YMFE (https://github.com/YMFE) / 司徒正美 / 祝鑫奔",
   "license": "Apache-2.0",
   "bugs": {
@@ -29,68 +39,52 @@
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.2.2",
-    "babel-loader": "^6.2.10",
-    "babel-plugin-external-helpers": "^6.22.0",
-    "babel-plugin-istanbul": "^4.1.1",
-    "babel-plugin-syntax-async-generators": "^6.13.0",
+    "babel-plugin-module-resolver": "^3.1.1",
     "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-plugin-transform-es2015-classes": "^6.24.1",
-    "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
-    "babel-plugin-transform-runtime": "^6.23.0",
     "babel-polyfill": "^6.26.0",
-    "babel-preset-avalon": "^1.0.0",
     "babel-preset-env": "^1.6.1",
-    "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "babel-runtime": "^5.8.38",
-    "chai": "^3.5.0",
-    "es3ify-webpack-plugin": "0.0.1",
+    "cross-env": "^5.1.6",
     "eslint": "^4.3.0",
     "eslint-plugin-react": "^7.1.0",
-    "express": "^4.15.3",
     "fs-extra": "^5.0.0",
     "gzip-size": "^4.0.0",
     "husky": "^0.14.3",
-    "karma": "^1.5",
-    "karma-chai": "^0.1.0",
-    "karma-coverage": "^1.1.1",
-    "karma-event-driver-ext": "0.0.12",
-    "karma-firefox-launcher": "^1.0.1",
-    "karma-mocha": "^1.3.0",
-    "karma-mocha-reporter": "^2.2.3",
-    "karma-spec-reporter": "0.0.30",
-    "karma-webpack": "^2.0.3",
+    "jasmine-check": "^1.0.0-rc.0",
+    "jest": "^22.4.3",
     "lint-staged": "^4.0.2",
-    "mocha": "^3.2.0",
     "ora": "^1.3.0",
     "pre-commit": "^1.2.2",
     "prettier": "^1.5.3",
     "prettier-eslint-cli": "^4.7.1",
-    "rollup": "^0.41.6",
+    "rollup": "^0.56.3",
     "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-cleanup": "^2.0.0",
-    "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-filesize": "^1.4.2",
-    "rollup-plugin-istanbul": "^1.1.0",
     "rollup-plugin-license": "^0.4.0",
-    "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-re": "^1.0.6",
-    "rollup-plugin-strip": "^1.1.1",
-    "uglify-js": "^3.1.4",
-    "webpack": "^1.14.0"
+    "uglify-js": "^3.1.4"
   },
   "ghooks": {
     "commit-msg": "validate-commit-msg"
   },
   "validate-commit-msg": {
-    "types": ["feat", "fix", "docs", "test", "chore", "refactor", "opti"],
+    "types": [
+      "feat",
+      "fix",
+      "docs",
+      "test",
+      "chore",
+      "refactor",
+      "opti"
+    ],
     "warnOnFail": false,
     "maxSubjectLength": 100,
     "subjectPattern": ".+",
     "subjectPatternErrorMsg": "请输入 commit message!",
-    "helpMessage":
-      "Commit message 格式错误"
+    "helpMessage": "Commit message 格式错误"
   },
   "dependencies": {}
 }
