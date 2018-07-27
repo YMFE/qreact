@@ -1,12 +1,17 @@
-import { validate, isFn, isNotFn } from "./utils";
+import {
+    validate,
+    isFn,
+    isNotFn
+} from './utils';
 
 /**
  * PluginFactory
  *
  * makes Plugin objects extend and inherit from a root PluginFactory
  */
-export function pluginFactory() {
+export function pluginFactory(config) {
     return {
+        config,
         /**
          * validate
          *
@@ -22,15 +27,15 @@ export function pluginFactory() {
          */
         create(plugin) {
             validate([
-                [
-                    isNotFn(plugin.onStoreCreated),
-                    "Plugin onStoreCreated must be a function"
+                [isNotFn(plugin.onStoreCreated),
+                    'Plugin onStoreCreated must be a function',
                 ],
-                [isNotFn(plugin.onModel), "Plugin onModel must be a function"],
-                [
-                    isNotFn(plugin.middleware),
-                    "Plugin middleware must be a function"
-                ]
+                [isNotFn(plugin.onModel),
+                    'Plugin onModel must be a function',
+                ],
+                [isNotFn(plugin.middleware),
+                    'Plugin middleware must be a function',
+                ],
             ]);
 
             if (plugin.onInit) {
@@ -41,20 +46,19 @@ export function pluginFactory() {
 
             if (plugin.exposed) {
                 Object.keys(plugin.exposed).forEach(function(key) {
-                    this[key] = isFn(plugin.exposed[key])
-                        ? plugin.exposed[key].bind(this) // bind functions to plugin class
-                        : Object.create(plugin.exposed[key]); // add exposed to plugin class
+                    this[key] =
+                        isFn(plugin.exposed[key]) ?
+                        plugin.exposed[key].bind(this) // bind functions to plugin class
+                        :
+                        Object.create(plugin.exposed[key]); // add exposed to plugin class
                 }, this);
             }
-            Array("onModel", "middleware", "onStoreCreated").forEach(function(
-                method
-            ) {
+            Array('onModel', 'middleware', 'onStoreCreated').forEach(function(method) {
                 if (plugin[method]) {
                     result[method] = plugin[method].bind(this);
                 }
-            },
-            this);
+            }, this);
             return result;
-        }
+        },
     };
 }

@@ -1,5 +1,5 @@
-import ReactPartialRenderer from "./ReactPartialRenderer";
-
+import ReactPartialRenderer from './Renderer';
+import { miniCreateClass } from 'react-core/util';
 /**
  * Render a ReactElement to its initial HTML. This should only be used on the
  * server.
@@ -21,27 +21,20 @@ export function renderToStaticMarkup(element) {
     const markup = renderer.read(Infinity);
     return markup;
 }
-import { Readable } from "stream";
+import {Readable} from 'stream';
 
-class ReactMarkupReadableStream extends Readable {
-    constructor(element, makeStaticMarkup) {
-        // Calls the stream.Readable(options) constructor. Consider exposing built-in
-        // features like highWaterMark in the future.
-        super({});
-        this.partialRenderer = new ReactPartialRenderer(
-            element,
-            makeStaticMarkup
-        );
-    }
 
+var ReactMarkupReadableStream = miniCreateClass(function ReactMarkupReadableStream(element, makeStaticMarkup){
+    this.partialRenderer = new ReactPartialRenderer(element, makeStaticMarkup);
+},{
     _read(size) {
         try {
             this.push(this.partialRenderer.read(size));
         } catch (err) {
-            this.emit("error", err);
+            this.emit('error', err);
         }
     }
-}
+},Readable );
 
 /**
  * Render a ReactElement to its initial HTML. This should only be used on the
@@ -51,12 +44,12 @@ class ReactMarkupReadableStream extends Readable {
 export function renderToNodeStream(element) {
     return new ReactMarkupReadableStream(element, false);
 }
-
+  
 /**
- * Similar to renderToNodeStream, except this doesn't create extra DOM attributes
- * such as data-react-id that React uses internally.
- * See https://reactjs.org/docs/react-dom-stream.html#rendertostaticnodestream
- */
+   * Similar to renderToNodeStream, except this doesn't create extra DOM attributes
+   * such as data-react-id that React uses internally.
+   * See https://reactjs.org/docs/react-dom-stream.html#rendertostaticnodestream
+   */
 export function renderToStaticNodeStream(element) {
     return new ReactMarkupReadableStream(element, true);
 }

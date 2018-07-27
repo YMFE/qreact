@@ -79,13 +79,11 @@ function flattenHooks(key, hooks) {
 function applyMixins(proto, mixins) {
     for (let key in mixins) {
         if (mixins.hasOwnProperty(key)) {
-            proto[key] = flattenHooks(
-                key,
-                mixins[key].concat(proto[key] || [])
-            );
+            proto[key] = flattenHooks(key, mixins[key].concat(proto[key] || []));
         }
     }
 }
+
 
 var win = getWindow();
 if (!win.React || !win.React.Component) {
@@ -101,41 +99,28 @@ export default function createClass(spec) {
     }
     //创建一个构造器,有四个参数
     let statics = spec.statics;
-    let Constructor = miniCreateClass(
-        function() {
-            if (!(this instanceof Component)) {
-                throw "must new Component(...)";
+    let Constructor = miniCreateClass(function Ctor() {
+        if (!(this instanceof Component)) {
+            throw "must new Component(...)";
+        }
+        for (let methodName in this) {
+            let method = this[methodName];
+            if (typeof method === "function" && !NOBIND[methodName]) {
+                this[methodName] = method.bind(this);
             }
-            for (let methodName in this) {
-                let method = this[methodName];
-                if (typeof method === "function" && !NOBIND[methodName]) {
-                    this[methodName] = method.bind(this);
-                }
-            }
+        }
 
-            if (spec.getInitialState) {
-                let test = (this.state = spec.getInitialState.call(this));
-                if (
-                    !(
-                        test === null ||
-                        {}.toString.call(test) == "[object Object]"
-                    )
-                ) {
-                    throw "Component.getInitialState(): must return an object or null";
-                }
+        if (spec.getInitialState) {
+            let test = this.state = spec.getInitialState.call(this);
+            if (!(test === null || ({}).toString.call(test) == "[object Object]")) {
+                throw "Component.getInitialState(): must return an object or null";
             }
-        },
-        Component,
-        spec,
-        statics
-    );
-    if (spec.displayName) {
-        Constructor.displayName = spec.displayName;
-    }
-
+        }
+    }, Component, spec, statics);
     //如果mixins里面非常复杂，可能mixin还包含其他mixin
     if (spec.mixins) {
         applyMixins(spec, collectMixins(spec.mixins));
+        extend(Constructor.prototype, spec);
     }
 
     if (statics && statics.getDefaultProps) {

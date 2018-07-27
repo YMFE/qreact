@@ -51,8 +51,8 @@ export var duplexMap = {
             if (props.checked != null) {
                 syncValue(node, "checked", !!props.checked);
             }
-            var value = getSafeValue(props.value);
-
+            const isActive = node === node.ownerDocument.activeElement;
+            const value = isActive ? node.value : getSafeValue(props.value);
             if (value != null) {
                 if (props.type === "number") {
                     if (
@@ -68,12 +68,13 @@ export var duplexMap = {
             }
 
             if (props.hasOwnProperty("value")) {
-                setDefaultValue(node, props.type, value);
+                setDefaultValue(node, props.type, value, isActive);
             } else if (props.hasOwnProperty("defaultValue")) {
                 setDefaultValue(
                     node,
                     props.type,
-                    getSafeValue(props.defaultValue)
+                    getSafeValue(props.defaultValue),
+                    isActive
                 );
             }
 
@@ -92,41 +93,30 @@ export var duplexMap = {
             });
         },
         mount(node, props) {
-            node.multiple = !!props.multiple;
-            var value = props.value;
+            let multiple = (node.multiple = !!props.multiple);
+            let value = props.value;
             if (value != null) {
-                updateOptions(node, !!props.multiple, value, false);
+                updateOptions(node, multiple, value, false);
             } else if (props.defaultValue != null) {
-                updateOptions(node, !!props.multiple, props.defaultValue, true);
+                updateOptions(node, multiple, props.defaultValue, true);
             }
         },
         update(node, props) {
             // mount后这个属性没用
             node._wrapperState.initialValue = void 666;
 
-            var wasMultiple = node._wrapperState.wasMultiple;
-            node._wrapperState.wasMultiple = !!props.multiple;
-
-            var value = props.value;
+            let wasMultiple = node._wrapperState.wasMultiple;
+            let multiple = (node._wrapperState.wasMultiple = !!props.multiple);
+            let value = props.value;
             if (value != null) {
-                updateOptions(node, !!props.multiple, value, false);
-            } else if (wasMultiple !== !!props.multiple) {
+                updateOptions(node, multiple, value, false);
+            } else if (wasMultiple !== multiple) {
                 // 切换multiple后，需要重新计算
                 if (props.defaultValue != null) {
-                    updateOptions(
-                        node,
-                        !!props.multiple,
-                        props.defaultValue,
-                        true
-                    );
+                    updateOptions(node, multiple, props.defaultValue, true);
                 } else {
                     // Revert the select back to its default unselected state.
-                    updateOptions(
-                        node,
-                        !!props.multiple,
-                        props.multiple ? [] : "",
-                        false
-                    );
+                    updateOptions(node, multiple, multiple ? [] : "", false);
                 }
             }
         }
@@ -139,7 +129,7 @@ export var duplexMap = {
                 let children = props.children;
                 if (children != null) {
                     //移除元素节点
-                    defaultValue = getTextContent(node);
+                    defaultValue = textContent(node);
                     node.innerHTML = "";
                 }
                 if (defaultValue == null) {
@@ -153,7 +143,7 @@ export var duplexMap = {
             });
         },
         mount(node, props, state) {
-            let text = getTextContent(node);
+            let text = textContent(node);
             let stateValue = "" + state.initialValue;
             if (text !== stateValue) {
                 syncValue(node, "value", stateValue);
@@ -181,9 +171,13 @@ export var duplexMap = {
             duplexMap.option.mount(node, props);
         },
         mount(node, props) {
-            let text = getTextContent(node);
-            if (node.text !== text.trim()) {
-                node.innerHTML = text;
+            let elems = node.getElementsByTagName("*");
+            let n = elems.length,
+                el;
+            if (n) {
+                for (n = n - 1, el; (el = elems[n--]); ) {
+                    node.removeChild(el);
+                }
             }
             if ("value" in props) {
                 node.duplexValue = node.value = props.value;
@@ -193,16 +187,16 @@ export var duplexMap = {
         }
     }
 };
-function getTextContent(node) {
-    //innerText是用来对付IE6－8，innerHTML是用来对付jest
-    return node.textContent || node.innerText || node.innerHTML;
+
+function textContent(node) {
+    return node.textContent || node.innerText;
 }
 
-function setDefaultValue(node, type, value) {
+function setDefaultValue(node, type, value, isActive) {
     if (
         // Focused number inputs synchronize on blur. See ChangeEventPlugin.js
         type !== "number" ||
-        node.ownerDocument.activeElement !== node
+        !isActive
     ) {
         if (value == null) {
             node.defaultValue = "" + node._wrapperState.initialValue;

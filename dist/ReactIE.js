@@ -6,8 +6,8 @@
     typeof exports === "object" && typeof module !== "undefined"
         ? (module.exports = factory())
         : typeof define === "function" && define.amd
-          ? define(factory)
-          : (global.React = factory());
+            ? define(factory)
+            : (global.React = factory());
 })(this, function() {
     var arrayPush = Array.prototype.push;
     var innerHTML = "dangerouslySetInnerHTML";
@@ -34,7 +34,7 @@
     }
     function resetStack(info) {
         keepLast(info.containerStack);
-        keepLast(info.containerStack);
+        keepLast(info.contextStack);
     }
     function keepLast(list) {
         var n = list.length;
@@ -84,18 +84,23 @@
         fn.constructor = SubClass;
         return fn;
     }
-    inherit.getName = function(ctor) {
-        return ctor.name;
-    };
+    try {
+        var supportEval = Function("a", "return a + 1")(2) == 3;
+    } catch (e) {}
     function miniCreateClass(ctor, superClass, methods, statics) {
-        var className = inherit.getName(ctor);
-        var Ctor = Function(
-            "superClass",
-            "ctor",
-            "return function " +
-                className +
-                " (props, context) {\n            superClass.apply(this, arguments); \n            ctor.apply(this, arguments);\n      }"
-        )(superClass, ctor);
+        var className = ctor.name || "IEComponent";
+        var Ctor = supportEval
+            ? Function(
+                  "superClass",
+                  "ctor",
+                  "return function " +
+                      className +
+                      " (props, context) {\n            superClass.apply(this, arguments); \n            ctor.apply(this, arguments);\n      }"
+              )(superClass, ctor)
+            : function Ctor() {
+                  superClass.apply(this, arguments);
+                  ctor.apply(this, arguments);
+              };
         Ctor.displayName = className;
         var fn = inherit(Ctor, superClass);
         extend(fn, methods);
@@ -169,6 +174,7 @@
                 middlewares.push(obj);
             }
         },
+        updateControlled: function updateControlled() {},
         fireMiddlewares: function fireMiddlewares(begin) {
             var index = begin ? middlewares.length - 1 : 0,
                 delta = begin ? -1 : 1,
@@ -180,6 +186,39 @@
             }
         },
         currentOwner: null
+    };
+
+    var fakeObject = {
+        enqueueSetState: returnFalse,
+        isMounted: returnFalse
+    };
+    function Component(props, context) {
+        Renderer.currentOwner = this;
+        this.context = context;
+        this.props = props;
+        this.refs = {};
+        this.updater = fakeObject;
+        this.state = null;
+    }
+    Component.prototype = {
+        constructor: Component,
+        replaceState: function replaceState() {
+            toWarnDev("replaceState", true);
+        },
+        isReactComponent: returnTrue,
+        isMounted: function isMounted$$1() {
+            toWarnDev("isMounted", true);
+            return this.updater.isMounted(this);
+        },
+        setState: function setState(state, cb) {
+            this.updater.enqueueSetState(this, state, cb);
+        },
+        forceUpdate: function forceUpdate(cb) {
+            this.updater.enqueueSetState(this, true, cb);
+        },
+        render: function render() {
+            throw "must implement render";
+        }
     };
 
     var _typeof =
@@ -409,7 +448,7 @@
                 invokeCallback = true;
                 break;
             case 8:
-                if (children.$$typeof) {
+                if (children.$$typeof || children instanceof Component) {
                     invokeCallback = true;
                 } else if (children.hasOwnProperty("toString")) {
                     children = children + "";
@@ -461,7 +500,7 @@
             }
             return subtreeCount;
         }
-        throw "React.createElement: type is invalid.";
+        throw "children: type is invalid.";
     }
     var REAL_SYMBOL = hasSymbol && Symbol.iterator;
     var FAKE_SYMBOL = "@@iterator";
@@ -568,39 +607,6 @@
         oneOf: check,
         oneOfType: check,
         shape: check
-    };
-
-    var fakeObject = {
-        enqueueSetState: returnFalse,
-        isMounted: returnFalse
-    };
-    function Component(props, context) {
-        Renderer.currentOwner = this;
-        this.context = context;
-        this.props = props;
-        this.refs = {};
-        this.updater = fakeObject;
-        this.state = null;
-    }
-    Component.prototype = {
-        constructor: Component,
-        replaceState: function replaceState() {
-            toWarnDev("replaceState", true);
-        },
-        isReactComponent: returnTrue,
-        isMounted: function isMounted$$1() {
-            toWarnDev("isMounted", true);
-            return this.updater.isMounted(this);
-        },
-        setState: function setState(state, cb) {
-            this.updater.enqueueSetState(this, state, cb);
-        },
-        forceUpdate: function forceUpdate(cb) {
-            this.updater.enqueueSetState(this, true, cb);
-        },
-        render: function render() {
-            throw "must implement render";
-        }
     };
 
     function shallowEqual(objA, objB) {
@@ -993,7 +999,8 @@
                 if (props.checked != null) {
                     syncValue(node, "checked", !!props.checked);
                 }
-                var value = getSafeValue(props.value);
+                var isActive = node === node.ownerDocument.activeElement;
+                var value = isActive ? node.value : getSafeValue(props.value);
                 if (value != null) {
                     if (props.type === "number") {
                         if (
@@ -1007,12 +1014,13 @@
                     }
                 }
                 if (props.hasOwnProperty("value")) {
-                    setDefaultValue(node, props.type, value);
+                    setDefaultValue(node, props.type, value, isActive);
                 } else if (props.hasOwnProperty("defaultValue")) {
                     setDefaultValue(
                         node,
                         props.type,
-                        getSafeValue(props.defaultValue)
+                        getSafeValue(props.defaultValue),
+                        isActive
                     );
                 }
                 if (props.checked == null && props.defaultChecked != null) {
@@ -1029,39 +1037,29 @@
                 });
             },
             mount: function mount(node, props) {
-                node.multiple = !!props.multiple;
+                var multiple = (node.multiple = !!props.multiple);
                 var value = props.value;
                 if (value != null) {
-                    updateOptions(node, !!props.multiple, value, false);
+                    updateOptions(node, multiple, value, false);
                 } else if (props.defaultValue != null) {
-                    updateOptions(
-                        node,
-                        !!props.multiple,
-                        props.defaultValue,
-                        true
-                    );
+                    updateOptions(node, multiple, props.defaultValue, true);
                 }
             },
             update: function update(node, props) {
                 node._wrapperState.initialValue = void 666;
                 var wasMultiple = node._wrapperState.wasMultiple;
-                node._wrapperState.wasMultiple = !!props.multiple;
+                var multiple = (node._wrapperState.wasMultiple = !!props.multiple);
                 var value = props.value;
                 if (value != null) {
-                    updateOptions(node, !!props.multiple, value, false);
-                } else if (wasMultiple !== !!props.multiple) {
+                    updateOptions(node, multiple, value, false);
+                } else if (wasMultiple !== multiple) {
                     if (props.defaultValue != null) {
-                        updateOptions(
-                            node,
-                            !!props.multiple,
-                            props.defaultValue,
-                            true
-                        );
+                        updateOptions(node, multiple, props.defaultValue, true);
                     } else {
                         updateOptions(
                             node,
-                            !!props.multiple,
-                            props.multiple ? [] : "",
+                            multiple,
+                            multiple ? [] : "",
                             false
                         );
                     }
@@ -1075,7 +1073,7 @@
                     var defaultValue = props.defaultValue;
                     var children = props.children;
                     if (children != null) {
-                        defaultValue = getTextContent(node);
+                        defaultValue = textContent(node);
                         node.innerHTML = "";
                     }
                     if (defaultValue == null) {
@@ -1088,7 +1086,7 @@
                 });
             },
             mount: function mount(node, props, state) {
-                var text = getTextContent(node);
+                var text = textContent(node);
                 var stateValue = "" + state.initialValue;
                 if (text !== stateValue) {
                     syncValue(node, "value", stateValue);
@@ -1116,9 +1114,13 @@
                 duplexMap.option.mount(node, props);
             },
             mount: function mount(node, props) {
-                var text = getTextContent(node);
-                if (node.text !== text.trim()) {
-                    node.innerHTML = text;
+                var elems = node.getElementsByTagName("*");
+                var n = elems.length,
+                    el = void 0;
+                if (n) {
+                    for (n = n - 1, el; (el = elems[n--]); ) {
+                        node.removeChild(el);
+                    }
                 }
                 if ("value" in props) {
                     node.duplexValue = node.value = props.value;
@@ -1128,11 +1130,11 @@
             }
         }
     };
-    function getTextContent(node) {
-        return node.textContent || node.innerText || node.innerHTML;
+    function textContent(node) {
+        return node.textContent || node.innerText;
     }
-    function setDefaultValue(node, type, value) {
-        if (type !== "number" || node.ownerDocument.activeElement !== node) {
+    function setDefaultValue(node, type, value, isActive) {
+        if (type !== "number" || !isActive) {
             if (value == null) {
                 node.defaultValue = "" + node._wrapperState.initialValue;
             } else if (node.defaultValue !== "" + value) {
@@ -1486,7 +1488,9 @@
     var fixWheelType =
         document.onwheel !== void 666
             ? "wheel"
-            : "onmousewheel" in document ? "mousewheel" : "DOMMouseScroll";
+            : "onmousewheel" in document
+                ? "mousewheel"
+                : "DOMMouseScroll";
     eventHooks.wheel = function(dom) {
         addEvent(dom, fixWheelType, specialHandles.wheel);
     };
@@ -1494,13 +1498,17 @@
         event.deltaX =
             "deltaX" in event
                 ? event.deltaX
-                : "wheelDeltaX" in event ? -event.wheelDeltaX : 0;
+                : "wheelDeltaX" in event
+                    ? -event.wheelDeltaX
+                    : 0;
         event.deltaY =
             "deltaY" in event
                 ? event.deltaY
                 : "wheelDeltaY" in event
-                  ? -event.wheelDeltaY
-                  : "wheelDelta" in event ? -event.wheelDelta : 0;
+                    ? -event.wheelDeltaY
+                    : "wheelDelta" in event
+                        ? -event.wheelDelta
+                        : 0;
     };
     var focusMap = {
         focus: "focus",
@@ -1601,16 +1609,24 @@
         SyntheticEvent: SyntheticEvent
     };
 
-    function _toConsumableArray(arr) {
-        if (Array.isArray(arr)) {
-            for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
-                arr2[i] = arr[i];
-            }
-            return arr2;
-        } else {
-            return Array.from(arr);
+    var NOWORK = 1;
+    var WORKING = 2;
+    var PLACE = 3;
+    var CONTENT = 5;
+    var ATTR = 7;
+    var DUPLEX = 11;
+    var DETACH = 13;
+    var HOOK = 17;
+    var REF = 19;
+    var CALLBACK = 23;
+    var CAPTURE = 29;
+    var effectNames = [DUPLEX, HOOK, REF, DETACH, CALLBACK, CAPTURE].sort(
+        function(a, b) {
+            return a - b;
         }
-    }
+    );
+    var effectLength = effectNames.length;
+
     var isSpecialAttr = {
         style: 1,
         autoFocus: 1,
@@ -1683,23 +1699,22 @@
             return match.slice(0, 1) + split + match.slice(1).toLowerCase();
         };
     }
-    var rhump = /[a-z][A-Z]/;
+    var rhump = /([a-z])([A-Z])/;
     var toHyphen = createRepaceFn("-");
     var toColon = createRepaceFn(":");
     function getSVGAttributeName(name) {
         if (svgCache[name]) {
             return svgCache[name];
         }
-        var key = name.match(rhump);
-        if (!key) {
+        var match = name.match(rhump);
+        if (!match) {
             return (svgCache[name] = name);
         }
-        var _ref = [].concat(_toConsumableArray(key[0].toLowerCase())),
-            prefix = _ref[0],
-            postfix = _ref[1];
+        var prefix = match[1];
+        var postfix = match[2].toLowerCase();
         var orig = name;
-        if (svgCamelCase[prefix] && svgCamelCase[prefix][postfix]) {
-            var count = svgCamelCase[prefix][postfix];
+        var count = svgCamelCase[prefix] && svgCamelCase[prefix][postfix];
+        if (count) {
             if (count === -1) {
                 return (svgCache[orig] = {
                     name: name.replace(rhump, toColon),
@@ -1726,6 +1741,7 @@
             if (!("onChange" in nextProps)) {
                 eventAction(dom, "onChange", noop, lastProps, fiber);
             }
+            fiber.effectTag *= DUPLEX;
             fiber.onDuplex = continueProps.onDuplex;
         }
         for (var name in nextProps) {
@@ -1804,7 +1820,6 @@
         onDuplex: noop
     };
     var duplexProps = {
-        onDuplex: duplexAction,
         value: 1,
         defaultValue: 1,
         checked: 1,
@@ -1979,35 +1994,10 @@
 
     function Fiber(vnode) {
         extend(this, vnode);
-        var type = vnode.type;
+        var type = vnode.type || "ProxyComponent(react-hot-loader)";
         this.name = type.displayName || type.name || type;
         this.effectTag = 1;
     }
-
-    var NOWORK = 1;
-    var WORKING = 2;
-    var PLACE = 3;
-    var CONTENT = 5;
-    var ATTR = 7;
-    var NULLREF = 11;
-    var DETACH = 13;
-    var HOOK = 17;
-    var REF = 19;
-    var CALLBACK = 23;
-    var CAPTURE = 29;
-    var effectNames = [
-        CONTENT,
-        ATTR,
-        NULLREF,
-        HOOK,
-        REF,
-        DETACH,
-        CALLBACK,
-        CAPTURE
-    ].sort(function(a, b) {
-        return a - b;
-    });
-    var effectLength = effectNames.length;
 
     function pushError(fiber, hook, error) {
         var names = [];
@@ -2140,9 +2130,6 @@
     function detachFiber(fiber, effects$$1) {
         fiber.effectTag = DETACH;
         effects$$1.push(fiber);
-        if (fiber.ref && fiber.hasMounted) {
-            fiber.effectTag *= NULLREF;
-        }
         fiber.disposed = true;
         for (var child = fiber.child; child; child = child.sibling) {
             detachFiber(child, effects$$1);
@@ -2259,9 +2246,6 @@
                         delete f.shiftContainer;
                         info.containerStack.shift();
                     }
-                    if (instance.insertPoint) {
-                        instance.insertPoint = null;
-                    }
                 } else {
                     var updater = instance && instance.updater;
                     if (f.shiftContext) {
@@ -2295,9 +2279,6 @@
             fiber.stateNode = Renderer.createElement(fiber);
         }
         var parent = fiber.parent;
-        if (!parent.insertPoint) {
-            parent.insertPoint = getInsertPoint(fiber);
-        }
         fiber.forwardFiber = parent.insertPoint;
         parent.insertPoint = fiber;
         fiber.effectTag = PLACE;
@@ -2362,15 +2343,12 @@
             fiber.parent =
                 type === AnuPortal ? props.parent : containerStack[0];
             instance = createInstance(fiber, newContext);
+            cacheContext(instance, contextStack[0], newContext);
         }
         instance._reactInternalFiber = fiber;
         var isStateful = !instance.__isStateless;
         if (isStateful) {
             var updateQueue = fiber.updateQueue;
-            if (fiber.hasMounted && fiber.dirty && fiber.parent) {
-                fiber.parent.insertPoint = null;
-            }
-            delete fiber.dirty;
             delete fiber.updateFail;
             if (fiber.hasMounted) {
                 applybeforeUpdateHooks(
@@ -2405,7 +2383,6 @@
             containerStack.unshift(fiber.parent);
             fiber.shiftContainer = true;
         }
-        instance.unmaskedContext = contextStack[0];
         instance.context = newContext;
         fiber.memoizedProps = instance.props = props;
         fiber.memoizedState = instance.state;
@@ -2416,11 +2393,15 @@
             contextStack.unshift(context);
         }
         if (isStateful) {
+            if (fiber.parent && fiber.hasMounted && fiber.dirty) {
+                fiber.parent.insertPoint = getInsertPoint(fiber);
+            }
             if (fiber.updateFail) {
                 cloneChildren(fiber);
                 fiber._hydrating = false;
                 return;
             }
+            delete fiber.dirty;
             fiber.effectTag *= HOOK;
         } else {
             fiber.effectTag = WORKING;
@@ -2537,6 +2518,10 @@
             setInsertPoints(cc);
         }
     }
+    function cacheContext(instance, unmaskedContext, context) {
+        instance.__unmaskedContext = unmaskedContext;
+        instance.__maskedContext = context;
+    }
     function getMaskedContext(instance, contextTypes, contextStack) {
         if (instance && !contextTypes) {
             return instance.context;
@@ -2545,11 +2530,20 @@
         if (!contextTypes) {
             return context;
         }
-        var parentContext = contextStack[0];
+        var unmaskedContext = contextStack[0];
+        if (instance) {
+            var cachedUnmasked = instance.__unmaskedContext;
+            if (cachedUnmasked === unmaskedContext) {
+                return instance.__maskedContext;
+            }
+        }
         for (var key in contextTypes) {
             if (contextTypes.hasOwnProperty(key)) {
-                context[key] = parentContext[key];
+                context[key] = unmaskedContext[key];
             }
+        }
+        if (instance) {
+            cacheContext(instance, unmaskedContext, context);
         }
         return context;
     }
@@ -2562,7 +2556,7 @@
         }
         var newFibers = fiberizeChildren(children, parentFiber);
         var effects$$1 = parentFiber.effects || (parentFiber.effects = []);
-        var matchFibers = {};
+        var matchFibers = new Object();
         delete parentFiber.child;
         for (var i in oldFibers) {
             var newFiber = newFibers[i];
@@ -2594,7 +2588,6 @@
                         delete _newFiber.deleteRef;
                     }
                     if (oldRef && oldRef !== _newFiber.ref) {
-                        alternate.effectTag *= NULLREF;
                         effects$$1.push(alternate);
                     }
                     if (_newFiber.tag === 5) {
@@ -2676,6 +2669,9 @@
         }
     };
 
+    var domFns = ["insertElement", "updateContent", "updateAttribute"];
+    var domEffects = [PLACE, CONTENT, ATTR];
+    var domRemoved = [];
     function commitDFSImpl(fiber) {
         var topFiber = fiber;
         outerLoop: while (true) {
@@ -2684,12 +2680,13 @@
                 delete fiber.effects;
             }
             if (fiber.effectTag % PLACE == 0) {
-                Renderer.insertElement(fiber);
+                domEffects.forEach(function(effect, i) {
+                    if (fiber.effectTag % effect == 0) {
+                        Renderer[domFns[i]](fiber);
+                        fiber.effectTag /= effect;
+                    }
+                });
                 fiber.hasMounted = true;
-                fiber.effectTag /= PLACE;
-                if (fiber.effectTag % ATTR == 0) {
-                    Renderer.updateAttribute(fiber);
-                }
             } else {
                 if (fiber.catchError) {
                     removeFormBoundaries(fiber);
@@ -2730,9 +2727,13 @@
             while ((el = effects$$1.shift())) {
                 if (el.effectTag === DETACH && el.caughtError) {
                     disposeFiber(el);
-                    return;
+                } else {
+                    commitDFSImpl(el);
                 }
-                commitDFSImpl(el);
+                if (domRemoved.length) {
+                    domRemoved.forEach(Renderer.removeElement);
+                    domRemoved.length = 0;
+                }
             }
         }, {});
         var error = Renderer.catchError;
@@ -2755,14 +2756,8 @@
                 switch (effectNo) {
                     case WORKING:
                         break;
-                    case CONTENT:
-                        Renderer.updateContext(fiber);
-                        break;
-                    case ATTR:
-                        if (fiber.onDuplex) {
-                            fiber.onDuplex(fiber);
-                            delete fiber.onDuplex;
-                        }
+                    case DUPLEX:
+                        Renderer.updateControlled(fiber);
                         break;
                     case HOOK:
                         if (fiber.hasMounted) {
@@ -2810,13 +2805,12 @@
         fiber.effectTag = NOWORK;
     }
     function disposeFibers(fiber) {
-        var list = [fiber.oldChildren, fiber.children],
-            count = 0;
-        while (count != 2) {
-            var c = list[count++];
+        var list = [fiber.oldChildren, fiber.children];
+        for (var i = 0; i < 2; i++) {
+            var c = list[i];
             if (c) {
-                for (var i in c) {
-                    var child = c[i];
+                for (var _i in c) {
+                    var child = c[_i];
                     if (!child.disposed && child.hasMounted) {
                         disposeFiber(child, true);
                         disposeFibers(child);
@@ -2840,11 +2834,12 @@
         }
         if (effectTag % DETACH == 0 || force === true) {
             if (fiber.tag > 3) {
-                Renderer.removeElement(fiber);
+                domRemoved.push(fiber);
             } else {
                 if (fiber.hasMounted) {
                     stateNode.updater.enqueueSetState = returnFalse;
                     guardCallback(stateNode, "componentWillUnmount", []);
+                    delete fiber.stateNode;
                 }
             }
             delete fiber.alternate;
@@ -2872,7 +2867,6 @@
             fiber.index = 0;
             container.child = fiber;
             var instance = createInstance(fiber, {});
-            instance.updater.isMounted = isMounted;
             container.hostRoot = instance;
             immediateUpdate = true;
             Renderer.emptyElement(container);
@@ -2958,7 +2952,7 @@
                 var dom = getContainer(fiber);
                 info = {
                     containerStack: [dom],
-                    contextStack: [fiber.stateNode.unmaskedContext]
+                    contextStack: [fiber.stateNode.__unmaskedContext]
                 };
             }
             reconcileDFS(fiber, info, deadline, ENOUGH_TIME);
@@ -3122,6 +3116,7 @@
         }
     }
 
+    var reuseTextNodes = [];
     function createElement$1(vnode) {
         var p = vnode.return;
         var type = vnode.type,
@@ -3129,7 +3124,7 @@
             ns = vnode.ns;
         switch (type) {
             case "#text":
-                var node = recyclables[type].pop();
+                var node = reuseTextNodes.pop();
                 if (node) {
                     node.nodeValue = props;
                     return node;
@@ -3148,7 +3143,9 @@
                     var s =
                         p.name == "AnuPortal"
                             ? p.props.parent
-                            : p.tag === 5 ? p.stateNode : null;
+                            : p.tag === 5
+                                ? p.stateNode
+                                : null;
                     if (s) {
                         ns = s.namespaceURI;
                         if (
@@ -3170,7 +3167,7 @@
         } catch (e1) {}
         var elem = document.createElement(type);
         var inputType = props && props.type;
-        if (inputType) {
+        if (inputType && elem.uniqueID) {
             try {
                 elem = document.createElement(
                     "<" + type + " type='" + inputType + "'/>"
@@ -3179,16 +3176,12 @@
         }
         return elem;
     }
-    var fragment = document.createDocumentFragment();
+    var hyperspace = document.createElement("div");
     function _emptyElement(node) {
-        var children = node.childNodes;
-        for (var i = 0, child; (child = children[i++]); ) {
-            node.removeChild(child);
+        while (node.firstChild) {
+            node.removeChild(node.firstChild);
         }
     }
-    var recyclables = {
-        "#text": []
-    };
     Renderer.middleware({
         begin: noop,
         end: fireDuplex
@@ -3197,23 +3190,14 @@
         if (!node) {
             return;
         }
-        if (node.nodeType === 1) {
-            _emptyElement(node);
-            if (node._reactInternalFiber) {
-                var i = topFibers.indexOf(node._reactInternalFiber);
-                if (i !== -1) {
-                    topFibers.splice(i, -1);
-                    topNodes.splice(i, -1);
-                }
-            }
+        var nodeType = node.nodeType;
+        if (nodeType === 1 && node.__events) {
             node.__events = null;
-        } else if (node.nodeType === 3) {
-            if (recyclables["#text"].length < 100) {
-                recyclables["#text"].push(node);
-            }
+        } else if (nodeType === 3 && reuseTextNodes.length < 100) {
+            reuseTextNodes.push(node);
         }
-        fragment.appendChild(node);
-        fragment.removeChild(node);
+        hyperspace.appendChild(node);
+        hyperspace.removeChild(node);
     }
     function insertElement(fiber) {
         var dom = fiber.stateNode,
@@ -3239,6 +3223,9 @@
         }
     }
     render.Render = Renderer;
+    function mergeContext(container, context) {
+        container.contextStack[0] = Object.assign({}, context);
+    }
     var DOMRenderer = createRenderer({
         render: render,
         updateAttribute: function updateAttribute(fiber) {
@@ -3247,13 +3234,13 @@
                 stateNode = fiber.stateNode;
             diffProps(stateNode, lastProps || emptyObject, props, fiber);
         },
-        updateContext: function updateContext(fiber) {
+        updateContent: function updateContent(fiber) {
             fiber.stateNode.nodeValue = fiber.props;
         },
+        updateControlled: duplexAction,
         createElement: createElement$1,
         insertElement: insertElement,
         emptyElement: function emptyElement(fiber) {
-            fiber.stateNode.innerHTML = "";
             _emptyElement(fiber.stateNode);
         },
         unstable_renderSubtreeIntoContainer: function unstable_renderSubtreeIntoContainer(
@@ -3265,18 +3252,18 @@
             var container = createContainer(root),
                 context = container.contextStack[0],
                 fiber = get(instance),
-                childContext = void 0;
-            while (fiber.return) {
+                backup = void 0;
+            do {
                 var inst = fiber.stateNode;
-                if (inst && inst.getChildContext) {
-                    childContext = inst.getChildContext();
-                    extend(context, childContext);
+                if (inst.getChildContext) {
+                    backup = mergeContext(container, inst.getChildContext());
                     break;
+                } else {
+                    backup = fiber;
                 }
-                fiber = fiber.return;
-            }
-            if (!childContext && fiber.contextStack) {
-                extend(context, fiber.contextStack[0]);
+            } while ((fiber = fiber.return));
+            if (backup && backup.contextStack) {
+                mergeContext(container, backup.contextStack[0]);
             }
             return Renderer.render(vnode, root, callback);
         },
@@ -3290,12 +3277,7 @@
                         child: null
                     },
                     function() {
-                        var i = topNodes.indexOf(root);
-                        if (i !== -1) {
-                            topNodes.splice(i, 1);
-                            topFibers.splice(i, 1);
-                        }
-                        root._reactInternalFiber = null;
+                        removeTop(root);
                     },
                     true
                 );
@@ -3304,19 +3286,24 @@
             return false;
         },
         removeElement: function removeElement(fiber) {
-            var instance = fiber.stateNode;
-            if (instance) {
-                _removeElement(instance);
-                if (instance._reactInternalFiber) {
-                    var j = topNodes.indexOf(instance);
-                    if (j !== -1) {
-                        topFibers.splice(j, 1);
-                        topNodes.splice(j, 1);
-                    }
+            var dom = fiber.stateNode;
+            if (dom) {
+                _removeElement(dom);
+                delete fiber.stateNode;
+                if (dom._reactInternalFiber) {
+                    removeTop(dom);
                 }
             }
         }
     });
+    function removeTop(dom) {
+        var j = topNodes.indexOf(dom);
+        if (j !== -1) {
+            topFibers.splice(j, 1);
+            topNodes.splice(j, 1);
+        }
+        dom._reactInternalFiber = null;
+    }
 
     var noCheck = false;
     function setSelectValue(e) {
@@ -3347,13 +3334,7 @@
             return true;
         }
         if (e.type === "propertychange") {
-            if (e.propertyName === "value") {
-                if (dom.__anuSetValue) {
-                    return false;
-                }
-            } else {
-                return false;
-            }
+            return e.propertyName === "value" && !dom.__anuSetValue;
         }
     });
     var fixIEInputHandle = createHandle("input", function(e) {
@@ -3366,7 +3347,9 @@
         change: function change(dom) {
             var mask = /radio|check/.test(dom.type)
                 ? "click"
-                : /text|password/.test(dom.type) ? "propertychange" : "change";
+                : /text|password/.test(dom.type)
+                    ? "propertychange"
+                    : "change";
             addEvent(dom, mask, fixIEChangeHandle);
         },
         submit: function submit(dom) {
@@ -3376,11 +3359,6 @@
         }
     };
     if (msie < 9) {
-        var noName = ["", "anonymous"];
-        var rname = /^function\s(\w+)/;
-        inherit.getName = function(ctor) {
-            return (String(ctor).match(rname) || noName)[1];
-        };
         actionStrategy[innerHTML] = function(dom, name, val, lastProps) {
             var oldhtml = lastProps[name] && lastProps[name].__html;
             var html = val && val.__html;

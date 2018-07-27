@@ -2,8 +2,8 @@
     typeof exports === "object" && typeof module !== "undefined"
         ? (module.exports = factory(require("stream")))
         : typeof define === "function" && define.amd
-          ? define(["stream"], factory)
-          : (global.ReactDOMServer = factory(global.stream));
+            ? define(["stream"], factory)
+            : (global.ReactDOMServer = factory(global.stream));
 })(this, function(stream) {
     var hasSymbol = typeof Symbol === "function" && Symbol["for"];
 
@@ -657,7 +657,9 @@
                             _context.next =
                                 _context.t0 === "#text"
                                     ? 4
-                                    : _context.t0 === "#comment" ? 7 : 10;
+                                    : _context.t0 === "#comment"
+                                        ? 7
+                                        : 10;
                             break;
                         case 4:
                             _context.next = 6;

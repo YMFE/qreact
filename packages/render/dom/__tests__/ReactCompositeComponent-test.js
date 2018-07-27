@@ -23,14 +23,6 @@ describe("ReactCompositeComponent", () => {
         PropTypes = require("prop-types");
         shallowCompare = require("lib/shallowCompare");
 
-        /*  shallowCompare = function (instance, nextProps, nextState) {
-            return (
-                !shallowEqual(instance.props, nextProps) ||
-                !shallowEqual(instance.state, nextState)
-            );
-        };
-        */
-
         MorphingComponent = class extends React.Component {
             state = { activated: false };
 
@@ -391,7 +383,7 @@ describe("ReactCompositeComponent", () => {
             expect(() => {
                 ReactDOM.render(<ClassWithRenderNotExtended />, container);
             }).toWarnDev(
-                "ClassWithRenderNotExtended doesn't extend React.Component"
+                `ClassWithRenderNotExtended doesn't extend React.Component`
             );
         }).toThrow();
     });
@@ -1725,5 +1717,63 @@ describe("ReactCompositeComponent", () => {
                     "component instance: you may have forgotten to define `render`."
             );
         }).toThrow();
+    });
+
+    it("上面的context没变，componentWillReceiveProps不会触发", () => {
+        class ListViewDemo extends React.Component {
+            static childContextTypes = {
+                testItems: PropTypes.array
+            };
+            constructor(props) {
+                super(props);
+                this.state = {
+                    testItems: [1, 2, 3]
+                };
+            }
+            getChildContext() {
+                return { testItems: this.state.testItems };
+            }
+            render() {
+                return (
+                    <div>
+                        <Hello ref="hello" />
+                    </div>
+                );
+            }
+        }
+        var list = [];
+        class Hello extends React.Component {
+            static contextTypes = {
+                testItems: PropTypes.array
+            };
+            constructor(props) {
+                super(props);
+                this.state = {
+                    hello: "world"
+                };
+            }
+            componentWillReceiveProps(nextProps) {
+                list.push("componentWillReceiveProps");
+            }
+            componentDidUpdate() {
+                list.push("componentDidUpdate");
+            }
+            changeHello() {
+                this.setState({
+                    hello: "woooo"
+                });
+            }
+            render() {
+                return (
+                    <div ref="div" onClick={this.changeHello.bind(this)}>
+                        {this.state.hello}
+                    </div>
+                );
+            }
+        }
+        var div = document.createElement("div");
+        var instance = ReactDOM.render(<ListViewDemo />, div);
+        instance.refs.hello.changeHello();
+        expect(list).toEqual(["componentDidUpdate"]);
     });
 });

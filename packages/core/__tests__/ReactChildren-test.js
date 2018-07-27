@@ -1,3 +1,4 @@
+
 "use strict";
 
 describe("ReactChildren", () => {
@@ -11,7 +12,7 @@ describe("ReactChildren", () => {
     });
     it("should support identity for simple", () => {
         var context = {};
-        var callback = jasmine.createSpy().and.callFake(function(kid, index) {
+        var callback = jasmine.createSpy().and.callFake(function (kid, index) {
             expect(this).toBe(context);
             expect(index).toBe(0);
             return kid;
@@ -26,18 +27,14 @@ describe("ReactChildren", () => {
         React.Children.forEach(instance.props.children, callback, context);
         expect(callback).toHaveBeenCalledWith(simpleKid, 0);
         callback.calls.reset();
-        var mappedChildren = React.Children.map(
-            instance.props.children,
-            callback,
-            context
-        );
+        var mappedChildren = React.Children.map(instance.props.children, callback, context);
         expect(callback).toHaveBeenCalledWith(simpleKid, 0);
         expect(mappedChildren[0]).toEqual(<span key=".$simple" />);
     });
 
     it("should treat single arrayless child as being in array", () => {
         var context = {};
-        var callback = jasmine.createSpy().and.callFake(function(kid, index) {
+        var callback = jasmine.createSpy().and.callFake(function (kid, index) {
             expect(this).toBe(context);
             expect(index).toBe(0);
             return kid;
@@ -48,18 +45,14 @@ describe("ReactChildren", () => {
         React.Children.forEach(instance.props.children, callback, context);
         expect(callback).toHaveBeenCalledWith(simpleKid, 0);
         callback.calls.reset();
-        var mappedChildren = React.Children.map(
-            instance.props.children,
-            callback,
-            context
-        );
+        var mappedChildren = React.Children.map(instance.props.children, callback, context);
         expect(callback).toHaveBeenCalledWith(simpleKid, 0);
         expect(mappedChildren[0]).toEqual(<span key=".0" />);
     });
 
     it("should treat single child in array as expected", () => {
         var context = {};
-        var callback = jasmine.createSpy().and.callFake(function(kid, index) {
+        var callback = jasmine.createSpy().and.callFake(function (kid, index) {
             expect(this).toBe(context);
             return kid;
         });
@@ -69,11 +62,7 @@ describe("ReactChildren", () => {
         React.Children.forEach(instance.props.children, callback, context);
         expect(callback).toHaveBeenCalledWith(simpleKid, 0);
         callback.calls.reset();
-        var mappedChildren = React.Children.map(
-            instance.props.children,
-            callback,
-            context
-        );
+        var mappedChildren = React.Children.map(instance.props.children, callback, context);
         expect(callback).toHaveBeenCalledWith(simpleKid, 0);
         expect(mappedChildren[0]).toEqual(<span key=".$simple" />);
     });
@@ -86,7 +75,7 @@ describe("ReactChildren", () => {
         var four = <div key="keyFour" />;
         var context = {};
 
-        var callback = jasmine.createSpy().and.callFake(function(kid, index) {
+        var callback = jasmine.createSpy().and.callFake(function (kid, index) {
             expect(this).toBe(context);
             return kid;
         });
@@ -113,24 +102,17 @@ describe("ReactChildren", () => {
         React.Children.forEach(instance.props.children, callback, context);
         assertCalls();
 
-        var mappedChildren = React.Children.map(
-            instance.props.children,
-            callback,
-            context
-        );
+        var mappedChildren = React.Children.map(instance.props.children, callback, context);
         assertCalls();
-        expect(mappedChildren).toEqual([
-            <div key=".$keyZero" />,
-            <div key=".$keyTwo" />,
-            <div key=".$keyFour" />
-        ]);
+        expect(mappedChildren).toEqual([<div key=".$keyZero" />,
+        <div key=".$keyTwo" />, <div key=".$keyFour" />]);
     });
     it("React.Children.forEach不处理null void 0", () => {
         var i = 0;
-        React.Children.forEach(null, function() {
+        React.Children.forEach(null, function () {
             i++;
         });
-        React.Children.forEach(void 0, function() {
+        React.Children.forEach(void 0, function () {
             i++;
         });
         expect(i).toBe(0);
@@ -141,7 +123,7 @@ describe("ReactChildren", () => {
         var a = <a key="aNode" />;
 
         var context = {};
-        var callback = jasmine.createSpy().and.callFake(function(kid, index) {
+        var callback = jasmine.createSpy().and.callFake(function (kid, index) {
             expect(this).toBe(context);
             return kid;
         });
@@ -176,19 +158,11 @@ describe("ReactChildren", () => {
         React.Children.forEach(instance.props.children, callback, context);
         assertCalls();
 
-        var mappedChildren = React.Children.map(
-            instance.props.children,
-            callback,
-            context
-        );
+        var mappedChildren = React.Children.map(instance.props.children, callback, context);
         assertCalls();
-        expect(mappedChildren).toEqual([
-            <div key=".$divNode" />,
-            <span key=".1:0:$spanNode" />,
-            <a key=".2:$aNode" />,
-            "string",
-            1234
-        ]);
+        expect(mappedChildren).toEqual([<div key=".$divNode" />,
+        <span key=".1:0:$spanNode" />,
+        <a key=".2:$aNode" />, "string", 1234]);
     });
 
     it("should be called for each child in nested structure", () => {
@@ -200,7 +174,7 @@ describe("ReactChildren", () => {
         var five = <div key="keyFive" />;
 
         var context = {};
-        var callback = jasmine.createSpy().and.callFake(function(kid, index) {
+        var callback = jasmine.createSpy().and.callFake(function (kid, index) {
             expect(this).toBe(context);
             return kid;
         });
@@ -221,25 +195,16 @@ describe("ReactChildren", () => {
         React.Children.forEach(instance.props.children, callback, context);
         assertCalls();
 
-        var mappedChildren = React.Children.map(
-            instance.props.children,
-            callback,
-            context
-        );
+        var mappedChildren = React.Children.map(instance.props.children, callback, context);
         assertCalls();
-        expect(mappedChildren).toEqual([
-            <div key=".0:$keyZero" />,
-            <div key=".0:$keyTwo" />,
-            <div key=".1:$keyFour" />,
-            <div key=".$keyFive" />
-        ]);
+        expect(mappedChildren).toEqual([<div key=".0:$keyZero" />, <div key=".0:$keyTwo" />, <div key=".1:$keyFour" />, <div key=".$keyFive" />]);
     });
 
     it("should retain key across two mappings", () => {
         var zeroForceKey = <div key="keyZero" />;
         var oneForceKey = <div key="keyOne" />;
         var context = {};
-        var callback = jasmine.createSpy().and.callFake(function(kid, index) {
+        var callback = jasmine.createSpy().and.callFake(function (kid, index) {
             expect(this).toBe(context);
             return kid;
         });
@@ -259,25 +224,18 @@ describe("ReactChildren", () => {
         React.Children.forEach(forcedKeys.props.children, callback, context);
         assertCalls();
 
-        var mappedChildren = React.Children.map(
-            forcedKeys.props.children,
-            callback,
-            context
-        );
+        var mappedChildren = React.Children.map(forcedKeys.props.children, callback, context);
         assertCalls();
-        expect(mappedChildren).toEqual([
-            <div key=".$keyZero" />,
-            <div key=".$keyOne" />
-        ]);
+        expect(mappedChildren).toEqual([<div key=".$keyZero" />, <div key=".$keyOne" />]);
     });
 
     it("should be called for each child in an iterable without keys", () => {
         //spyOn(console, "error");
         var threeDivIterable = {
-            "@@iterator": function() {
+            "@@iterator": function () {
                 var i = 0;
                 return {
-                    next: function() {
+                    next: function () {
                         if (i++ < 3) {
                             return { value: <div />, done: false };
                         } else {
@@ -289,7 +247,7 @@ describe("ReactChildren", () => {
         };
 
         var context = {};
-        var callback = jasmine.createSpy().and.callFake(function(kid, index) {
+        var callback = jasmine.createSpy().and.callFake(function (kid, index) {
             expect(this).toBe(context);
             return kid;
         });
@@ -307,31 +265,21 @@ describe("ReactChildren", () => {
         React.Children.forEach(instance.props.children, callback, context);
         assertCalls();
 
-        var mappedChildren = React.Children.map(
-            instance.props.children,
-            callback,
-            context
-        );
+
+        var mappedChildren = React.Children.map(instance.props.children, callback, context);
         assertCalls();
-        var compareChildren = [
-            <div key=".0" />,
-            <div key=".1" />,
-            <div key=".2" />
-        ];
+        var compareChildren = [<div key=".0" />, <div key=".1" />, <div key=".2" />];
         expect(mappedChildren).toEqual(compareChildren);
     });
 
     it("should be called for each child in an iterable with keys", () => {
         var threeDivIterable = {
-            "@@iterator": function() {
+            "@@iterator": function () {
                 var i = 0;
                 return {
-                    next: function() {
+                    next: function () {
                         if (i++ < 3) {
-                            return {
-                                value: <div key={"#" + i} />,
-                                done: false
-                            };
+                            return { value: <div key={"#" + i} />, done: false };
                         } else {
                             return { value: undefined, done: true };
                         }
@@ -341,7 +289,7 @@ describe("ReactChildren", () => {
         };
 
         var context = {};
-        var callback = jasmine.createSpy().and.callFake(function(kid, index) {
+        var callback = jasmine.createSpy().and.callFake(function (kid, index) {
             expect(this).toBe(context);
             return kid;
         });
@@ -359,22 +307,14 @@ describe("ReactChildren", () => {
         React.Children.forEach(instance.props.children, callback, context);
         assertCalls();
 
-        var mappedChildren = React.Children.map(
-            instance.props.children,
-            callback,
-            context
-        );
+        var mappedChildren = React.Children.map(instance.props.children, callback, context);
         assertCalls();
-        expect(mappedChildren).toEqual([
-            <div key=".$#1" />,
-            <div key=".$#2" />,
-            <div key=".$#3" />
-        ]);
+        expect(mappedChildren).toEqual([<div key=".$#1" />, <div key=".$#2" />, <div key=".$#3" />]);
     });
 
     it("should not enumerate enumerable numbers (#4776)", () => {
         /*eslint-disable no-extend-native */
-        Number.prototype["@@iterator"] = function() {
+        Number.prototype["@@iterator"] = function () {
             throw new Error("number iterator called");
         };
         /*eslint-enable no-extend-native */
@@ -389,14 +329,12 @@ describe("ReactChildren", () => {
             );
 
             var context = {};
-            var callback = jasmine
-                .createSpy()
-                .and.callFake(function(kid, index) {
-                    expect(this).toBe(context);
-                    return kid;
-                });
+            var callback = jasmine.createSpy().and.callFake(function (kid, index) {
+                expect(this).toBe(context);
+                return kid;
+            });
 
-            var assertCalls = function() {
+            var assertCalls = function () {
                 expect(callback.calls.count()).toBe(3);
                 expect(callback).toHaveBeenCalledWith(5, 0);
                 expect(callback).toHaveBeenCalledWith(12, 1);
@@ -407,11 +345,7 @@ describe("ReactChildren", () => {
             React.Children.forEach(instance.props.children, callback, context);
             assertCalls();
 
-            var mappedChildren = React.Children.map(
-                instance.props.children,
-                callback,
-                context
-            );
+            var mappedChildren = React.Children.map(instance.props.children, callback, context);
             assertCalls();
             expect(mappedChildren).toEqual([5, 12, 13]);
         } finally {
@@ -433,7 +367,7 @@ describe("ReactChildren", () => {
         );
 
         var context = {};
-        var callback = jasmine.createSpy().and.callFake(function(kid, index) {
+        var callback = jasmine.createSpy().and.callFake(function (kid, index) {
             expect(this).toBe(context);
             return kid;
         });
@@ -448,11 +382,7 @@ describe("ReactChildren", () => {
         React.Children.forEach(instance.props.children, callback, context);
         assertCalls();
 
-        var mappedChildren = React.Children.map(
-            instance.props.children,
-            callback,
-            context
-        );
+        var mappedChildren = React.Children.map(instance.props.children, callback, context);
         assertCalls();
         expect(mappedChildren).toEqual(["a", 13]);
 
@@ -461,7 +391,7 @@ describe("ReactChildren", () => {
     });
 
     it("should pass key to returned component", () => {
-        var mapFn = function(kid, index) {
+        var mapFn = function (kid, index) {
             return <div>{kid}</div>;
         };
 
@@ -478,7 +408,7 @@ describe("ReactChildren", () => {
 
     it("should invoke callback with the right context", () => {
         var lastContext;
-        var callback = function(kid, index) {
+        var callback = function (kid, index) {
             lastContext = this;
             return this;
         };
@@ -491,11 +421,7 @@ describe("ReactChildren", () => {
         React.Children.forEach(instance.props.children, callback, scopeTester);
         expect(lastContext).toBe(scopeTester);
 
-        var mappedChildren = React.Children.map(
-            instance.props.children,
-            callback,
-            scopeTester
-        );
+        var mappedChildren = React.Children.map(instance.props.children, callback, scopeTester);
 
         expect(React.Children.count(mappedChildren)).toBe(1);
         expect(mappedChildren[0]).toBe(scopeTester);
@@ -509,7 +435,7 @@ describe("ReactChildren", () => {
         const four = <div key="keyFour" />;
         const context = {};
 
-        const callback = jasmine.createSpy().and.callFake(function(kid) {
+        const callback = jasmine.createSpy().and.callFake(function (kid) {
             expect(this).toBe(context);
             return kid;
         });
@@ -539,22 +465,22 @@ describe("ReactChildren", () => {
         const mappedChildren = React.Children.map(
             instance.props.children,
             callback,
-            context
+            context,
         );
         assertCalls();
         expect(mappedChildren).toEqual([
             <div key=".$keyZero" />,
             <div key=".$keyTwo" />,
-            <div key=".$keyFour" />
+            <div key=".$keyFour" />,
         ]);
     });
-    it("should traverse children of different kinds", () => {
+    it('should traverse children of different kinds', () => {
         const div = <div key="divNode" />;
         const span = <span key="spanNode" />;
         const a = <a key="aNode" />;
 
         const context = {};
-        const callback = jasmine.createSpy().and.callFake(function(kid) {
+        const callback = jasmine.createSpy().and.callFake(function (kid) {
             expect(this).toBe(context);
             return kid;
         });
@@ -564,7 +490,7 @@ describe("ReactChildren", () => {
                 {div}
                 {[[span]]}
                 {[a]}
-                {"string"}
+                {'string'}
                 {1234}
                 {true}
                 {false}
@@ -578,7 +504,7 @@ describe("ReactChildren", () => {
             expect(callback).toHaveBeenCalledWith(div, 0);
             expect(callback).toHaveBeenCalledWith(span, 1);
             expect(callback).toHaveBeenCalledWith(a, 2);
-            expect(callback).toHaveBeenCalledWith("string", 3);
+            expect(callback).toHaveBeenCalledWith('string', 3);
             expect(callback).toHaveBeenCalledWith(1234, 4);
             expect(callback).toHaveBeenCalledWith(null, 5);
             expect(callback).toHaveBeenCalledWith(null, 6);
@@ -593,19 +519,19 @@ describe("ReactChildren", () => {
         const mappedChildren = React.Children.map(
             instance.props.children,
             callback,
-            context
+            context,
         );
         assertCalls();
         expect(mappedChildren).toEqual([
             <div key=".$divNode" />,
             <span key=".1:0:$spanNode" />,
             <a key=".2:$aNode" />,
-            "string",
-            1234
+            'string',
+            1234,
         ]);
     });
 
-    it("should be called for each child in nested structure", () => {
+    it('should be called for each child in nested structure', () => {
         const zero = <div key="keyZero" />;
         const one = null;
         const two = <div key="keyTwo" />;
@@ -614,7 +540,7 @@ describe("ReactChildren", () => {
         const five = <div key="keyFive" />;
 
         const context = {};
-        const callback = jasmine.createSpy().and.callFake(function(kid) {
+        const callback = jasmine.createSpy().and.callFake(function (kid) {
             return kid;
         });
 
@@ -637,22 +563,22 @@ describe("ReactChildren", () => {
         const mappedChildren = React.Children.map(
             instance.props.children,
             callback,
-            context
+            context,
         );
         assertCalls();
         expect(mappedChildren).toEqual([
             <div key=".0:$keyZero" />,
             <div key=".0:$keyTwo" />,
             <div key=".1:$keyFour" />,
-            <div key=".$keyFive" />
+            <div key=".$keyFive" />,
         ]);
     });
 
-    it("should retain key across two mappings", () => {
+    it('should retain key across two mappings', () => {
         const zeroForceKey = <div key="keyZero" />;
         const oneForceKey = <div key="keyOne" />;
         const context = {};
-        const callback = jasmine.createSpy().and.callFake(function(kid) {
+        const callback = jasmine.createSpy().and.callFake(function (kid) {
             expect(this).toBe(context);
             return kid;
         });
@@ -676,40 +602,40 @@ describe("ReactChildren", () => {
         const mappedChildren = React.Children.map(
             forcedKeys.props.children,
             callback,
-            context
+            context,
         );
         assertCalls();
         expect(mappedChildren).toEqual([
             <div key=".$keyZero" />,
-            <div key=".$keyOne" />
+            <div key=".$keyOne" />,
         ]);
     });
 
-    it("should be called for each child in an iterable without keys", () => {
+    it('should be called for each child in an iterable without keys', () => {
         const threeDivIterable = {
-            "@@iterator": function() {
+            '@@iterator': function () {
                 let i = 0;
                 return {
-                    next: function() {
+                    next: function () {
                         if (i++ < 3) {
                             return { value: <div />, done: false };
                         } else {
                             return { value: undefined, done: true };
                         }
-                    }
+                    },
                 };
-            }
+            },
         };
 
         const context = {};
-        const callback = jasmine.createSpy().and.callFake(function(kid) {
+        const callback = jasmine.createSpy().and.callFake(function (kid) {
             expect(this).toBe(context);
             return kid;
         });
 
         let instance;
         expect(() => (instance = <div>{threeDivIterable}</div>)).toWarnDev(
-            "Warning: Each child in an array or iterator should have a unique \"key\" prop."
+            'Warning: Each child in an array or iterator should have a unique "key" prop.',
         );
 
         function assertCalls() {
@@ -726,41 +652,42 @@ describe("ReactChildren", () => {
         const mappedChildren = React.Children.map(
             instance.props.children,
             callback,
-            context
+            context,
         );
         assertCalls();
         expect(mappedChildren).toEqual([
             <div key=".0" />,
             <div key=".1" />,
-            <div key=".2" />
+            <div key=".2" />,
         ]);
     });
 
-    it("should be called for each child in an iterable without keys", () => {
+
+    it('should be called for each child in an iterable without keys', () => {
         const threeDivIterable = {
-            "@@iterator": function() {
+            '@@iterator': function () {
                 let i = 0;
                 return {
-                    next: function() {
+                    next: function () {
                         if (i++ < 3) {
                             return { value: <div />, done: false };
                         } else {
                             return { value: undefined, done: true };
                         }
-                    }
+                    },
                 };
-            }
+            },
         };
 
         const context = {};
-        const callback = jasmine.createSpy().and.callFake(function(kid) {
+        const callback = jasmine.createSpy().and.callFake(function (kid) {
             expect(this).toBe(context);
             return kid;
         });
 
         let instance;
         expect(() => (instance = <div>{threeDivIterable}</div>)).toWarnDev(
-            "Warning: Each child in an array or iterator should have a unique \"key\" prop."
+            'Warning: Each child in an array or iterator should have a unique "key" prop.',
         );
 
         function assertCalls() {
@@ -777,37 +704,34 @@ describe("ReactChildren", () => {
         const mappedChildren = React.Children.map(
             instance.props.children,
             callback,
-            context
+            context,
         );
         assertCalls();
         expect(mappedChildren).toEqual([
             <div key=".0" />,
             <div key=".1" />,
-            <div key=".2" />
+            <div key=".2" />,
         ]);
     });
 
-    it("should be called for each child in an iterable with keys", () => {
+    it('should be called for each child in an iterable with keys', () => {
         const threeDivIterable = {
-            "@@iterator": function() {
+            '@@iterator': function () {
                 let i = 0;
                 return {
-                    next: function() {
+                    next: function () {
                         if (i++ < 3) {
-                            return {
-                                value: <div key={"#" + i} />,
-                                done: false
-                            };
+                            return { value: <div key={'#' + i} />, done: false };
                         } else {
                             return { value: undefined, done: true };
                         }
-                    }
+                    },
                 };
-            }
+            },
         };
 
         const context = {};
-        const callback = jasmine.createSpy().and.callFake(function(kid) {
+        const callback = jasmine.createSpy().and.callFake(function (kid) {
             expect(this).toBe(context);
             return kid;
         });
@@ -828,20 +752,20 @@ describe("ReactChildren", () => {
         const mappedChildren = React.Children.map(
             instance.props.children,
             callback,
-            context
+            context,
         );
         assertCalls();
         expect(mappedChildren).toEqual([
             <div key=".$#1" />,
             <div key=".$#2" />,
-            <div key=".$#3" />
+            <div key=".$#3" />,
         ]);
     });
 
-    it("should not enumerate enumerable numbers (#4776)", () => {
+    it('should not enumerate enumerable numbers (#4776)', () => {
         /*eslint-disable no-extend-native */
-        Number.prototype["@@iterator"] = function() {
-            throw new Error("number iterator called");
+        Number.prototype['@@iterator'] = function () {
+            throw new Error('number iterator called');
         };
         /*eslint-enable no-extend-native */
 
@@ -855,12 +779,12 @@ describe("ReactChildren", () => {
             );
 
             const context = {};
-            const callback = jasmine.createSpy().and.callFake(function(kid) {
+            const callback = jasmine.createSpy().and.callFake(function (kid) {
                 expect(this).toBe(context);
                 return kid;
             });
 
-            const assertCalls = function() {
+            const assertCalls = function () {
                 expect(callback.calls.count()).toBe(3);
                 expect(callback).toHaveBeenCalledWith(5, 0);
                 expect(callback).toHaveBeenCalledWith(12, 1);
@@ -874,37 +798,37 @@ describe("ReactChildren", () => {
             const mappedChildren = React.Children.map(
                 instance.props.children,
                 callback,
-                context
+                context,
             );
             assertCalls();
             expect(mappedChildren).toEqual([5, 12, 13]);
         } finally {
-            delete Number.prototype["@@iterator"];
+            delete Number.prototype['@@iterator'];
         }
     });
 
-    it("should allow extension of native prototypes", () => {
+    it('should allow extension of native prototypes', () => {
         /*eslint-disable no-extend-native */
-        String.prototype.key = "react";
-        Number.prototype.key = "rocks";
+        String.prototype.key = 'react';
+        Number.prototype.key = 'rocks';
         /*eslint-enable no-extend-native */
 
         const instance = (
             <div>
-                {"a"}
+                {'a'}
                 {13}
             </div>
         );
 
         const context = {};
-        const callback = jasmine.createSpy().and.callFake(function(kid) {
+        const callback = jasmine.createSpy().and.callFake(function (kid) {
             expect(this).toBe(context);
             return kid;
         });
 
         function assertCalls() {
             expect(callback.calls.count()).toBe(2, 0);
-            expect(callback).toHaveBeenCalledWith("a", 0);
+            expect(callback).toHaveBeenCalledWith('a', 0);
             expect(callback).toHaveBeenCalledWith(13, 1);
             callback.calls.reset();
         }
@@ -915,43 +839,40 @@ describe("ReactChildren", () => {
         const mappedChildren = React.Children.map(
             instance.props.children,
             callback,
-            context
+            context,
         );
         assertCalls();
-        expect(mappedChildren).toEqual(["a", 13]);
+        expect(mappedChildren).toEqual(['a', 13]);
 
         delete String.prototype.key;
         delete Number.prototype.key;
     });
 
-    it("should pass key to returned component", () => {
-        const mapFn = function(kid, index) {
+    it('should pass key to returned component', () => {
+        const mapFn = function (kid, index) {
             return <div>{kid}</div>;
         };
 
         const simpleKid = <span key="simple" />;
 
         const instance = <div>{simpleKid}</div>;
-        const mappedChildren = React.Children.map(
-            instance.props.children,
-            mapFn
-        );
+        const mappedChildren = React.Children.map(instance.props.children, mapFn);
 
         expect(React.Children.count(mappedChildren)).toBe(1);
         expect(mappedChildren[0]).not.toBe(simpleKid);
         expect(mappedChildren[0].props.children).toBe(simpleKid);
-        expect(mappedChildren[0].key).toBe(".$simple");
+        expect(mappedChildren[0].key).toBe('.$simple');
     });
 
-    it("should invoke callback with the right context", () => {
+    it('should invoke callback with the right context', () => {
         let lastContext;
-        const callback = function(kid, index) {
+        const callback = function (kid, index) {
             lastContext = this;
             return this;
         };
 
         // TODO: Use an object to test, after non-object fragments has fully landed.
-        const scopeTester = "scope tester";
+        const scopeTester = 'scope tester';
 
         const simpleKid = <span key="simple" />;
         const instance = <div>{simpleKid}</div>;
@@ -961,14 +882,14 @@ describe("ReactChildren", () => {
         const mappedChildren = React.Children.map(
             instance.props.children,
             callback,
-            scopeTester
+            scopeTester,
         );
 
         expect(React.Children.count(mappedChildren)).toBe(1);
         expect(mappedChildren[0]).toBe(scopeTester);
     });
 
-    it("should be called for each child", () => {
+    it('should be called for each child', () => {
         const zero = <div key="keyZero" />;
         const one = null;
         const two = <div key="keyTwo" />;
@@ -980,9 +901,9 @@ describe("ReactChildren", () => {
             null, // Key should be added even if we don't supply it!
             <div />, // Key should be added even if not supplied!
             <span />, // Map from null to something.
-            <div key="keyFour" />
+            <div key="keyFour" />,
         ];
-        const callback = jasmine.createSpy().and.callFake(function(kid, index) {
+        const callback = jasmine.createSpy().and.callFake(function (kid, index) {
             return mapped[index];
         });
 
@@ -1006,7 +927,7 @@ describe("ReactChildren", () => {
 
         const mappedChildren = React.Children.map(
             instance.props.children,
-            callback
+            callback,
         );
         expect(callback.calls.count()).toBe(5);
         expect(React.Children.count(mappedChildren)).toBe(4);
@@ -1015,8 +936,8 @@ describe("ReactChildren", () => {
             mappedChildren[0].key,
             mappedChildren[1].key,
             mappedChildren[2].key,
-            mappedChildren[3].key
-        ]).toEqual(["giraffe/.$keyZero", ".$keyTwo", ".3", ".$keyFour"]);
+            mappedChildren[3].key,
+        ]).toEqual(['giraffe/.$keyZero', '.$keyTwo', '.3', '.$keyFour']);
 
         expect(callback).toHaveBeenCalledWith(zero, 0);
         expect(callback).toHaveBeenCalledWith(one, 1);
@@ -1030,7 +951,7 @@ describe("ReactChildren", () => {
         expect(mappedChildren[3]).toEqual(<div key=".$keyFour" />);
     });
 
-    it("should be called for each child in nested structure", () => {
+    it('should be called for each child in nested structure', () => {
         const zero = <div key="keyZero" />;
         const one = null;
         const two = <div key="keyTwo" />;
@@ -1043,7 +964,7 @@ describe("ReactChildren", () => {
         const fourMapped = <div key="keyFour" />;
         const fiveMapped = <div />;
 
-        const callback = jasmine.createSpy().and.callFake(function(kid) {
+        const callback = jasmine.createSpy().and.callFake(function (kid) {
             switch (kid) {
                 case zero:
                     return zeroMapped;
@@ -1073,7 +994,7 @@ describe("ReactChildren", () => {
 
         const mappedChildren = React.Children.map(
             instance.props.children,
-            callback
+            callback,
         );
         expect(callback.calls.count()).toBe(6);
         expect(callback).toHaveBeenCalledWith(zero, 0);
@@ -1089,12 +1010,12 @@ describe("ReactChildren", () => {
             mappedChildren[0].key,
             mappedChildren[1].key,
             mappedChildren[2].key,
-            mappedChildren[3].key
+            mappedChildren[3].key,
         ]).toEqual([
-            "giraffe/.0:0:$keyZero",
-            ".0:0:$keyTwo",
-            ".0:1:$keyFour",
-            ".0:$keyFive"
+            'giraffe/.0:0:$keyZero',
+            '.0:0:$keyTwo',
+            '.0:1:$keyFour',
+            '.0:$keyFive',
         ]);
 
         expect(mappedChildren[0]).toEqual(<div key="giraffe/.0:0:$keyZero" />);
@@ -1103,7 +1024,7 @@ describe("ReactChildren", () => {
         expect(mappedChildren[3]).toEqual(<div key=".0:$keyFive" />);
     });
 
-    it("should retain key across two mappings", () => {
+    it('should retain key across two mappings', () => {
         const zeroForceKey = <div key="keyZero" />;
         const oneForceKey = <div key="keyOne" />;
 
@@ -1112,7 +1033,7 @@ describe("ReactChildren", () => {
         // Key should be added even if we don't supply it!
         const oneForceKeyMapped = <div />;
 
-        const mapFn = function(kid, index) {
+        const mapFn = function (kid, index) {
             return index === 0 ? zeroForceKeyMapped : oneForceKeyMapped;
         };
 
@@ -1123,32 +1044,32 @@ describe("ReactChildren", () => {
             </div>
         );
 
-        const expectedForcedKeys = ["giraffe/.$keyZero", ".$keyOne"];
+        const expectedForcedKeys = ['giraffe/.$keyZero', '.$keyOne'];
         const mappedChildrenForcedKeys = React.Children.map(
             forcedKeys.props.children,
-            mapFn
+            mapFn,
         );
         const mappedForcedKeys = mappedChildrenForcedKeys.map(c => c.key);
         expect(mappedForcedKeys).toEqual(expectedForcedKeys);
 
         const expectedRemappedForcedKeys = [
-            "giraffe/.$giraffe/.$keyZero",
-            ".$.$keyOne"
+            'giraffe/.$giraffe/.$keyZero',
+            '.$.$keyOne',
         ];
         const remappedChildrenForcedKeys = React.Children.map(
             mappedChildrenForcedKeys,
-            mapFn
+            mapFn,
         );
         expect(remappedChildrenForcedKeys.map(c => c.key)).toEqual(
-            expectedRemappedForcedKeys
+            expectedRemappedForcedKeys,
         );
     });
 
-    it("should not throw if key provided is a dupe with array key", () => {
+    it('should not throw if key provided is a dupe with array key', () => {
         const zero = <div />;
         const one = <div key="0" />;
 
-        const mapFn = function() {
+        const mapFn = function () {
             return null;
         };
 
@@ -1159,12 +1080,12 @@ describe("ReactChildren", () => {
             </div>
         );
 
-        expect(function() {
+        expect(function () {
             React.Children.map(instance.props.children, mapFn);
         }).not.toThrow();
     });
 
-    it("should use the same key for a cloned element", () => {
+    it('should use the same key for a cloned element', () => {
         const instance = (
             <div>
                 <div />
@@ -1173,18 +1094,18 @@ describe("ReactChildren", () => {
 
         const mapped = React.Children.map(
             instance.props.children,
-            element => element
+            element => element,
         );
 
         const mappedWithClone = React.Children.map(
             instance.props.children,
-            element => React.cloneElement(element)
+            element => React.cloneElement(element),
         );
 
         expect(mapped[0].key).toBe(mappedWithClone[0].key);
     });
 
-    it("should use the same key for a cloned element with key", () => {
+    it('should use the same key for a cloned element with key', () => {
         const instance = (
             <div>
                 <div key="unique" />
@@ -1193,35 +1114,35 @@ describe("ReactChildren", () => {
 
         const mapped = React.Children.map(
             instance.props.children,
-            element => element
+            element => element,
         );
 
         const mappedWithClone = React.Children.map(
             instance.props.children,
-            element => React.cloneElement(element, { key: "unique" })
+            element => React.cloneElement(element, { key: 'unique' }),
         );
 
         expect(mapped[0].key).toBe(mappedWithClone[0].key);
     });
 
-    it("should return 0 for null children", () => {
+    it('should return 0 for null children', () => {
         const numberOfChildren = React.Children.count(null);
         expect(numberOfChildren).toBe(0);
     });
 
-    it("should return 0 for undefined children", () => {
+    it('should return 0 for undefined children', () => {
         const numberOfChildren = React.Children.count(undefined);
         expect(numberOfChildren).toBe(0);
     });
 
-    it("should return 1 for single child", () => {
+    it('should return 1 for single child', () => {
         const simpleKid = <span key="simple" />;
         const instance = <div>{simpleKid}</div>;
         const numberOfChildren = React.Children.count(instance.props.children);
         expect(numberOfChildren).toBe(1);
     });
 
-    it("should count the number of children in flat structure", () => {
+    it('should count the number of children in flat structure', () => {
         const zero = <div key="keyZero" />;
         const one = null;
         const two = <div key="keyTwo" />;
@@ -1241,7 +1162,7 @@ describe("ReactChildren", () => {
         expect(numberOfChildren).toBe(5);
     });
 
-    it("should count the number of children in nested structure", () => {
+    it('should count the number of children in nested structure', () => {
         const zero = <div key="keyZero" />;
         const one = null;
         const two = <div key="keyTwo" />;
@@ -1256,28 +1177,28 @@ describe("ReactChildren", () => {
         expect(numberOfChildren).toBe(7);
     });
 
-    it("should flatten children to an array", () => {
+    it('should flatten children to an array', () => {
         expect(React.Children.toArray(undefined)).toEqual([]);
         expect(React.Children.toArray(null)).toEqual([]);
 
         expect(React.Children.toArray(<div />).length).toBe(1);
         expect(React.Children.toArray([<div />]).length).toBe(1);
         expect(React.Children.toArray(<div />)[0].key).toBe(
-            React.Children.toArray([<div />])[0].key
+            React.Children.toArray([<div />])[0].key,
         );
 
         const flattened = React.Children.toArray([
             [<div key="apple" />, <div key="banana" />, <div key="camel" />],
-            [<div key="banana" />, <div key="camel" />, <div key="deli" />]
+            [<div key="banana" />, <div key="camel" />, <div key="deli" />],
         ]);
         expect(flattened.length).toBe(6);
-        expect(flattened[1].key).toContain("banana");
-        expect(flattened[3].key).toContain("banana");
+        expect(flattened[1].key).toContain('banana');
+        expect(flattened[3].key).toContain('banana');
         expect(flattened[1].key).not.toBe(flattened[3].key);
 
         const reversed = React.Children.toArray([
             [<div key="camel" />, <div key="banana" />, <div key="apple" />],
-            [<div key="deli" />, <div key="camel" />, <div key="banana" />]
+            [<div key="deli" />, <div key="camel" />, <div key="banana" />],
         ]);
         expect(flattened[0].key).toBe(reversed[2].key);
         expect(flattened[1].key).toBe(reversed[1].key);
@@ -1287,12 +1208,13 @@ describe("ReactChildren", () => {
         expect(flattened[5].key).toBe(reversed[3].key);
 
         // null/undefined/bool are all omitted
-        expect(
-            React.Children.toArray([1, "two", null, undefined, true])
-        ).toEqual([1, "two"]);
+        expect(React.Children.toArray([1, 'two', null, undefined, true])).toEqual([
+            1,
+            'two',
+        ]);
     });
 
-    it("should escape keys", () => {
+    it('should escape keys', () => {
         const zero = <div key="1" />;
         const one = <div key="1=::=2" />;
         const instance = (
@@ -1303,11 +1225,11 @@ describe("ReactChildren", () => {
         );
         const mappedChildren = React.Children.map(
             instance.props.children,
-            kid => kid
+            kid => kid,
         );
         expect(mappedChildren).toEqual([
             <div key=".$1" />,
-            <div key=".$1=0=2=2=02" />
+            <div key=".$1=0=2=2=02" />,
         ]);
     });
 
@@ -1315,27 +1237,24 @@ describe("ReactChildren", () => {
         // 'Objects are not valid as a React child (found: object with keys ' +
         // '{a, b}). If you meant to render a collection of children, use an ' +
         // 'array instead.',
-        expect(function() {
-            React.Children.forEach({ a: 1, b: 2 }, function() {}, null);
-        }).toThrow("React.createElement: type is invalid.");
+        expect(function () {
+            React.Children.forEach({ a: 1, b: 2 }, function () { }, null);
+        }).toThrow("children: type is invalid.");
     });
 
     it("should throw on regex", () => {
         // Really, we care about dates (#4840) but those have nondeterministic
         // serialization (timezones) so let's test a regex instead:
-        expect(function() {
-            React.Children.forEach(/abc/, function() {}, null);
-        }).toThrow("React.createElement: type is invalid.");
+        expect(function () {
+            React.Children.forEach(/abc/, function () { }, null);
+        }).toThrow("children: type is invalid.");
     });
 
-    it("复杂的孩子转换", function() {
+    it("复杂的孩子转换", function () {
         function getString(nodes) {
             var str = [];
-            for (var i = 0, node; (node = nodes[i++]); ) {
-                if (
-                    node.nodeType === 8 &&
-                    node.nodeValue.indexOf("react-text") !== 0
-                ) {
+            for (var i = 0, node; (node = nodes[i++]);) {
+                if (node.nodeType === 8 && node.nodeValue.indexOf("react-text") !== 0) {
                     continue;
                 }
                 str.push(node.nodeName.toLowerCase());
@@ -1374,22 +1293,20 @@ describe("ReactChildren", () => {
                     aaa: a
                 });
             }
-            componentDidMount() {}
-            componentWillUpdate() {}
+            componentDidMount() {
+            }
+            componentWillUpdate() {
+            }
             render() {
                 return map[index++];
             }
         }
-        var div = document.createElement("div");
+        var div = document.createElement("div")
         var s = ReactDOM.render(<App />, div);
 
-        expect(getString(div.firstChild.childNodes)).toBe(
-            "#text p span strong"
-        );
+        expect(getString(div.firstChild.childNodes)).toBe("#text p span strong");
         s.change(100);
-        expect(getString(div.firstChild.childNodes)).toBe(
-            "em span #text span b i"
-        );
+        expect(getString(div.firstChild.childNodes)).toBe("em span #text span b i");
         s.change(100);
         expect(getString(div.firstChild.childNodes)).toBe("span");
     });
@@ -1400,7 +1317,7 @@ describe("ReactChildren", () => {
                 return <span>span in a component</span>;
             }
         }
-        var div = document.createElement("div");
+        var div = document.createElement("div")
         function test(content) {
             React.render(content, div);
         }

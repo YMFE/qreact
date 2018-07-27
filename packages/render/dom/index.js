@@ -27,15 +27,7 @@ if (prevReact && prevReact.eventSystem) {
         unstable_renderSubtreeIntoContainer,
         unmountComponentAtNode
     } = DOMRenderer;
-    /*
-    DOMRenderer.injectIntoDevTools({
-        findFiberByHostInstance: get,
-        findHostInstanceByFiber: findDOMNode,
-        bundleType: 1,
-        version: "VERSION",
-        rendererPackageName: "react-dom"
-    });
-    */
+
     React = win.React = win.ReactDOM = {
         //平台相关API
         eventSystem,

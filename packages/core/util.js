@@ -30,7 +30,7 @@ export function returnTrue() {
 
 export function resetStack(info) {
     keepLast(info.containerStack);
-    keepLast(info.containerStack);
+    keepLast(info.contextStack);
 }
 
 function keepLast(list) {
@@ -88,20 +88,25 @@ export function inherit(SubClass, SupClass) {
     fn.constructor = SubClass;
     return fn;
 }
-
-inherit.getName = function(ctor) {
-    return ctor.name;
-};
+try {
+    //微信小程序不支持Function
+    var supportEval = Function("a", "return a + 1")(2) == 3;
+} catch (e) {}
 export function miniCreateClass(ctor, superClass, methods, statics) {
-    let className = inherit.getName(ctor);
-    let Ctor = Function(
-        "superClass",
-        "ctor",
-        `return function ${className} (props, context) {
+    let className = ctor.name || "IEComponent";
+    let Ctor = supportEval
+        ? Function(
+              "superClass",
+              "ctor",
+              `return function ${className} (props, context) {
             superClass.apply(this, arguments); 
             ctor.apply(this, arguments);
       }`
-    )(superClass, ctor);
+          )(superClass, ctor)
+        : function Ctor() {
+              superClass.apply(this, arguments);
+              ctor.apply(this, arguments);
+          };
     Ctor.displayName = className;
     var fn = inherit(Ctor, superClass);
     extend(fn, methods);

@@ -1,7 +1,9 @@
-import { isFn } from "./utils";
+import {
+    isFn
+} from "./utils"
 
 function __awaiter(thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function(resolve, reject) {
+    return new(P || (P = Promise))(function(resolve, reject) {
         function fulfilled(value) {
             try {
                 step(generator.next(value));
@@ -12,18 +14,16 @@ function __awaiter(thisArg, _arguments, P, generator) {
 
         function rejected(value) {
             try {
-                step(generator["throw"](value));
+                step(generator['throw'](value));
             } catch (e) {
                 reject(e);
             }
         }
 
         function step(result) {
-            result.done
-                ? resolve(result.value)
-                : new P(function(resolve) {
-                    resolve(result.value);
-                }).then(fulfilled, rejected);
+            result.done ? resolve(result.value) : new P(function(resolve) {
+                resolve(result.value);
+            }).then(fulfilled, rejected);
         }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
@@ -41,22 +41,14 @@ function __generator(thisArg, body) {
             trys: [],
             ops: []
         },
-        f,
-        y,
-        t,
-        g;
-    return (
-        (g = {
-            next: verb(0),
-            throw: verb(1),
-            return: verb(2)
-        }),
-        typeof Symbol === "function" &&
-            (g[Symbol.iterator] = function() {
-                return this;
-            }),
-        g
-    );
+        f, y, t, g;
+    return g = {
+        next: verb(0),
+        'throw': verb(1),
+        'return': verb(2)
+    }, typeof Symbol === 'function' && (g[Symbol.iterator] = function() {
+        return this;
+    }), g;
 
     function verb(n) {
         return function(v) {
@@ -66,25 +58,14 @@ function __generator(thisArg, body) {
 
     function step(op) {
         if (f) {
-            throw new TypeError("Generator is already executing.");
+            throw new TypeError('Generator is already executing.');
         }
         while (_) {
             try {
-                if (
-                    ((f = 1),
-                        y &&
-                        (t =
-                            op[0] & 2
-                                ? y["return"]
-                                : op[0]
-                                    ? y["throw"] ||
-                                    ((t = y["return"]) && t.call(y), 0)
-                                    : y.next) &&
-                        !(t = t.call(y, op[1])).done)
-                ) {
+                if (f = 1, y && (t = op[0] & 2 ? y['return'] : op[0] ? y['throw'] || ((t = y['return']) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) {
                     return t;
                 }
-                if (((y = 0), t)) {
+                if (y = 0, t) {
                     op = [op[0] & 2, t.value];
                 }
                 switch (op[0]) {
@@ -108,18 +89,11 @@ function __generator(thisArg, body) {
                         _.trys.pop();
                         continue;
                     default:
-                        if (
-                            !((t = _.trys),
-                                (t = t.length > 0 && t[t.length - 1])) &&
-                            (op[0] === 6 || op[0] === 2)
-                        ) {
+                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
                             _ = 0;
                             continue;
                         }
-                        if (
-                            op[0] === 3 &&
-                            (!t || (op[1] > t[0] && op[1] < t[3]))
-                        ) {
+                        if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) {
                             _.label = op[1];
                             break;
                         }
@@ -163,14 +137,15 @@ function __generator(thisArg, body) {
  * generates dispatch[modelName][actionName]
  */
 
+
 export var dispatchPlugin = {
     exposed: {
         // required as a placeholder for store.dispatch
         storeDispatch(action, state) {
-            console.warn("Warning: store not yet loaded");
+            console.warn('Warning: store not yet loaded');
         },
         storeGetState() {
-            console.warn("Warning: store not yet loaded");
+            console.warn('Warning: store not yet loaded');
         },
         /**
          * dispatch
@@ -195,24 +170,24 @@ export var dispatchPlugin = {
                     var action;
                     return __generator(this, function(_a) {
                         action = {
-                            type: modelName + "/" + reducerName
+                            type: modelName + '/' + reducerName
                         };
-                        if (typeof payload !== "undefined") {
+                        if (typeof payload !== 'undefined') {
                             action.payload = payload;
                         }
-                        if (typeof meta !== "undefined") {
+                        if (typeof meta !== 'undefined') {
                             action.meta = meta;
                         }
                         if (this.dispatch[modelName][reducerName].isEffect) {
                             // ensure that effect state is captured on dispatch
                             // to avoid possible mutations and warnings
-                            return [2 /*return*/, this.dispatch(action)];
+                            return [2 /*return*/ , this.dispatch(action)];
                         }
-                        return [2 /*return*/, this.dispatch(action)];
+                        return [2 /*return*/ , this.dispatch(action)];
                     });
                 });
             };
-        }
+        },
     },
     // access store.dispatch after store is created
     onStoreCreated(store) {
@@ -231,29 +206,18 @@ export var dispatchPlugin = {
         for (let reducerName in reducers) {
             if (reducers.hasOwnProperty(reducerName)) {
                 this.validate([
-                    [
-                        !!reducerName.match(/\/.+\//),
-                        "Invalid reducer name (" +
-                            modelName +
-                            "/" +
-                            reducerName +
-                            ")"
+                    [!!reducerName.match(/\/.+\//),
+                        'Invalid reducer name (' + modelName + '/' + reducerName + ')'
                     ],
-                    [
-                        !isFn(reducers[reducerName]),
-                        "Invalid reducer (" +
-                            modelName +
-                            "/" +
-                            reducerName +
-                            "). Must be a function"
-                    ]
+                    [!isFn(reducers[reducerName]),
+                        'Invalid reducer (' + modelName + '/' + reducerName + '). Must be a function',
+                    ],
                 ]);
-                this.dispatch[modelName][
-                    reducerName
-                ] = this.createDispatcher.apply(this, [modelName, reducerName]);
+                this.dispatch[modelName][reducerName] = this.createDispatcher.apply(this, [modelName, reducerName]);
+
             }
         }
-    }
+    },
 };
 
 /**
@@ -264,45 +228,32 @@ export var dispatchPlugin = {
 export var effectsPlugin = {
     exposed: {
         // expose effects for access from dispatch plugin
-        effects: {}
+        effects: {},
     },
     // add effects to dispatch so that dispatch[modelName][effectName] calls an effect
     onModel: function(model) {
         if (!model.effects) {
             return;
         }
-        var effects = isFn(model.effects)
-            ? model.effects(this.dispatch)
-            : model.effects;
+        var effects = isFn(model.effects) ?
+            model.effects(this.dispatch) :
+            model.effects;
         let modelName = model.name;
         for (let effectName in effects) {
             if (effects.hasOwnProperty(effectName)) {
+
                 this.validate([
-                    [
-                        !!effectName.match(/\//),
-                        "Invalid effect name (" +
-                            modelName +
-                            "/" +
-                            effectName +
-                            ")"
+                    [!!effectName.match(/\//),
+                        'Invalid effect name (' + modelName + '/' + effectName + ')',
                     ],
-                    [
-                        !isFn(effects[effectName]),
-                        "Invalid effect (" +
-                            modelName +
-                            "/" +
-                            effectName +
-                            "). Must be a function"
-                    ]
+                    [!isFn(effects[effectName]),
+                        'Invalid effect (' + modelName + '/' + effectName + '). Must be a function',
+                    ],
                 ]);
-                this.effects[modelName + "/" + effectName] = effects[
-                    effectName
-                ].bind(this.dispatch[modelName]);
+                this.effects[modelName + '/' + effectName] = effects[effectName].bind(this.dispatch[modelName]);
                 // add effect to dispatch
                 // is assuming dispatch is available already... that the dispatch plugin is in there
-                var effect = (this.dispatch[modelName][
-                    effectName
-                ] = this.createDispatcher.apply(this, [modelName, effectName]));
+                var effect = this.dispatch[modelName][effectName] = this.createDispatcher.apply(this, [modelName, effectName]);
                 // tag effects so they can be differentiated from normal actions
                 effect.isEffect = true;
             }
@@ -318,25 +269,18 @@ export var effectsPlugin = {
                         switch (_a.label) {
                             case 0:
                                 if (!(action.type in this.effects)) {
-                                    return [3 /*break*/, 2];
+                                    return [3 /*break*/ , 2];
                                 }
-                                return [4 /*yield*/, next(action)];
+                                return [4 /*yield*/ , next(action)];
                             case 1:
                                 _a.sent();
-                                return [
-                                    2 /*return*/,
-                                    this.effects[action.type](
-                                        action.payload,
-                                        store.getState(),
-                                        action.meta
-                                    )
-                                ];
+                                return [2 /*return*/ , this.effects[action.type](action.payload, store.getState(), action.meta)];
                             case 2:
-                                return [2 /*return*/, next(action)];
+                                return [2 /*return*/ , next(action)];
                         }
                     });
                 });
             };
         };
-    }
+    },
 };

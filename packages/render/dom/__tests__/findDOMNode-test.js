@@ -31,7 +31,7 @@ describe("findDOMNode", () => {
     });
 
     it("findDOMNode should find dom element after an update from null", () => {
-        function Bar({ flag }) {
+        function Bar({flag}) {
             if (flag) {
                 return <span>A</span>;
             }
@@ -58,11 +58,10 @@ describe("findDOMNode", () => {
 
     it("findDOMNode should reject random objects", () => {
         expect(function() {
-            ReactDOM.findDOMNode({ foo: "bar" });
-        })
-            .toThrowError
+            ReactDOM.findDOMNode({foo: "bar"});
+        }).toThrowError(
             // 'Element appears to be neither ReactComponent nor DOMNode. Keys: foo',
-            ();
+        );
     });
 
     it("findDOMNode should reject unmounted objects with render func", () => {
@@ -76,7 +75,9 @@ describe("findDOMNode", () => {
         const inst = ReactDOM.render(<Foo />, container);
         ReactDOM.unmountComponentAtNode(container);
         //这里与官方不一致
-        expect(() => ReactDOM.findDOMNode(inst)).not.toThrowError();
+        expect(() => ReactDOM.findDOMNode(inst)).not.toThrowError(
+     
+        );
     });
 
     it("findDOMNode should not throw an error when called within a component that is not mounted", () => {

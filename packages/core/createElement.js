@@ -1,18 +1,13 @@
-import {
-    typeNumber,
-    toWarnDev,
-    hasSymbol,
-    Fragment,
-    REACT_ELEMENT_TYPE,
-    hasOwnProperty
-} from "./util";
+import { typeNumber, toWarnDev, hasSymbol, Fragment, REACT_ELEMENT_TYPE, hasOwnProperty } from "./util";
 import { Renderer } from "./createRenderer";
+import { Component } from "./Component";
+
 
 const RESERVED_PROPS = {
     key: true,
     ref: true,
     __self: true,
-    __source: true
+    __source: true,
 };
 
 function makeProps(type, config, props, children, len) {
@@ -41,6 +36,7 @@ function makeProps(type, config, props, children, len) {
     }
 
     return props;
+
 }
 function hasValidRef(config) {
     return config.ref !== undefined;
@@ -82,6 +78,7 @@ export function createElement(type, config, ...children) {
     return ReactElement(type, tag, props, key, ref, Renderer.currentOwner);
 }
 
+
 export function cloneElement(element, config, ...children) {
     // Original props are copied
     let props = Object.assign({}, element.props);
@@ -110,6 +107,7 @@ export function cloneElement(element, config, ...children) {
     return ReactElement(type, tag, props, key, ref, owner);
 }
 
+
 export function createFactory(type) {
     //  console.warn('createFactory is deprecated');
     var factory = createElement.bind(null, type);
@@ -127,13 +125,7 @@ function ReactElement(type, tag, props, key, ref, owner) {
         ret.$$typeof = REACT_ELEMENT_TYPE;
         ret.key = key || null;
         let refType = typeNumber(ref);
-        if (
-            refType === 2 ||
-            refType === 3 ||
-            refType === 4 ||
-            refType === 5 ||
-            refType === 8
-        ) {
+        if (refType === 2 || refType === 3 || refType === 4 || refType === 5 || refType === 8) {
             //boolean number, string, function
             if (refType < 4) {
                 ref += "";
@@ -147,32 +139,33 @@ function ReactElement(type, tag, props, key, ref, owner) {
     return ret;
 }
 
+
 export function isValidElement(vnode) {
     return !!vnode && vnode.$$typeof === REACT_ELEMENT_TYPE;
 }
 
 export function createVText(text) {
-    return ReactElement("#text", 6, text + "");
+    return ReactElement("#text", 6,   text + "" );
 }
 
 function escape(key) {
     const escapeRegex = /[=:]/g;
     const escaperLookup = {
-        "=": "=0",
-        ":": "=2"
+        '=': '=0',
+        ':': '=2',
     };
-    const escapedString = ("" + key).replace(escapeRegex, function(match) {
+    const escapedString = ('' + key).replace(escapeRegex, function (match) {
         return escaperLookup[match];
     });
 
-    return "$" + escapedString;
+    return '$' + escapedString;
 }
 
 let lastText, flattenIndex, flattenObject;
 function flattenCb(context, child, key, childType) {
     if (child === null) {
         lastText = null;
-        return;
+        return
     }
     if (childType === 3 || childType === 4) {
         if (lastText) {
@@ -196,7 +189,7 @@ export function fiberizeChildren(children, fiber) {
     flattenObject = {};
     flattenIndex = 0;
     if (children !== void 666) {
-        lastText = null; //c 为fiber.props.children
+        lastText = null;//c 为fiber.props.children
         traverseAllChildren(children, "", flattenCb);
     }
     flattenIndex = 0;
@@ -207,7 +200,7 @@ function getComponentKey(component, index) {
     // Do some typechecking here since we call this blindly. We want to ensure
     // that we don't block potential future ES APIs.
     if (
-        typeof component === "object" &&
+        typeof component === 'object' &&
         component !== null &&
         component.key != null
     ) {
@@ -218,41 +211,36 @@ function getComponentKey(component, index) {
     return index.toString(36);
 }
 
-const SEPARATOR = ".";
-const SUBSEPARATOR = ":";
+const SEPARATOR = "."
+const SUBSEPARATOR = ':';
 
 //operateChildren有着复杂的逻辑，如果第一层是可遍历对象，那么
-export function traverseAllChildren(
-    children,
-    nameSoFar,
-    callback,
-    bookKeeping
-) {
-    let childType = typeNumber(children);
+export function traverseAllChildren(children, nameSoFar, callback, bookKeeping) {
+    let childType = typeNumber(children)
     let invokeCallback = false;
     switch (childType) {
-        case 0: //undefined
-        case 1: //null
-        case 2: //boolean
-        case 5: //function
-        case 6: //symbol
-            children = null;
-            invokeCallback = true;
-            break;
-        case 3: //string
-        case 4: //number
-            invokeCallback = true;
-            break;
+        case 0://undefined
+        case 1://null
+        case 2://boolean
+        case 5://function
+        case 6://symbol
+            children = null
+            invokeCallback = true
+            break
+        case 3://string 
+        case 4://number
+            invokeCallback = true
+            break
         // 7 array
-        case 8: //object
-            if (children.$$typeof) {
-                invokeCallback = true;
+        case 8://object
+            if (children.$$typeof || children instanceof Component) {
+                invokeCallback = true
             } else if (children.hasOwnProperty("toString")) {
-                children = children + "";
-                invokeCallback = true;
+                children = children + ""
+                invokeCallback = true
                 childType = 3;
             }
-            break;
+            break
     }
 
     if (invokeCallback) {
@@ -261,9 +249,7 @@ export function traverseAllChildren(
             children,
             // If it's the only child, treat the name as if it was wrapped in an array
             // so that it's consistent if the number of children grows.
-            nameSoFar === ""
-                ? SEPARATOR + getComponentKey(children, 0)
-                : nameSoFar,
+            nameSoFar === '' ? SEPARATOR + getComponentKey(children, 0) : nameSoFar,
             childType
         );
         return 1;
@@ -271,10 +257,10 @@ export function traverseAllChildren(
 
     let subtreeCount = 0; // Count of children found in the current subtree.
     const nextNamePrefix =
-        nameSoFar === "" ? SEPARATOR : nameSoFar + SUBSEPARATOR;
+        nameSoFar === '' ? SEPARATOR : nameSoFar + SUBSEPARATOR;
     if (children.forEach) {
         //数组，Map, Set
-        children.forEach(function(child, i) {
+        children.forEach(function (child, i) {
             let nextName = nextNamePrefix + getComponentKey(child, i);
             subtreeCount += traverseAllChildren(
                 child,
@@ -283,9 +269,9 @@ export function traverseAllChildren(
                 bookKeeping
             );
         });
-        return subtreeCount;
+        return subtreeCount
     }
-    const iteratorFn = getIteractor(children);
+    const iteratorFn = getIteractor(children)
     if (iteratorFn) {
         iterator = iteratorFn.call(children);
         var ii = 0,
@@ -293,16 +279,11 @@ export function traverseAllChildren(
         while (!(step = iterator.next()).done) {
             child = step.value;
             nextName = nextNamePrefix + getComponentKey(child, ii++);
-            subtreeCount += traverseAllChildren(
-                child,
-                nextName,
-                callback,
-                bookKeeping
-            );
+            subtreeCount += traverseAllChildren(child, nextName, callback, bookKeeping);
         }
-        return subtreeCount;
+        return subtreeCount
     }
-    throw "React.createElement: type is invalid.";
+    throw "children: type is invalid.";
 }
 let REAL_SYMBOL = hasSymbol && Symbol.iterator;
 let FAKE_SYMBOL = "@@iterator";

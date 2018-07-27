@@ -6,8 +6,8 @@
     typeof exports === "object" && typeof module !== "undefined"
         ? (module.exports = factory())
         : typeof define === "function" && define.amd
-          ? define(factory)
-          : (global.ReachRouter = factory());
+            ? define(factory)
+            : (global.ReachRouter = factory());
 })(this, function() {
     var hasOwnProperty = Object.prototype.hasOwnProperty;
     var fakeWindow = {};
@@ -39,18 +39,23 @@
         fn.constructor = SubClass;
         return fn;
     }
-    inherit.getName = function(ctor) {
-        return ctor.name;
-    };
+    try {
+        var supportEval = Function("a", "return a + 1")(2) == 3;
+    } catch (e) {}
     function miniCreateClass(ctor, superClass, methods, statics) {
-        var className = inherit.getName(ctor);
-        var Ctor = Function(
-            "superClass",
-            "ctor",
-            "return function " +
-                className +
-                " (props, context) {\n            superClass.apply(this, arguments); \n            ctor.apply(this, arguments);\n      }"
-        )(superClass, ctor);
+        var className = ctor.name || "IEComponent";
+        var Ctor = supportEval
+            ? Function(
+                  "superClass",
+                  "ctor",
+                  "return function " +
+                      className +
+                      " (props, context) {\n            superClass.apply(this, arguments); \n            ctor.apply(this, arguments);\n      }"
+              )(superClass, ctor)
+            : function Ctor() {
+                  superClass.apply(this, arguments);
+                  ctor.apply(this, arguments);
+              };
         Ctor.displayName = className;
         var fn = inherit(Ctor, superClass);
         extend(fn, methods);
@@ -231,7 +236,9 @@
     function sorter(a, b) {
         return a.score < b.score
             ? 1
-            : a.score > b.score ? -1 : a.index - b.index;
+            : a.score > b.score
+                ? -1
+                : a.index - b.index;
     }
     function rankRoutes(routes) {
         return routes.map(rankRoute).sort(sorter);

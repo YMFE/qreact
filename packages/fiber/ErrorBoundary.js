@@ -1,7 +1,12 @@
 import { noop, get } from "react-core/util";
 import { Renderer } from "react-core/createRenderer";
 import { fakeObject } from "react-core/Component";
-import { NOWORK, CAPTURE, DETACH, NULLREF } from "./effectTag";
+import {
+    NOWORK,
+    CAPTURE,
+    DETACH
+    //  NULLREF
+} from "./effectTag";
 
 export function pushError(fiber, hook, error) {
     let names = [];
@@ -151,9 +156,7 @@ export function detachFiber(fiber, effects) {
     fiber.effectTag = DETACH;
 
     effects.push(fiber);
-    if (fiber.ref && fiber.hasMounted) {
-        fiber.effectTag *= NULLREF;
-    }
+
     fiber.disposed = true;
     for (let child = fiber.child; child; child = child.sibling) {
         detachFiber(child, effects);

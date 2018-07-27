@@ -14,7 +14,7 @@ function cleanChildren(array) {
             return {
                 type: el.type,
                 props: el.props,
-                children: cleanChildren(el.children)
+                children: cleanChildren(el.children),
             };
         }
     });
@@ -31,7 +31,7 @@ export let NoopRenderer = createRenderer({
         return render(vnode, autoContainer);
     },
     updateAttribute() {},
-    updateContext(fiber) {
+    updateContent(fiber) {
         fiber.stateNode.children = fiber.props.children;
     },
     reset() {
@@ -65,7 +65,7 @@ export let NoopRenderer = createRenderer({
         return {
             type: fiber.type,
             props: null,
-            children: fiber.tag === 6 ? fiber.props : []
+            children: fiber.tag === 6 ? fiber.props : [],
         };
     },
     insertElement(fiber) {
@@ -105,7 +105,7 @@ export let NoopRenderer = createRenderer({
             var node = fiber.stateNode;
             remove(parent.children, node);
         }
-    }
+    },
 });
 function remove(children, node) {
     var index = children.indexOf(node);

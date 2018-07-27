@@ -1,14 +1,14 @@
-import { getWindow } from "react-core/util";
+import {
+    getWindow
+} from "react-core/util";
 //计划有history hash iframe三种模式
-export var modeObject = {};
+export var modeObject = {}
 //伪造一个Location对象
 function getLocation(source) {
     return {
         ...source.location,
         getPath() {
-            return modeObject.value === "hash"
-                ? this.hash.slice(1)
-                : this.pathname;
+            return modeObject.value === "hash" ? this.hash.slice(1) : this.pathname
         },
         state: source.history.state,
         key: (source.history.state && source.history.state.key) || "initial"
@@ -18,10 +18,11 @@ function getLocation(source) {
 //伪造一个History对象
 function createHistory(source) {
     let listeners = [];
-
+  
     let transitioning = false;
     let resolveTransition = () => {};
     let target = {
+
         //减少魔法，提高兼容性，将只读的访问器属性改成普通属性
         location: getLocation(source),
 
@@ -35,11 +36,11 @@ function createHistory(source) {
         listen(listener) {
             listeners.push(listener);
 
-            let popstateListener = e => {
-                target.location = getLocation(source);
+            let popstateListener = (e) => {      
+                target.location = getLocation(source)
                 listener();
             };
-            var event = modeObject.value === "hash" ? "hashchange" : "popstate";
+            var event = modeObject.value === "hash" ? "hashchange" : "popstate"
             addEvent(source, event, popstateListener);
             return () => {
                 removeEvent(source, event, popstateListener);
@@ -47,18 +48,20 @@ function createHistory(source) {
             };
         },
 
-        navigate(to, { state, replace = false } = {}) {
-            state = {
-                ...state,
+        navigate(to, {
+            state,
+            replace = false
+        } = {}) {
+            state = { ...state,
                 key: Date.now() + ""
             };
             // try...catch iOS Safari limits to 100 pushState calls
-            var slocation = source.location;
+            var slocation = source.location
             if (modeObject.value === "hash") {
                 if (replace && slocation.hash !== newHash) {
-                    history.back();
+                    history.back()
                 }
-                slocation.hash = to;
+                slocation.hash = to
             } else {
                 try {
                     if (transitioning || replace) {
@@ -70,6 +73,7 @@ function createHistory(source) {
                     slocation[replace ? "replace" : "assign"](to);
                 }
             }
+
 
             target.location = getLocation(source);
 
@@ -85,17 +89,17 @@ function createHistory(source) {
 
 function addEvent(dom, name, fn) {
     if (dom.addEventListener) {
-        dom.addEventListener(name, fn);
+        dom.addEventListener(name, fn)
     } else if (dom.attachEvent) {
-        dom.attachEvent("on" + name, fn);
+        dom.attachEvent("on" + name, fn)
     }
 }
 
 function removeEvent(dom, name, fn) {
     if (dom.removeEventListener) {
-        dom.removeEventListener(name, fn);
+        dom.removeEventListener(name, fn)
     } else if (dom.detachEvent) {
-        dom.detachEvent("on" + name, fn);
+        dom.detachEvent("on" + name, fn)
     }
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -103,12 +107,10 @@ function removeEvent(dom, name, fn) {
 function createMemorySource(initialPathname = "/") {
     let index = 0;
     let states = [];
-    let stack = [
-        {
-            pathname: initialPathname,
-            search: ""
-        }
-    ];
+    let stack = [{
+        pathname: initialPathname,
+        search: ""
+    }];
 
     let target = {
         // location
@@ -118,7 +120,7 @@ function createMemorySource(initialPathname = "/") {
             // index
             // entries,
             // state
-            back() {},
+            back(){},
             pushState(state, _, uri) {
                 index++;
                 stack.push(uri2obj(uri));
@@ -163,6 +165,14 @@ let getSource = () => {
 };
 
 let globalHistory = createHistory(getSource());
-let { navigate } = globalHistory;
+let {
+    navigate
+} = globalHistory;
 
-export { globalHistory, navigate, createHistory, createMemorySource };
+
+export {
+    globalHistory,
+    navigate,
+    createHistory,
+    createMemorySource
+};

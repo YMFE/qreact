@@ -13,15 +13,15 @@ export const Renderer = {
             middlewares.push(obj);
         }
     },
+    updateControlled(){},
     fireMiddlewares(begin) {
         let index = begin ? middlewares.length - 1 : 0,
             delta = begin ? -1 : 1,
-            method = begin ? "begin" : "end",
-            obj;
+            method = begin ? "begin" : "end", obj;
         while ((obj = middlewares[index])) {
             obj[method]();
             index += delta;
         }
     },
-    currentOwner: null //vnode
+    currentOwner: null, //vnode
 };

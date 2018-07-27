@@ -4,6 +4,7 @@ import {
     WORKING,
     PLACE,
     CONTENT,
+    DUPLEX,
     ATTR, //UPDATE
     DETACH, //DELETION
     HOOK,
@@ -24,6 +25,9 @@ import { Refs } from "./Refs";
  * @param {*} fiber
  * @param {*} topFiber
  */
+var domFns = ["insertElement", "updateContent", "updateAttribute"];
+var domEffects = [PLACE, CONTENT, ATTR];
+var domRemoved = [];
 
 function commitDFSImpl(fiber) {
     let topFiber = fiber;
@@ -36,12 +40,13 @@ function commitDFSImpl(fiber) {
         }
         if (fiber.effectTag % PLACE == 0) {
             // DOM节点插入或移除
-            Renderer.insertElement(fiber);
+            domEffects.forEach(function(effect, i) {
+                if (fiber.effectTag % effect == 0) {
+                    Renderer[domFns[i]](fiber);
+                    fiber.effectTag /= effect;
+                }
+            });
             fiber.hasMounted = true;
-            fiber.effectTag /= PLACE;
-            if (fiber.effectTag % ATTR == 0) {
-                Renderer.updateAttribute(fiber);
-            }
         } else {
             // 边界组件的清洗工件
             if (fiber.catchError) {
@@ -86,9 +91,13 @@ export function commitDFS(effects) {
             //处理retry组件
             if (el.effectTag === DETACH && el.caughtError) {
                 disposeFiber(el);
-                return;
+            } else {
+                commitDFSImpl(el);
             }
-            commitDFSImpl(el);
+            if (domRemoved.length) {
+                domRemoved.forEach(Renderer.removeElement);
+                domRemoved.length = 0;
+            }
         }
     }, {});
 
@@ -119,14 +128,8 @@ export function commitEffects(fiber) {
             switch (effectNo) {
                 case WORKING:
                     break;
-                case CONTENT:
-                    Renderer.updateContext(fiber);
-                    break;
-                case ATTR:
-                    if (fiber.onDuplex) {
-                        fiber.onDuplex(fiber);
-                        delete fiber.onDuplex;
-                    }
+                case DUPLEX:
+                    Renderer.updateControlled(fiber);
                     break;
                 case HOOK:
                     if (fiber.hasMounted) {
@@ -178,11 +181,9 @@ export function commitEffects(fiber) {
 }
 
 export function disposeFibers(fiber) {
-    let list = [fiber.oldChildren, fiber.children],
-        count = 0;
-
-    while (count != 2) {
-        let c = list[count++];
+    let list = [fiber.oldChildren, fiber.children];
+    for (let i = 0; i < 2; i++) {
+        let c = list[i];
         if (c) {
             for (let i in c) {
                 let child = c[i];
@@ -209,16 +210,16 @@ function disposeFiber(fiber, force) {
     }
     if (effectTag % DETACH == 0 || force === true) {
         if (fiber.tag > 3) {
-            Renderer.removeElement(fiber);
+            domRemoved.push(fiber);
         } else {
             if (fiber.hasMounted) {
                 stateNode.updater.enqueueSetState = returnFalse;
                 guardCallback(stateNode, "componentWillUnmount", []);
+                delete fiber.stateNode;
             }
         }
         delete fiber.alternate;
         delete fiber.hasMounted;
-        //  delete fiber.stateNode;
         fiber.disposed = true;
     }
     fiber.effectTag = NOWORK;

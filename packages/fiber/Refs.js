@@ -18,14 +18,15 @@ export let Refs = {
         try {
             let number = typeNumber(ref);
             refStrategy[number](owner, ref, dom);
-            if (owner && owner.__isStateless) {
+            if(owner && owner.__isStateless ){
                 delete fiber.ref;
                 fiber.deleteRef = true;
             }
+         
         } catch (e) {
             pushError(fiber, "ref", e);
         }
-    }
+    },
 };
 
 const refStrategy = {
@@ -45,5 +46,5 @@ const refStrategy = {
     },
     8: function(owner, ref, dom) {
         ref.current = dom;
-    }
+    },
 };

@@ -1,8 +1,13 @@
 // Polyfill requestIdleCallback and cancelIdleCallback
-import { typeNumber, isFn, getWindow } from "react-core/util";
+import {
+    typeNumber,
+    isFn,
+    getWindow
+} from "react-core/util";
 
-var global = getWindow();
-var requestAnimationFrameForReact = global.requestAnimationFrame;
+var global = getWindow()
+var requestAnimationFrameForReact = global.requestAnimationFrame
+
 
 // We capture a local reference to any global, in case it gets polyfilled after
 // this module is initially evaluated.
@@ -12,7 +17,7 @@ const localSetTimeout = setTimeout;
 const localClearTimeout = clearTimeout;
 
 const hasNativePerformanceNow =
-    typeof performance === "object" && typeof performance.now === "function";
+    typeof performance === 'object' && typeof performance.now === 'function';
 
 let now;
 if (hasNativePerformanceNow) {
@@ -25,6 +30,7 @@ if (hasNativePerformanceNow) {
         return localDate.now();
     };
 }
+]
 
 if (!requestAnimationFrameForReact) {
     const timeoutIds = new Map();
@@ -35,14 +41,14 @@ if (!requestAnimationFrameForReact) {
             scheduledCallback: callback,
             timeoutTime: 0,
             next: null,
-            prev: null
+            prev: null,
         };
         const timeoutId = localSetTimeout(() => {
             callback({
                 timeRemaining() {
                     return Infinity;
                 },
-                didTimeout: false
+                didTimeout: false,
             });
         });
         timeoutIds.set(callback, timeoutId);
@@ -77,7 +83,7 @@ if (!requestAnimationFrameForReact) {
         timeRemaining() {
             const remaining = frameDeadline - now();
             return remaining > 0 ? remaining : 0;
-        }
+        },
     };
 
     /**
@@ -99,7 +105,7 @@ if (!requestAnimationFrameForReact) {
             if (!finishedCalling) {
                 // an error must have been thrown
                 isIdleScheduled = true;
-                global.postMessage(messageKey, "*");
+                global.postMessage(messageKey, '*');
             }
         }
     };
@@ -123,10 +129,7 @@ if (!requestAnimationFrameForReact) {
         // Keep a pointer to the soonest timeoutTime, and check that first.
         // If it has not expired, we can skip traversing the whole list.
         // If it has expired, then we step through all the callbacks.
-        if (
-            nextSoonestTimeoutTime === -1 ||
-            nextSoonestTimeoutTime > currentTime
-        ) {
+        if (nextSoonestTimeoutTime === -1 || nextSoonestTimeoutTime > currentTime) {
             // We know that none of them have timed out yet.
             return;
         }
@@ -170,10 +173,10 @@ if (!requestAnimationFrameForReact) {
 
     // We use the postMessage trick to defer idle work until after the repaint.
     const messageKey =
-        "__reactIdleCallback$" +
+        '__reactIdleCallback$' +
         Math.random()
-            .toString(36)
-            .slice(2);
+        .toString(36)
+        .slice(2);
     const idleTick = function(event) {
         if (event.source !== global || event.data !== messageKey) {
             return;
@@ -209,7 +212,7 @@ if (!requestAnimationFrameForReact) {
     };
     // Assumes that we have addEventListener in this environment. Might need
     // something better for old IE.
-    global.addEventListener("message", idleTick, false);
+    global.addEventListener('message', idleTick, false);
 
     const animationTick = function(rafTime) {
         isAnimationFrameScheduled = false;
@@ -231,22 +234,20 @@ if (!requestAnimationFrameForReact) {
             // Take the max of the two in case one of them was an anomaly due to
             // missed frame deadlines.
             activeFrameTime =
-                nextFrameTime < previousFrameTime
-                    ? previousFrameTime
-                    : nextFrameTime;
+                nextFrameTime < previousFrameTime ? previousFrameTime : nextFrameTime;
         } else {
             previousFrameTime = nextFrameTime;
         }
         frameDeadline = rafTime + activeFrameTime;
         if (!isIdleScheduled) {
             isIdleScheduled = true;
-            global.postMessage(messageKey, "*");
+            global.postMessage(messageKey, '*');
         }
     };
 
     scheduleWork = function(callback, options) {
         let timeoutTime = -1;
-        if (options != null && typeof options.timeout === "number") {
+        if (options != null && typeof options.timeout === 'number') {
             timeoutTime = now() + options.timeout;
         }
         if (
@@ -260,7 +261,7 @@ if (!requestAnimationFrameForReact) {
             scheduledCallback: callback,
             timeoutTime,
             prev: null,
-            next: null
+            next: null,
         };
         if (headOfPendingCallbacksLinkedList === null) {
             // Make this callback the head and tail of our list
@@ -355,4 +356,8 @@ if (!requestAnimationFrameForReact) {
     };
 }
 
-export { now, scheduleWork, cancelScheduledWork };
+export {
+    now,
+    scheduleWork,
+    cancelScheduledWork
+};

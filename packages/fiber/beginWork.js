@@ -11,7 +11,7 @@ import {
     HOOK,
     CONTENT,
     REF,
-    NULLREF,
+    //  NULLREF,
     CALLBACK,
     NOWORK,
     WORKING
@@ -73,10 +73,7 @@ export function reconcileDFS(fiber, info, deadline, ENOUGH_TIME) {
                     delete f.shiftContainer;
                     info.containerStack.shift(); // shift parent
                 }
-                //instance为元素节点
-                if (instance.insertPoint) {
-                    instance.insertPoint = null;
-                }
+    
             } else {
                 let updater = instance && instance.updater;
                 if (f.shiftContext) {
@@ -111,9 +108,10 @@ function updateHostComponent(fiber, info) {
         fiber.stateNode = Renderer.createElement(fiber);
     }
     const parent = fiber.parent;
-    if (!parent.insertPoint) {
+    /* if (!parent.insertPoint) {
         parent.insertPoint = getInsertPoint(fiber);
     }
+    */
     fiber.forwardFiber = parent.insertPoint;
 
     parent.insertPoint = fiber;
@@ -180,6 +178,7 @@ export function updateClassComponent(fiber, info) {
     if (instance == null) {
         fiber.parent = type === AnuPortal ? props.parent : containerStack[0];
         instance = createInstance(fiber, newContext);
+        cacheContext(instance, contextStack[0], newContext);
     }
 
     instance._reactInternalFiber = fiber; //更新rIF
@@ -187,10 +186,7 @@ export function updateClassComponent(fiber, info) {
     if (isStateful) {
         //有狀态组件
         let updateQueue = fiber.updateQueue;
-        if (fiber.hasMounted && fiber.dirty && fiber.parent) {
-            fiber.parent.insertPoint = null;
-        }
-        delete fiber.dirty;
+
         delete fiber.updateFail;
         if (fiber.hasMounted) {
             applybeforeUpdateHooks(
@@ -228,7 +224,7 @@ export function updateClassComponent(fiber, info) {
         fiber.shiftContainer = true;
     }
     //存放它上面的所有context的并集
-    instance.unmaskedContext = contextStack[0];
+    //instance.unmaskedContext = contextStack[0];
     //设置新context, props, state
     instance.context = newContext;
     fiber.memoizedProps = instance.props = props;
@@ -241,11 +237,16 @@ export function updateClassComponent(fiber, info) {
     }
 
     if (isStateful) {
+        if (fiber.parent && fiber.hasMounted && fiber.dirty) {
+            fiber.parent.insertPoint = getInsertPoint(fiber);
+        }
         if (fiber.updateFail) {
             cloneChildren(fiber);
             fiber._hydrating = false;
             return;
         }
+
+        delete fiber.dirty;
         fiber.effectTag *= HOOK;
     } else {
         fiber.effectTag = WORKING;
@@ -291,7 +292,6 @@ function applybeforeUpdateHooks(
     if (!instance.__useNewHooks) {
         if (propsChanged || contextChanged) {
             let prevState = instance.state;
-
             callUnsafeHook(instance, "componentWillReceiveProps", [
                 newProps,
                 newContext
@@ -372,7 +372,10 @@ function cloneChildren(fiber) {
         setInsertPoints(cc);
     }
 }
-
+function cacheContext(instance, unmaskedContext, context) {
+    instance.__unmaskedContext = unmaskedContext;
+    instance.__maskedContext = context;
+}
 function getMaskedContext(instance, contextTypes, contextStack) {
     if (instance && !contextTypes) {
         return instance.context;
@@ -381,11 +384,22 @@ function getMaskedContext(instance, contextTypes, contextStack) {
     if (!contextTypes) {
         return context;
     }
-    let parentContext = contextStack[0];
+
+    let unmaskedContext = contextStack[0];
+    if (instance) {
+        var cachedUnmasked = instance.__unmaskedContext;
+        if (cachedUnmasked === unmaskedContext) {
+            return instance.__maskedContext;
+        }
+    }
+
     for (let key in contextTypes) {
         if (contextTypes.hasOwnProperty(key)) {
-            context[key] = parentContext[key];
+            context[key] = unmaskedContext[key];
         }
+    }
+    if (instance) {
+        cacheContext(instance, unmaskedContext, context);
     }
     return context;
 }
@@ -404,7 +418,7 @@ function diffChildren(parentFiber, children) {
     }
     let newFibers = fiberizeChildren(children, parentFiber); // 新的
     let effects = parentFiber.effects || (parentFiber.effects = []);
-    let matchFibers = {};
+    let matchFibers = new Object();
     delete parentFiber.child;
     for (let i in oldFibers) {
         let newFiber = newFibers[i];
@@ -438,7 +452,7 @@ function diffChildren(parentFiber, children) {
                     delete newFiber.deleteRef;
                 }
                 if (oldRef && oldRef !== newFiber.ref) {
-                    alternate.effectTag *= NULLREF;
+                    //  alternate.effectTag *= NULLREF;
                     effects.push(alternate);
                 }
                 if (newFiber.tag === 5) {

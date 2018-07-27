@@ -6,8 +6,8 @@ function startsWith(string, search) {
 }
 let reservedNames = ["uri", "path"];
 
-export function invariant(condition, msg) {
-    if (!condition) {
+export function invariant(condition, msg){
+    if(!condition){
         throw msg;
     }
 }
@@ -159,7 +159,7 @@ function resolve(to, base) {
     }
     let _arr = to.split("?");
     let toPathname = _arr[0];
-    let toQuery = _arr[1];
+    let toQuery  = _arr[1];
     let basePathname = base.split("?").shift();
 
     let toSegments = segmentize(toPathname);
@@ -200,16 +200,16 @@ function insertParams(path, params) {
     let segments = segmentize(path);
     return (
         "/" +
-        segments
-            .map(segment => {
-                let match = paramRe.exec(segment);
-                return match ? params[match[1]] : segment;
-            })
-            .join("/")
+    segments
+        .map(segment => {
+            let match = paramRe.exec(segment);
+            return match ? params[match[1]] : segment;
+        })
+        .join("/")
     );
 }
 
-function validateRedirect(from, to) {
+function validateRedirect (from, to)  {
     let filter = segment => isDynamic(segment);
     let fromString = segmentize(from)
         .filter(filter)
@@ -276,13 +276,15 @@ function rankRoutes(routes) {
     return routes.map(rankRoute).sort(sorter);
 }
 //去除前后的斜杠，并按/切割成数组
-function segmentize(uri) {
+function segmentize( uri) {
     return uri.replace(/(^\/+|\/+$)/g, "").split("/");
 }
 
-function addQuery(pathname, query) {
-    return pathname + (query ? `?${query}` : "");
+function addQuery (pathname, query) {
+    return pathname + (query ? `?${query}` : ""); 
 }
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 export { startsWith, pick, match, resolve, insertParams, validateRedirect };

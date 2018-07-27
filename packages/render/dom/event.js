@@ -276,7 +276,9 @@ eventPropHooks.click = function(e) {
 const fixWheelType =
     document.onwheel !== void 666
         ? "wheel"
-        : "onmousewheel" in document ? "mousewheel" : "DOMMouseScroll";
+        : "onmousewheel" in document
+            ? "mousewheel"
+            : "DOMMouseScroll";
 eventHooks.wheel = function(dom) {
     addEvent(dom, fixWheelType, specialHandles.wheel);
 };
@@ -286,15 +288,19 @@ eventPropHooks.wheel = function(event) {
         "deltaX" in event
             ? event.deltaX
             : // Fallback to `wheelDeltaX` for Webkit and normalize (right is positive).
-            "wheelDeltaX" in event ? -event.wheelDeltaX : 0;
+              "wheelDeltaX" in event
+                ? -event.wheelDeltaX
+                : 0;
     event.deltaY =
         "deltaY" in event
             ? event.deltaY
             : // Fallback to `wheelDeltaY` for Webkit and normalize (down is positive).
-            "wheelDeltaY" in event
+              "wheelDeltaY" in event
                 ? -event.wheelDeltaY
                 : // Fallback to `wheelDelta` for IE<9 and normalize (down is positive).
-                "wheelDelta" in event ? -event.wheelDelta : 0;
+                  "wheelDelta" in event
+                    ? -event.wheelDelta
+                    : 0;
 };
 
 export let focusMap = {

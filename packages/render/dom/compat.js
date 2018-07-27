@@ -43,13 +43,7 @@ let fixIEChangeHandle = createHandle("change", function(e) {
         return true;
     }
     if (e.type === "propertychange") {
-        if (e.propertyName === "value") {
-            if (dom.__anuSetValue) {
-                return false;
-            }
-        } else {
-            return false;
-        }
+        return e.propertyName === "value" && !dom.__anuSetValue;
     }
 });
 
@@ -65,7 +59,9 @@ let IEHandleFix = {
         //IE6-8, radio, checkbox的点击事件必须在失去焦点时才触发 select则需要做更多补丁工件
         let mask = /radio|check/.test(dom.type)
             ? "click"
-            : /text|password/.test(dom.type) ? "propertychange" : "change";
+            : /text|password/.test(dom.type)
+                ? "propertychange"
+                : "change";
         addEvent(dom, mask, fixIEChangeHandle);
     },
     submit: function(dom) {
@@ -74,13 +70,7 @@ let IEHandleFix = {
         }
     }
 };
-
 if (msie < 9) {
-    const noName = ["", "anonymous"];
-    const rname = /^function\s(\w+)/;
-    inherit.getName = function(ctor) {
-        return (String(ctor).match(rname) || noName)[1];
-    };
     actionStrategy[innerHTML] = function(dom, name, val, lastProps) {
         let oldhtml = lastProps[name] && lastProps[name].__html;
         let html = val && val.__html;
